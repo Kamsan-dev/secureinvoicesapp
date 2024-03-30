@@ -7,7 +7,6 @@ export interface LoginState {
    error: string | undefined;
    message: string | undefined;
    isUsingMfa: boolean | undefined;
-   phone: string | undefined;
    currentUser: User | undefined;
 }
 

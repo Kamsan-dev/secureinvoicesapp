@@ -9,7 +9,6 @@ const initialState: LoginState = {
    loginSuccess: false,
    message: undefined,
    isUsingMfa: false,
-   phone: undefined,
    currentUser: undefined,
 };
 
@@ -42,7 +41,7 @@ const authFeature = createFeature({
       on(authMfaAction.verifyCodeSuccess, (state, action) => ({
          ...state,
          dataState: DataState.LOADED,
-         isUsingMfa: false,
+         isUsingMfa: true,
          message: action.response.message,
          currentUser: action.response.data?.user,
       })),
@@ -62,7 +61,6 @@ export const {
    selectIsUsingMfa,
    selectError,
    selectMessage,
-   selectPhone,
    selectLoginSuccess,
    selectCurrentUser,
    selectLoginState,

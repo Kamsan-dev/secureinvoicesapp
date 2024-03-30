@@ -51,7 +51,7 @@ export const redirectAfterLoginSuccessEffect = createEffect(
             if (!isUsingMfa) {
                router.navigateByUrl('/register');
             } else {
-               router.navigateByUrl('/login');
+               //router.navigateByUrl('/login');
                isUsingMfa = false;
             }
          }),

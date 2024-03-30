@@ -96,7 +96,7 @@
                   <div class="text-center">
                      <h2>SecureInvoices</h2>
                      <h5 class="card-title mt-4 mb-4">
-                        Verification Code Sent To {{ state.currentUser?.firstName }}
+                        Verification Code Sent To {{ phoneSubject | async }}
                      </h5>
 
                      <p class="mt-2" style="font-size: 20px">Please access your SMS and enter the code.</p>

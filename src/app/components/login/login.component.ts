@@ -1,13 +1,15 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Store } from '@ngrx/store';
-import { authLoginAction, authMfaAction } from 'src/app/store/login/login.action';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Observable } from 'rxjs';
-import { LoginState } from 'src/app/interfaces/appstate';
-import { selectLoginState } from 'src/app/store/login/login.reducer';
-import { selectCurrentUser } from 'src/app/store/login/login.reducer';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { BehaviorSubject, Observable, catchError, delay, map, of, startWith } from 'rxjs';
+import { DataState } from 'src/app/enums/datastate.enum';
+import { LoginState, Profile } from 'src/app/interfaces/appstate';
+import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
+import { PersistanceService } from 'src/app/services/persistance.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
    selector: 'app-login',
@@ -16,15 +18,28 @@ import { RouterModule } from '@angular/router';
    templateUrl: './login.component.html',
    styleUrls: ['./login.component.css'],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
+   initialState: LoginState = {
+      dataState: DataState.LOADED,
+      error: undefined,
+      loginSuccess: false,
+      message: undefined,
+      isUsingMfa: false,
+      currentUser: undefined,
+   };
    loginForm: FormGroup;
    verificationForm: FormGroup;
-   loginState$: Observable<LoginState>;
+   loginState$: Observable<any> = of(this.initialState);
    userEmail: string | undefined;
+   public phoneSubject = new BehaviorSubject<string | undefined>('null');
+   public emailSubject = new BehaviorSubject<string | undefined>('null');
 
    constructor(
       private fb: FormBuilder,
       private store: Store,
+      private userService: UserService,
+      private persistanceService: PersistanceService,
+      private router: Router,
    ) {
       this.loginForm = this.fb.nonNullable.group({
          email: ['dev@email.com', Validators.required],
@@ -35,12 +50,7 @@ export class LoginComponent implements OnInit {
          code: ['', Validators.required],
       });
 
-      this.loginState$ = this.store.select(selectLoginState);
-   }
-   ngOnInit(): void {
-      this.store.select(selectCurrentUser).subscribe((user) => {
-         this.userEmail = user?.email;
-      });
+      //this.loginState$ = this.store.select(selectLoginState);
    }
 
    onSubmitForm(): void {
@@ -48,16 +58,83 @@ export class LoginComponent implements OnInit {
          email: this.loginForm.value.email,
          password: this.loginForm.value.password,
       };
-      this.store.dispatch(authLoginAction.login({ request }));
+      this.loginState$ = this.userService.login(request).pipe(
+         delay(3000),
+         map((response: CustomHttpResponse<Profile>) => {
+            if (response.data?.user?.usingMfa) {
+               this.phoneSubject.next('...' + response.data.user.phone?.substring(6));
+               this.emailSubject.next(response.data.user.email);
+               return {
+                  loginSuccess: false,
+                  dataState: DataState.LOADED,
+                  isUsingMfa: true,
+                  currentUser: response.data?.user,
+               };
+            } else {
+               this.persistanceService.set('access-token', response.data?.access_token);
+               this.persistanceService.set('refresh-token', response.data?.refresh_token);
+               this.router.navigateByUrl('/register');
+               return {
+                  dataState: DataState.LOADED,
+                  loginSuccess: true,
+                  currentUser: response.data?.user,
+                  isUsingMfa: false,
+                  message: response.message,
+               };
+            }
+         }),
+         startWith({
+            dataState: DataState.LOADING,
+            isUsingMfa: false,
+         }),
+         catchError((errors: HttpErrorResponse) => {
+            //console.log(errors);
+            return of({
+               dataState: DataState.ERROR,
+               loginSuccess: false,
+               isUsingMfa: false,
+               error: errors.error.reason,
+            });
+         }),
+      );
    }
 
-   onSubmitVerifyCode(): void {
-      console.log(this.verificationForm.value.code);
+   // onSubmitForm(): void {
+   //    const request = {
+   //       email: this.loginForm.value.email,
+   //       password: this.loginForm.value.password,
+   //    };
+   //    this.store.dispatch(authLoginAction.login({ request }));
+   // }
 
+   onSubmitVerifyCode(): void {
       const request = {
-         email: this.userEmail,
+         email: this.emailSubject.getValue(),
          code: this.verificationForm.value.code,
       };
-      this.store.dispatch(authMfaAction.verifyCode({ request }));
+      console.log(request);
+      this.loginState$ = this.userService.verifyCode(request).pipe(
+         map((response: CustomHttpResponse<Profile>) => {
+            this.persistanceService.set('access-token', response.data?.access_token);
+            this.persistanceService.set('refresh-token', response.data?.refresh_token);
+            this.router.navigateByUrl('/register');
+            return {
+               loginSuccess: true,
+               dataState: DataState.LOADED,
+               isUsingMfa: false,
+               currentUser: response.data?.user,
+            };
+         }),
+         startWith({ dataState: DataState.LOADING }),
+         catchError((errors: HttpErrorResponse) => {
+            return of({
+               dataState: DataState.ERROR,
+               loginSuccess: false,
+               isUsingMfa: true,
+               error: errors.error.reason,
+            });
+         }),
+      );
+      //this.store.dispatch(authMfaAction.verifyCode({ request }));
    }
 }
