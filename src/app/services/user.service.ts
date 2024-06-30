@@ -6,20 +6,18 @@ import { LoginRequestInterface } from '../interfaces/login-request';
 import { Profile } from '../interfaces/appstate';
 
 @Injectable({
-   providedIn: 'root',
+  providedIn: 'root',
 })
 export class UserService {
-   constructor(private http: HttpClient) {}
-   private readonly server: string = 'http://localhost:8080/';
+  constructor(private http: HttpClient) {}
+  private readonly server: string = 'http://localhost:8080/';
 
-   login(requestLogin: LoginRequestInterface): Observable<CustomHttpResponse<Profile>> {
-      const body = { email: requestLogin.email, password: requestLogin.password };
-      return this.http.post<CustomHttpResponse<Profile>>(this.server + 'user/login', body);
-   }
+  public login(requestLogin: LoginRequestInterface): Observable<CustomHttpResponse<Profile>> {
+    const body = { email: requestLogin.email, password: requestLogin.password };
+    return this.http.post<CustomHttpResponse<Profile>>(this.server + 'user/login', body);
+  }
 
-   verifyCode(request: any): Observable<CustomHttpResponse<Profile>> {
-      return this.http.get<CustomHttpResponse<Profile>>(
-         this.server + 'user/verify/code/' + request.email + '/' + request.code,
-      );
-   }
+  public verifyCode(request: any): Observable<CustomHttpResponse<Profile>> {
+    return this.http.get<CustomHttpResponse<Profile>>(this.server + 'user/verify/code/' + request.email + '/' + request.code);
+  }
 }

@@ -18,17 +18,8 @@ import { UserService } from 'src/app/services/user.service';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
-  private initialState: LoginState = {
-    dataState: DataState.LOADED,
-    error: undefined,
-    loginSuccess: false,
-    message: undefined,
-    isUsingMfa: false,
-    currentUser: undefined,
-  };
   public loginForm: FormGroup;
   public verificationForm: FormGroup;
-  public loginState$: Observable<LoginState> = of(this.initialState);
   public readonly phoneSig = signal<string | undefined>('');
   public readonly emailSig = signal<string | undefined>('');
   constructor(
@@ -47,6 +38,16 @@ export class LoginComponent {
     });
   }
 
+  private _initialState: LoginState = {
+    dataState: DataState.LOADED,
+    error: undefined,
+    loginSuccess: false,
+    message: undefined,
+    isUsingMfa: false,
+    currentUser: undefined,
+  };
+  public loginState$: Observable<LoginState> = of(this._initialState);
+
   public onSubmitForm(): void {
     const request = {
       email: this.loginForm.value.email,
@@ -60,7 +61,7 @@ export class LoginComponent {
           this.phoneSig.set('...' + user.phone?.substring(6));
           this.emailSig.set(user.email);
           return {
-            ...this.initialState,
+            ...this._initialState,
             loginSuccess: false,
             dataState: DataState.LOADED,
             isUsingMfa: true,
@@ -71,7 +72,7 @@ export class LoginComponent {
           this.persistanceService.set('refresh-token', response.data?.refresh_token);
           this.router.navigateByUrl('/register');
           return {
-            ...this.initialState,
+            ...this._initialState,
             dataState: DataState.LOADED,
             loginSuccess: true,
             currentUser: user,
@@ -81,12 +82,12 @@ export class LoginComponent {
         }
       }),
       startWith({
-        ...this.initialState,
+        ...this._initialState,
         dataState: DataState.LOADING,
       } as LoginState),
       catchError((errors: HttpErrorResponse) => {
         return of({
-          ...this.initialState,
+          ...this._initialState,
           dataState: DataState.ERROR,
           loginSuccess: false,
           isUsingMfa: false,
@@ -108,7 +109,7 @@ export class LoginComponent {
         this.persistanceService.set('refresh-token', response.data?.refresh_token);
         this.router.navigateByUrl('/register');
         return {
-          ...this.initialState,
+          ...this._initialState,
           loginSuccess: true,
           dataState: DataState.LOADED,
           isUsingMfa: false,
@@ -118,7 +119,7 @@ export class LoginComponent {
       startWith({ dataState: DataState.LOADING } as LoginState),
       catchError((errors: HttpErrorResponse) => {
         return of({
-          ...this.initialState,
+          ...this._initialState,
           dataState: DataState.ERROR,
           loginSuccess: false,
           isUsingMfa: true,
@@ -126,5 +127,10 @@ export class LoginComponent {
         });
       }),
     );
+  }
+
+  public openLoginPage(event: MouseEvent): void {
+    event.stopImmediatePropagation();
+    this.loginState$ = of({ ...this._initialState, DataState: DataState.LOADED, loginSuccess: false, isUsingMfa: false } as LoginState);
   }
 }

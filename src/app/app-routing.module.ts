@@ -1,5 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { CustomersComponent } from './components/customers/customers.component';
+import { HomeComponent } from './components/home/home.component';
+import { ProfileComponent } from './components/profile/profile.component';
 
 const routes: Routes = [
   {
@@ -23,8 +26,25 @@ const routes: Routes = [
     loadComponent: () => import('./components/resetpassword/resetpassword.component').then((m) => m.ResetpasswordComponent),
   },
   {
+    path: 'profile',
+    component: ProfileComponent,
+  },
+  {
+    path: 'customers',
+    component: CustomersComponent,
+  },
+  {
+    path: '',
+    component: HomeComponent,
+  },
+  {
+    path: '',
+    redirectTo: '/',
+    pathMatch: 'full',
+  },
+  {
     path: '**',
-    redirectTo: 'login',
+    component: HomeComponent,
   },
 ];
 
