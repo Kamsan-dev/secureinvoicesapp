@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, signal } from '@angular/core';
+import { Component, OnDestroy, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { Observable, catchError, delay, map, of, startWith } from 'rxjs';
+import { Observable, Subject, Subscription, catchError, delay, lastValueFrom, map, of, startWith, takeUntil } from 'rxjs';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { LoginState, Profile } from 'src/app/interfaces/appstate';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
+import { User } from 'src/app/interfaces/user';
 import { PersistanceService } from 'src/app/services/persistance.service';
 import { UserService } from 'src/app/services/user.service';
 
@@ -17,11 +18,12 @@ import { UserService } from 'src/app/services/user.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
-export class LoginComponent {
+export class LoginComponent implements OnDestroy {
   public loginForm: FormGroup;
   public verificationForm: FormGroup;
   public readonly phoneSig = signal<string | undefined>('');
   public readonly emailSig = signal<string | undefined>('');
+  private destroy: Subject<void> = new Subject<void>();
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
@@ -38,7 +40,7 @@ export class LoginComponent {
     });
   }
 
-  private _initialState: LoginState = {
+  public loginState: LoginState = {
     dataState: DataState.LOADED,
     error: undefined,
     loginSuccess: false,
@@ -46,55 +48,29 @@ export class LoginComponent {
     isUsingMfa: false,
     currentUser: undefined,
   };
-  public loginState$: Observable<LoginState> = of(this._initialState);
 
+  //#region Forms
   public onSubmitForm(): void {
     const request = {
       email: this.loginForm.value.email,
       password: this.loginForm.value.password,
     };
-    this.loginState$ = this.userService.login(request).pipe(
-      delay(1500),
-      map((response: CustomHttpResponse<Profile>) => {
-        const user = response.data?.user;
-        if (user?.usingMfa) {
-          this.phoneSig.set('...' + user.phone?.substring(6));
-          this.emailSig.set(user.email);
-          return {
-            ...this._initialState,
-            loginSuccess: false,
-            dataState: DataState.LOADED,
-            isUsingMfa: true,
-            currentUser: user,
-          } as LoginState;
-        } else {
-          this.persistanceService.set('access-token', response.data?.access_token);
-          this.persistanceService.set('refresh-token', response.data?.refresh_token);
-          this.router.navigateByUrl('/register');
-          return {
-            ...this._initialState,
-            dataState: DataState.LOADED,
-            loginSuccess: true,
-            currentUser: user,
-            isUsingMfa: false,
-            message: response.message,
-          } as LoginState;
-        }
-      }),
-      startWith({
-        ...this._initialState,
-        dataState: DataState.LOADING,
-      } as LoginState),
-      catchError((errors: HttpErrorResponse) => {
-        return of({
-          ...this._initialState,
-          dataState: DataState.ERROR,
-          loginSuccess: false,
-          isUsingMfa: false,
-          error: errors.error.reason,
-        } as LoginState);
-      }),
-    );
+
+    this.loginState = {
+      ...this.loginState,
+      dataState: DataState.LOADING,
+    };
+    this.userService
+      .login(request)
+      .pipe(takeUntil(this.destroy), delay(800))
+      .subscribe({
+        next: (response: CustomHttpResponse<Profile>) => {
+          this.handleLoginResponse(response);
+        },
+        error: (errors: HttpErrorResponse) => {
+          this.handleError(errors);
+        },
+      });
   }
 
   public onSubmitVerifyCode(): void {
@@ -102,35 +78,98 @@ export class LoginComponent {
       email: this.emailSig(),
       code: this.verificationForm.value.code,
     };
-    console.log(request);
-    this.loginState$ = this.userService.verifyCode(request).pipe(
-      map((response: CustomHttpResponse<Profile>) => {
-        this.persistanceService.set('access-token', response.data?.access_token);
-        this.persistanceService.set('refresh-token', response.data?.refresh_token);
-        this.router.navigateByUrl('/register');
-        return {
-          ...this._initialState,
-          loginSuccess: true,
-          dataState: DataState.LOADED,
-          isUsingMfa: false,
-          currentUser: response.data?.user,
-        } as LoginState;
-      }),
-      startWith({ dataState: DataState.LOADING } as LoginState),
-      catchError((errors: HttpErrorResponse) => {
-        return of({
-          ...this._initialState,
-          dataState: DataState.ERROR,
-          loginSuccess: false,
-          isUsingMfa: true,
-          error: errors.error.reason,
-        });
-      }),
-    );
+    this.loginState = {
+      ...this.loginState,
+      dataState: DataState.LOADING,
+    };
+
+    this.userService
+      .verifyCode(request)
+      .pipe(takeUntil(this.destroy))
+      .subscribe({
+        next: (response: CustomHttpResponse<Profile>) => {
+          this.persistanceService.set('access-token', response.data?.access_token);
+          this.persistanceService.set('refresh-token', response.data?.refresh_token);
+          this.loginState = {
+            ...this.loginState,
+            loginSuccess: true,
+            dataState: DataState.LOADED,
+            isUsingMfa: false,
+            currentUser: response.data?.user,
+          };
+          this.router.navigateByUrl('/');
+        },
+        error: (errors: HttpErrorResponse) => {
+          this.loginState = {
+            ...this.loginState,
+            dataState: DataState.ERROR,
+            loginSuccess: false,
+            isUsingMfa: true,
+            error: errors.error.reason,
+          };
+        },
+      });
   }
 
   public openLoginPage(event: MouseEvent): void {
     event.stopImmediatePropagation();
-    this.loginState$ = of({ ...this._initialState, DataState: DataState.LOADED, loginSuccess: false, isUsingMfa: false } as LoginState);
+    this.loginState = {
+      ...this.loginState,
+      dataState: DataState.LOADED,
+      loginSuccess: false,
+      isUsingMfa: false,
+    };
+  }
+
+  private handleLoginResponse(response: CustomHttpResponse<Profile>): void {
+    const user = response.data?.user;
+    if (user?.usingMfa) {
+      this.handleMfaUser(user);
+    } else {
+      this.handleRegularUser(response);
+    }
+  }
+
+  private handleMfaUser(user: User): void {
+    this.phoneSig.set('...' + user.phone?.substring(6));
+    this.emailSig.set(user.email);
+    this.loginState = {
+      ...this.loginState,
+      loginSuccess: false,
+      dataState: DataState.LOADED,
+      isUsingMfa: true,
+      currentUser: user,
+    };
+  }
+
+  private handleRegularUser(response: CustomHttpResponse<Profile>): void {
+    this.persistanceService.set('access-token', response.data?.access_token);
+    this.persistanceService.set('refresh-token', response.data?.refresh_token);
+    this.router.navigateByUrl('/register');
+    this.loginState = {
+      ...this.loginState,
+      dataState: DataState.LOADED,
+      loginSuccess: true,
+      currentUser: response.data?.user,
+      isUsingMfa: false,
+      message: response.message,
+    };
+  }
+
+  private handleError(errors: HttpErrorResponse): void {
+    this.loginState = {
+      ...this.loginState,
+      dataState: DataState.ERROR,
+      loginSuccess: false,
+      isUsingMfa: false,
+      error: errors.error.reason,
+    };
+  }
+
+  //#endregion
+
+  ngOnDestroy(): void {
+    this.destroy.next();
+    this.destroy.complete();
   }
 }
