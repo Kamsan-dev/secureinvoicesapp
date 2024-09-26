@@ -11,9 +11,11 @@ import { CustomersComponent } from './components/customers/customers.component';
 import { HomeComponent } from './components/home/home.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { StatsComponent } from './components/stats/stats.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 @NgModule({
   declarations: [AppComponent, ProfileComponent, CustomersComponent, HomeComponent, NavbarComponent, StatsComponent],
-  imports: [BrowserModule, HttpClientModule, AppRoutingModule, RouterOutlet, CommonModule, LoginComponent],
+  imports: [BrowserModule, FormsModule, ReactiveFormsModule, HttpClientModule, AppRoutingModule, RouterOutlet, CommonModule, LoginComponent],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

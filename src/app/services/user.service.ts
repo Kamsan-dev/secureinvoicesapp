@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CustomHttpResponse } from '../interfaces/custom-http-response';
 import { Observable } from 'rxjs';
 import { LoginRequestInterface } from '../interfaces/login-request';
 import { Profile } from '../interfaces/appstate';
+import { User } from '../interfaces/user';
 
 @Injectable({
   providedIn: 'root',
@@ -19,5 +20,11 @@ export class UserService {
 
   public verifyCode(request: any): Observable<CustomHttpResponse<Profile>> {
     return this.http.get<CustomHttpResponse<Profile>>(this.server + 'user/verify/code/' + request.email + '/' + request.code);
+  }
+
+  public profile(): Observable<CustomHttpResponse<Profile>> {
+    return this.http.get<CustomHttpResponse<Profile>>(this.server + 'user/profile', {
+      headers: new HttpHeaders().set('Authorization', 'Bearer'),
+    });
   }
 }
