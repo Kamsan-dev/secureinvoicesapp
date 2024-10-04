@@ -96,11 +96,11 @@
                   </div>
                 </div>
                 <div>
-                  <!-- <button [disabled]="state?.appData?.data?.user?.roleName === 'ROLE_USER' || (isLoading$ | async)" type="submit" class="btn btn-primary">
-                               <span *ngIf="isLoading$ | async" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 5px;"></span>
-                               <span *ngIf="isLoading$ | async">Loading...</span>
-                               <span *ngIf="!(isLoading$ | async)">Update</span>
-                            </button> -->
+                  <button *ngIf="!profileForm.disabled" [disabled]="loading() || profileForm.pristine" type="submit" class="btn btn-primary">
+                    <span *ngIf="loading()" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 5px"></span>
+                    <span *ngIf="loading()">Loading...</span>
+                    <span *ngIf="!loading()">Update</span>
+                  </button>
                 </div>
               </div>
               <div class="tab-pane fade" id="security-tab" role="tabpanel" aria-labelledby="security" style="min-height: 510px">

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 import { DataState } from 'src/app/enums/datastate.enum';
-import { Profile } from 'src/app/interfaces/appstate';
+import { Profile, RoleEnum } from 'src/app/interfaces/appstate';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
 import { State } from 'src/app/interfaces/state';
 import { User } from 'src/app/interfaces/user';
@@ -22,6 +22,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     error: undefined,
   });
 
+  public loading = signal(false);
   private destroy: Subject<void> = new Subject<void>();
 
   public profileForm!: FormGroup;
@@ -86,6 +87,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
         jobTitle: user.title || '',
         bio: user.bio || '',
       });
+
+      if (user.roleName === RoleEnum.ROLE_USER) {
+        this.profileForm.disable();
+      }
     }
   }
 
