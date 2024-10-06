@@ -1,6 +1,7 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, delay, lastValueFrom, of, Subject, takeUntil } from 'rxjs';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { Profile, RoleEnum } from 'src/app/interfaces/appstate';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
@@ -34,12 +35,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.profileForm = this.fb.group({
+      userId: [''],
       firstName: [''],
       lastName: [''],
       email: [''],
       phone: [''],
       address: [''],
-      jobTitle: [''],
+      title: [''],
       bio: [''],
     });
 
@@ -51,24 +53,26 @@ export class ProfileComponent implements OnInit, OnDestroy {
   private loadUserProfile(): void {
     this.userService
       .profile()
-      .pipe(takeUntil(this.destroy))
+      .pipe(delay(1000), takeUntil(this.destroy))
       .subscribe({
         next: (response: CustomHttpResponse<Profile>) => {
           console.log(response);
           this.dataSubject.next(response);
           this.profileState.set({
             ...this.profileState(),
+            dataState: DataState.LOADED,
             appData: response,
           });
 
           // Populate the form with the loaded data
           this.populateForm();
         },
-        error: (error: string) => {
+        error: (error: HttpErrorResponse) => {
           this.profileState.set({
             ...this.profileState(),
             appData: this.dataSubject.value!,
-            error: error,
+            dataState: DataState.ERROR,
+            error: error.error.reason,
           });
         },
       });
@@ -79,12 +83,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
     if (user) {
       this.profileForm.setValue({
+        userId: user.userId || '',
         firstName: user.firstName || '',
         lastName: user.lastName || '',
         email: user.email || '',
         phone: user.phone || '',
         address: user.address || '',
-        jobTitle: user.title || '',
+        title: user.title || '',
         bio: user.bio || '',
       });
 
@@ -95,9 +100,34 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   // Handle profile form submission
-  public onProfileSubmit(): void {
-    if (this.profileForm.valid) {
-      console.log('Profile form submitted:', this.profileForm.value);
+  public async onProfileSubmit(): Promise<void> {
+    this.loading.set(true);
+    try {
+      this.profileForm.disable();
+      await lastValueFrom(of(null).pipe(delay(3000)));
+      const response = await lastValueFrom(this.userService.updateProfile(this.profileForm.value)); // Await the profile update
+      // update profile with fetch data
+      this.dataSubject.next({ ...response, data: response.data });
+      this.profileState.set({
+        ...this.profileState(),
+        dataState: DataState.LOADED,
+        appData: response,
+      });
+    } catch (error) {
+      if (error instanceof HttpErrorResponse) {
+        this.profileState.set({
+          ...this.profileState(),
+          appData: this.dataSubject.value!,
+          dataState: DataState.ERROR,
+          error: error.error.reason,
+        });
+      } else {
+        console.log('An unknown error occurred', error);
+      }
+    } finally {
+      this.loading.set(false);
+      this.profileForm.markAsPristine();
+      this.profileForm.enable();
     }
   }
 

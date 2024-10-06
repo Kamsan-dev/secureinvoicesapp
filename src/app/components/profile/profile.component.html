@@ -85,7 +85,7 @@
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Job Title</label>
-                      <input type="text" name="title" class="form-control" formControlName="jobTitle" />
+                      <input type="text" name="title" class="form-control" formControlName="title" />
                     </div>
                   </div>
                   <div class="col-md-12">
@@ -96,7 +96,7 @@
                   </div>
                 </div>
                 <div>
-                  <button *ngIf="!profileForm.disabled" [disabled]="loading() || profileForm.pristine" type="submit" class="btn btn-primary">
+                  <button *ngIf="getUserInformations()?.roleName !== 'ROLE_USER'" [disabled]="loading() || profileForm.pristine" type="submit" class="btn btn-primary">
                     <span *ngIf="loading()" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 5px"></span>
                     <span *ngIf="loading()">Loading...</span>
                     <span *ngIf="!loading()">Update</span>
