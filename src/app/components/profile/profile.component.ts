@@ -51,6 +51,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   //#region Forms
 
   private loadUserProfile(): void {
+    this.profileState().dataState = DataState.LOADING;
     this.userService
       .profile()
       .pipe(delay(1000), takeUntil(this.destroy))

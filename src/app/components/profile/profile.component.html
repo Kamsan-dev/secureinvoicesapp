@@ -10,22 +10,24 @@
               <a [routerLink]="['/']">Home</a>
             </li>
             <li class="breadcrumb-item active">Users</li>
-            <li class="breadcrumb-item active" aria-current="page">{{ getUserName() }}</li>
+            <li class="breadcrumb-item active" aria-current="page">{{ profileState().dataState !== 'LOADING_STATE' ? getUserName() : 'Loading...' }}</li>
           </ol>
         </nav>
         <div class="bg-white shadow rounded-lg d-block d-sm-flex" style="border-radius: 8px">
           <div class="profile-tab-nav border-right">
             <div class="p-4">
-              <div class="img-circle text-center mb-3">
-                <span style="position: relative">
-                  <img [src]="getUserPictureProfile()" alt="John" class="shadow" />
-                  <!-- <img src="" alt="John" class="shadow" /> -->
-                  <i class="bi bi-camera-fill right-position"></i>
-                </span>
-              </div>
-              <h4 class="text-center">{{ getUserName() }}</h4>
-              <div class="w-100 text-center">
-                <span class="text-center">Since {{ getUserJoinDate() | date: 'MMM d, y' }}</span>
+              <div *ngIf="profileState().dataState !== 'LOADING_STATE'; else spinner">
+                <div class="img-circle text-center mb-3">
+                  <span style="position: relative">
+                    <img [src]="getUserPictureProfile()" alt="John" class="shadow" />
+                    <!-- <img src="" alt="John" class="shadow" /> -->
+                    <i class="bi bi-camera-fill right-position"></i>
+                  </span>
+                </div>
+                <h4 class="text-center">{{ getUserName() }}</h4>
+                <div class="w-100 text-center">
+                  <span class="text-center">Since {{ getUserJoinDate() | date: 'MMM d, y' }}</span>
+                </div>
               </div>
             </div>
             <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
@@ -51,7 +53,7 @@
               <div class="tab-pane fade show active" id="profile-tab" role="tabpanel" aria-labelledby="profile" style="min-height: 510px">
                 <h3 class="mb-4">Profile Settings</h3>
                 <input type="hidden" name="id" />
-                <div class="row">
+                <div class="row" *ngIf="profileState().dataState !== 'LOADING_STATE'; else spinner">
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>First Name</label>
@@ -96,7 +98,12 @@
                   </div>
                 </div>
                 <div>
-                  <button *ngIf="getUserInformations()?.roleName !== 'ROLE_USER'" [disabled]="loading() || profileForm.pristine" type="submit" class="btn btn-primary">
+                  <button
+                    *ngIf="getUserInformations()?.roleName !== 'ROLE_USER' && profileState().dataState !== 'LOADING_STATE'"
+                    [disabled]="loading() || profileForm.pristine"
+                    type="submit"
+                    class="btn btn-primary"
+                  >
                     <span *ngIf="loading()" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 5px"></span>
                     <span *ngIf="loading()">Loading...</span>
                     <span *ngIf="!loading()">Update</span>
@@ -273,3 +280,9 @@
 <form enctype="multipart/form-data" style="display: none">
   <input type="file" name="image" id="image" placeholder="file" ngModel accept="image/*" />
 </form>
+
+<ng-template #spinner>
+  <div class="d-flex align-items-center justify-content-center">
+    <se-progress-spinner mode="indeterminate"></se-progress-spinner>
+  </div>
+</ng-template>

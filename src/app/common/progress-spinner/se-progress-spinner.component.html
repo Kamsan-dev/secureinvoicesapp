@@ -1,0 +1,14 @@
+<div class="se-progress-spinner--container" aria-hidden="true">
+  <svg [attr.viewBox]="viewBox()" xmlns="http://www.w3.org/2000/svg" focusable="false">
+    <circle
+      [attr.r]="circleRadius()"
+      [style.stroke-dasharray.px]="strokeCircumference()"
+      [style.stroke-dashoffset.px]="strokeDashOffset()"
+      [style.stroke-width.%]="circleStrokeWidth()"
+      class="se-progress-spinner--circle"
+      [ngClass]="colorSig()"
+      cx="50%"
+      cy="50%"
+    />
+  </svg>
+</div>
