@@ -1,16 +1,19 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { CustomHttpResponse } from '../interfaces/custom-http-response';
-import { Observable } from 'rxjs';
-import { LoginRequestInterface, updateProfilRequestInterface } from '../interfaces/login-request';
+import { Injectable } from '@angular/core';
+import { Observable, tap } from 'rxjs';
 import { Profile } from '../interfaces/appstate';
-import { User } from '../interfaces/user';
+import { CustomHttpResponse } from '../interfaces/custom-http-response';
+import { LoginRequestInterface, updateProfilRequestInterface } from '../interfaces/login-request';
+import { PersistanceService } from './persistance.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private persistanceService: PersistanceService,
+  ) {}
   private readonly server: string = 'http://localhost:8080/';
 
   public login(requestLogin: LoginRequestInterface): Observable<CustomHttpResponse<Profile>> {
@@ -23,20 +26,28 @@ export class UserService {
   }
 
   public profile(): Observable<CustomHttpResponse<Profile>> {
-    return this.http.get<CustomHttpResponse<Profile>>(this.server + 'user/profile', {
-      headers: new HttpHeaders().set(
-        'Authorization',
-        'Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJTZWN1cmVJbnZvaWNlcyIsImF1ZCI6IkNVU1RPTUVSX01BTkFHRU1FTlRfU0VSVklDRVMiLCJpYXQiOjE3MjgyMzc3MTQsInN1YiI6IjEiLCJhdXRob3JpdGllcyI6WyJSRUFEOlVTRVIiLCIgUkVBRDpDVVNUT01FUiIsIiBVUERBVEU6VVNFUiIsIiBVUERBVEU6Q1VTVE9NRVIiLCIgQ1JFQVRFOlVTRVIiLCIgQ1JFQVRFOkNVU1RPTUVSIl0sImV4cCI6MTcyODY2OTcxNH0.QKIgzvQp4-fRXsoEPmj4dDI6xS7aR9f9-raBZSFRxGnObxdZg_ynjfQzs00-fZTjASCJZMvmJtj0mouVEVWF5Q',
-      ),
-    });
+    return this.http.get<CustomHttpResponse<Profile>>(this.server + 'user/profile');
   }
 
   public updateProfile(updateRequest: updateProfilRequestInterface): Observable<CustomHttpResponse<Profile>> {
-    return this.http.patch<CustomHttpResponse<Profile>>(this.server + 'user/update', updateRequest, {
-      headers: new HttpHeaders().set(
-        'Authorization',
-        'Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJTZWN1cmVJbnZvaWNlcyIsImF1ZCI6IkNVU1RPTUVSX01BTkFHRU1FTlRfU0VSVklDRVMiLCJpYXQiOjE3MjgyMzc3MTQsInN1YiI6IjEiLCJhdXRob3JpdGllcyI6WyJSRUFEOlVTRVIiLCIgUkVBRDpDVVNUT01FUiIsIiBVUERBVEU6VVNFUiIsIiBVUERBVEU6Q1VTVE9NRVIiLCIgQ1JFQVRFOlVTRVIiLCIgQ1JFQVRFOkNVU1RPTUVSIl0sImV4cCI6MTcyODY2OTcxNH0.QKIgzvQp4-fRXsoEPmj4dDI6xS7aR9f9-raBZSFRxGnObxdZg_ynjfQzs00-fZTjASCJZMvmJtj0mouVEVWF5Q',
-      ),
-    });
+    return this.http.patch<CustomHttpResponse<Profile>>(this.server + 'user/update', updateRequest);
+  }
+
+  public refreshToken(): Observable<CustomHttpResponse<Profile>> {
+    console.log('refresh token');
+    return this.http
+      .get<CustomHttpResponse<Profile>>(this.server + 'user/refresh/token', {
+        headers: { Authorization: 'Bearer ' + this.persistanceService.get('refresh-token') },
+      })
+      .pipe(
+        tap({
+          next: (response: CustomHttpResponse<Profile>) => {
+            this.persistanceService.remove('refresh-token');
+            this.persistanceService.remove('access-token');
+            this.persistanceService.set('access-token', response.data?.access_token);
+            this.persistanceService.set('refresh-token', response.data?.refresh_token);
+          },
+        }),
+      );
   }
 }

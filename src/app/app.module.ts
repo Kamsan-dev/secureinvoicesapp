@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
@@ -14,9 +14,11 @@ import { StatsComponent } from './components/stats/stats.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { SeProgressSpinnerModule } from './common/progress-spinner/se-progress-spinner.module';
+import { TokenInterceptor } from './interceptor/token.interceptor';
 @NgModule({
   declarations: [AppComponent, ProfileComponent, CustomersComponent, HomeComponent, NavbarComponent, StatsComponent],
   imports: [BrowserModule, FormsModule, ReactiveFormsModule, HttpClientModule, AppRoutingModule, RouterOutlet, CommonModule, LoginComponent, SeProgressSpinnerModule],
+  providers: [{ provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

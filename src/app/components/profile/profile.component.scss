@@ -32,7 +32,7 @@ a#notification.nav-link.active {
 }
 
 .profile-tab-nav {
-  min-width: 250px;
+  //min-width: 250px;
 }
 
 .tab-content {
@@ -76,4 +76,8 @@ a#notification.nav-link.active {
   pointer-events: none;
   /* color: #AAA; */
   background: #f5f5f5;
+}
+
+.user-name-text {
+  text-wrap: nowrap;
 }
