@@ -26,7 +26,9 @@ export class ProfileComponent implements OnInit, OnDestroy {
   public loading = signal(false);
   private destroy: Subject<void> = new Subject<void>();
 
+  //forms
   public profileForm!: FormGroup;
+  private originalUserProfileFormValue: any;
 
   constructor(
     private userService: UserService,
@@ -98,6 +100,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.profileForm.disable();
       }
     }
+    this.originalUserProfileFormValue = { ...this.profileForm.value };
   }
 
   // Handle profile form submission
@@ -127,9 +130,15 @@ export class ProfileComponent implements OnInit, OnDestroy {
       }
     } finally {
       this.loading.set(false);
+      this.originalUserProfileFormValue = { ...this.profileForm.value };
       this.profileForm.markAsPristine();
       this.profileForm.enable();
     }
+  }
+
+  public async onCancelUserProfileChanges(event: TouchEvent | MouseEvent): Promise<void> {
+    event.stopImmediatePropagation();
+    this.profileForm.reset(this.originalUserProfileFormValue);
   }
 
   //#endregion

@@ -97,7 +97,7 @@
                     </div>
                   </div>
                 </div>
-                <div>
+                <div class="d-flex gap-1">
                   <button
                     *ngIf="getUserInformations()?.roleName !== 'ROLE_USER' && profileState().dataState !== 'LOADING_STATE'"
                     [disabled]="loading() || profileForm.pristine"
@@ -107,6 +107,15 @@
                     <span *ngIf="loading()" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 5px"></span>
                     <span *ngIf="loading()">Loading...</span>
                     <span *ngIf="!loading()">Update</span>
+                  </button>
+                  <button
+                    *ngIf="getUserInformations()?.roleName !== 'ROLE_USER' && profileState().dataState !== 'LOADING_STATE'"
+                    [disabled]="loading() || profileForm.pristine"
+                    type="button"
+                    class="btn btn-secondary"
+                    (click)="onCancelUserProfileChanges($event)"
+                  >
+                    <span>Undo changes</span>
                   </button>
                 </div>
               </div>

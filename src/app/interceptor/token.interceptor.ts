@@ -16,7 +16,7 @@ export class TokenInterceptor implements HttpInterceptor {
     private userService: UserService,
   ) {}
 
-  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> | Observable<HttpResponse<unknown>> {
+  public intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> | Observable<HttpResponse<unknown>> {
     if (shouldNotIntercept(request.url)) {
       return next.handle(request);
     }
