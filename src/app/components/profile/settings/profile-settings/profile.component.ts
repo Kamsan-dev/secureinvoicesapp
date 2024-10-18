@@ -10,7 +10,7 @@ import { User } from 'src/app/interfaces/user';
 import { UserService } from 'src/app/services/user.service';
 
 @Component({
-  selector: 'app-profile',
+  selector: 'se-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,7 +35,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
   ) {}
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.profileForm = this.fb.group({
       userId: [''],
       firstName: [''],
@@ -104,7 +104,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   // Handle profile form submission
-  public async onProfileSubmit(): Promise<void> {
+  public async onProfileSubmit(event: FormGroup): Promise<void> {
+    this.profileForm = event;
     this.loading.set(true);
     try {
       this.profileForm.disable();
@@ -136,8 +137,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
   }
 
-  public async onCancelUserProfileChanges(event: TouchEvent | MouseEvent): Promise<void> {
-    event.stopImmediatePropagation();
+  public onCancelUserProfileChanges(): void {
     this.profileForm.reset(this.originalUserProfileFormValue);
   }
 
@@ -160,7 +160,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     return this.profileState().appData?.data?.user || null;
   }
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     this.destroy.next();
     this.destroy.complete();
   }
