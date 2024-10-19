@@ -148,13 +148,20 @@
             </div>
             <div class="tab-pane fade" id="password-tab" role="tabpanel" aria-labelledby="password" style="min-height: 510px">
               <h3 class="mb-4">Password Settings</h3>
-              <form>
-                <input type="hidden" name="userId" />
+              <form [formGroup]="passwordForm" (ngSubmit)="onPasswordFormSubmit()">
+                <!-- <input type="hidden" name="userId" /> -->
                 <div class="row">
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label>Current password</label>
-                      <input type="password" name="currentPassword" class="form-control" required />
+                  <div class="col-md-7">
+                    <div class="d-flex gap-2 align-items-center">
+                      <div class="form-group">
+                        <label>Current password</label>
+                        <input type="password" name="password" class="form-control" formControlName="password" required />
+                      </div>
+                      <button style="height: 38px" type="button" class="btn btn-primary" (click)="onVerifyPasswordButtonClick()">
+                        <span *ngIf="loading()" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 5px"></span>
+                        <span *ngIf="loading()">Validation...</span>
+                        <span *ngIf="!loading()">Validate</span>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -162,21 +169,21 @@
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>New password</label>
-                      <input type="password" name="newPassword" class="form-control" minlength="5" required />
+                      <input type="password" name="newPassword" class="form-control" formControlName="newPassword" required />
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Confirm new password</label>
-                      <input type="password" name="confirmPassword" class="form-control" minlength="5" required />
+                      <input type="password" name="confirmPassword" class="form-control" formControlName="confirmPassword" required />
                     </div>
                   </div>
                 </div>
                 <div>
-                  <button type="submit" class="btn btn-primary">
-                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 5px"></span>
-                    <span>Loading...</span>
-                    <span>Update</span>
+                  <button *ngIf="profileState().dataState !== 'LOADING_STATE'" [disabled]="loading() || passwordForm.pristine" type="submit" class="btn btn-primary">
+                    <span *ngIf="loading()" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 5px"></span>
+                    <span *ngIf="loading()">loading...</span>
+                    <span *ngIf="!loading()">Update</span>
                   </button>
                 </div>
               </form>

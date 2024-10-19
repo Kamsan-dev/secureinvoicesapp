@@ -28,6 +28,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   //forms
   public profileForm!: FormGroup;
+  public passwordForm!: FormGroup;
   private originalUserProfileFormValue: any;
 
   constructor(
@@ -46,8 +47,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
       title: [''],
       bio: [''],
     });
-
     this.loadUserProfile();
+
+    this.passwordForm = this.fb.group({
+      password: [''],
+      newPassword: [{ value: '', disabled: true }],
+      confirmPassword: [{ value: '', disabled: true }],
+    });
   }
 
   //#region Forms
@@ -139,6 +145,61 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   public onCancelUserProfileChanges(): void {
     this.profileForm.reset(this.originalUserProfileFormValue);
+  }
+
+  // Handle password form submission
+
+  public async onVerifyPasswordButtonClick(): Promise<void> {
+    this.loading.set(true);
+    const request = {
+      password: this.passwordForm.value.password,
+    };
+    try {
+      this.passwordForm.disable();
+      await lastValueFrom(of(null).pipe(delay(300)));
+      const response = await lastValueFrom(this.userService.verifyPassword(request));
+      this.passwordForm.controls['newPassword'].enable();
+      this.passwordForm.controls['confirmPassword'].enable();
+    } catch (error) {
+      if (error instanceof HttpErrorResponse) {
+        console.log(error.error.reason);
+      } else {
+        console.log('An unknown error occurred', error);
+      }
+    } finally {
+      this.loading.set(false);
+      this.passwordForm.controls['password'].enable();
+    }
+  }
+
+  public onPasswordFormSubmit(): void {
+    const request = {
+      password: this.passwordForm.value.password,
+      newPassword: this.passwordForm.value.newPassword,
+      confirmPassword: this.passwordForm.value.confirmPassword,
+    };
+    console.log(request);
+
+    this.userService
+      .updateUserPassword(request)
+      .pipe(takeUntil(this.destroy))
+      .subscribe({
+        next: (response: CustomHttpResponse<Profile>) => {
+          this.resetPasswordForm();
+          console.log(response.message);
+        },
+        error: (error: HttpErrorResponse) => {
+          console.log(error.error.reason);
+        },
+      });
+  }
+
+  private resetPasswordForm(): void {
+    this.passwordForm.reset({
+      password: '',
+      newPassword: { value: '', disabled: true },
+      confirmPassword: { value: '', disabled: true },
+    });
   }
 
   //#endregion

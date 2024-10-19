@@ -13,3 +13,9 @@ export interface updateProfilRequestInterface {
   title: string;
   bio: string;
 }
+
+export interface updateProfilePasswordRequestInterface {
+  password: string;
+  newPassword: string;
+  confirmPassword: string;
+}

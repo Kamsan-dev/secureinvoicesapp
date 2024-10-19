@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { Profile } from '../interfaces/appstate';
 import { CustomHttpResponse } from '../interfaces/custom-http-response';
-import { LoginRequestInterface, updateProfilRequestInterface } from '../interfaces/login-request';
+import { LoginRequestInterface, updateProfilePasswordRequestInterface, updateProfilRequestInterface } from '../interfaces/login-request';
 import { PersistanceService } from './persistance.service';
 import { Router } from '@angular/router';
 
@@ -55,5 +55,15 @@ export class UserService {
           },
         }),
       );
+  }
+
+  public verifyPassword(requestPassword: any): Observable<CustomHttpResponse<Profile>> {
+    const body = { password: requestPassword.password };
+    console.log(body);
+    return this.http.post<CustomHttpResponse<Profile>>(this.server + 'user/update/password/verification', body);
+  }
+
+  public updateUserPassword(requestPassword: updateProfilePasswordRequestInterface): Observable<CustomHttpResponse<Profile>> {
+    return this.http.patch<CustomHttpResponse<Profile>>(this.server + 'user/update/password', requestPassword);
   }
 }
