@@ -30,6 +30,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   public profileForm!: FormGroup;
   public passwordForm!: FormGroup;
   private originalUserProfileFormValue: any;
+  public passwordVerified = signal(false);
 
   constructor(
     private userService: UserService,
@@ -160,6 +161,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
       const response = await lastValueFrom(this.userService.verifyPassword(request));
       this.passwordForm.controls['newPassword'].enable();
       this.passwordForm.controls['confirmPassword'].enable();
+      this.passwordVerified.set(true);
+      this.passwordForm.markAsPristine();
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
         console.log(error.error.reason);
@@ -172,26 +175,35 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
   }
 
-  public onPasswordFormSubmit(): void {
+  public onPasswordFormSubmit(event: FormGroup): void {
+    this.passwordForm = event;
+    this.loading.set(true);
     const request = {
       password: this.passwordForm.value.password,
       newPassword: this.passwordForm.value.newPassword,
       confirmPassword: this.passwordForm.value.confirmPassword,
     };
     console.log(request);
-
-    this.userService
-      .updateUserPassword(request)
-      .pipe(takeUntil(this.destroy))
-      .subscribe({
-        next: (response: CustomHttpResponse<Profile>) => {
-          this.resetPasswordForm();
-          console.log(response.message);
-        },
-        error: (error: HttpErrorResponse) => {
-          console.log(error.error.reason);
-        },
-      });
+    if (request.newPassword === request.confirmPassword) {
+      this.userService
+        .updateUserPassword(request)
+        .pipe(takeUntil(this.destroy), delay(300))
+        .subscribe({
+          next: (response: CustomHttpResponse<Profile>) => {
+            this.resetPasswordForm();
+            this.loading.set(false);
+            console.log(response.message);
+          },
+          error: (error: HttpErrorResponse) => {
+            console.log(error.error.reason);
+            this.resetPasswordForm();
+            this.loading.set(false);
+          },
+        });
+    } else {
+      this.resetPasswordForm();
+      this.loading.set(false);
+    }
   }
 
   private resetPasswordForm(): void {
