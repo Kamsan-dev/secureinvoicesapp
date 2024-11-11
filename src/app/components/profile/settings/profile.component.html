@@ -60,30 +60,13 @@
               ></se-profile-info>
             </div>
             <div class="tab-pane fade" id="security-tab" role="tabpanel" aria-labelledby="security" style="min-height: 510px">
-              <h3 class="mb-4">Authorization Settings</h3>
-              <div class="row">
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label style="margin-bottom: 5px">Role Name</label>
-                    <select name="roleName" class="form-control select-cl" required>
-                      <option class="select-cl">ROLE_ADMIN</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label style="margin-bottom: 5px">Role Permissions</label>
-                    <input type="text" class="form-control" style="margin-bottom: 5px" />
-                  </div>
-                </div>
-              </div>
-              <div>
-                <button type="submit" class="btn btn-primary">
-                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 5px"></span>
-                  <span>Loading...</span>
-                  <span>Update</span>
-                </button>
-              </div>
+              <se-profile-authorization
+                [appData]="profileState().appData"
+                [dataState]="profileState().dataState"
+                [loading]="loading()"
+                [userInfos]="getUserInformations()"
+                (handleUserRoleChange)="onUserRoleUpdate($event)"
+              ></se-profile-authorization>
             </div>
             <div class="tab-pane fade" id="application-tab" role="tabpanel" aria-labelledby="application" style="min-height: 510px">
               <h3 class="mb-4">Application Settings</h3>

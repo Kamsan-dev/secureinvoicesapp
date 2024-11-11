@@ -66,4 +66,16 @@ export class UserService {
   public updateUserPassword(requestPassword: updateProfilePasswordRequestInterface): Observable<CustomHttpResponse<Profile>> {
     return this.http.patch<CustomHttpResponse<Profile>>(this.server + 'user/update/password', requestPassword);
   }
+
+  public updateUserRole(form: { roleName: string }): Observable<CustomHttpResponse<Profile>> {
+    return this.http.patch<CustomHttpResponse<Profile>>(this.server + 'user/update/role', form).pipe(
+      tap({
+        next: (response: CustomHttpResponse<Profile>) => {
+          this.persistanceService.remove('refresh-token');
+          this.persistanceService.remove('access-token');
+          this.router.navigate(['login']);
+        },
+      }),
+    );
+  }
 }

@@ -8,8 +8,9 @@ import { SharedModule } from 'src/app/shared.module';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ProfilePasswordComponent } from './settings/profile-password/profile-password.component';
+import { ProfileAuthorizationComponent } from './settings/profile-authorization/profile-authorization.component';
 @NgModule({
-  declarations: [ProfileInfoComponent, ProfileComponent, ProfilePasswordComponent],
+  declarations: [ProfileInfoComponent, ProfileComponent, ProfilePasswordComponent, ProfileAuthorizationComponent],
   imports: [CommonModule, ReactiveFormsModule, SeProgressSpinnerModule, SharedModule, RouterModule, FormsModule],
 })
 export class ProfileModule {}

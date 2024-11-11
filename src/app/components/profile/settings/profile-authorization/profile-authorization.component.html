@@ -1,0 +1,52 @@
+<h3 class="mb-4">Authorization Settings</h3>
+<div class="row">
+  <div class="col-md-6">
+    <div class="form-group">
+      <label style="margin-bottom: 5px">Role Name</label>
+      <select
+        [ngModel]="selectedRole()"
+        (ngModelChange)="selectedRole.set($event)"
+        [disabled]="!isSysAdminOrAdmin() || loadingSig()"
+        name="roleName"
+        class="form-control select-cl"
+        required
+      >
+        <option
+          *ngFor="let role of rolesListSig()"
+          [disabled]="!isSysAdminOrAdmin() || loadingSig()"
+          [selected]="role.name === userInformations()?.roleName"
+          [ngValue]="role.name"
+          class="select-cl"
+        >
+          {{ role.name }}
+        </option>
+      </select>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="form-group">
+      <label style="margin-bottom: 5px">Role Permissions</label>
+      <input
+        *ngFor="let permission of listPermissions().split(', ')"
+        [value]="permission"
+        type="text"
+        class="form-control"
+        [disabled]="true"
+        style="margin-bottom: 5px"
+      />
+    </div>
+  </div>
+</div>
+<div>
+  <button
+    *ngIf="userInformations()?.roleName !== 'ROLE_USER' && dataStateSig() !== 'LOADING_STATE'"
+    [disabled]="loadingSig() || !isSysAdminOrAdmin() || userInformations()?.roleName === selectedRole()"
+    type="submit"
+    class="btn btn-primary"
+    (click)="updateUserRole()"
+  >
+    <span *ngIf="loadingSig()" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 5px"></span>
+    <span *ngIf="loadingSig()">loading...</span>
+    <span *ngIf="!loadingSig()">Update</span>
+  </button>
+</div>

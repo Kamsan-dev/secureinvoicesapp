@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { BehaviorSubject, delay, lastValueFrom, of, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, delay, lastValueFrom, of, Subject, take, takeUntil } from 'rxjs';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { Profile, RoleEnum } from 'src/app/interfaces/appstate';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
@@ -73,7 +73,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
             dataState: DataState.LOADED,
             appData: response,
           });
-
           // Populate the form with the loaded data
           this.populateForm();
         },
@@ -212,6 +211,41 @@ export class ProfileComponent implements OnInit, OnDestroy {
       newPassword: { value: '', disabled: true },
       confirmPassword: { value: '', disabled: true },
     });
+  }
+
+  public onUserRoleUpdate(event: string): void {
+    this.loading.set(true);
+    const request = {
+      roleName: event,
+    };
+    if (event !== this.getUserInformations()?.roleName) {
+      this.userService
+        .updateUserRole(request)
+        .pipe(takeUntil(this.destroy), delay(1500))
+        .subscribe({
+          next: (response: CustomHttpResponse<Profile>) => {
+            console.log(response);
+            this.dataSubject.next(response);
+            this.profileState.set({
+              ...this.profileState(),
+              dataState: DataState.LOADED,
+              appData: response,
+            });
+            this.loading.set(false);
+          },
+          error: (error: HttpErrorResponse) => {
+            this.profileState.set({
+              ...this.profileState(),
+              appData: this.dataSubject.value!,
+              dataState: DataState.ERROR,
+              error: error.error.reason,
+            });
+            this.loading.set(false);
+          },
+        });
+    } else {
+      this.loading.set(false);
+    }
   }
 
   //#endregion

@@ -11,9 +11,9 @@ export interface LoginState {
 }
 
 export interface Profile {
-  user: User | undefined;
+  user: User;
   events: UserEvent[] | undefined;
-  roles: Role[] | undefined;
+  roles: Role[];
   access_token: string;
   refresh_token: string;
 }
