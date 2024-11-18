@@ -67,6 +67,10 @@ export class UserService {
     return this.http.patch<CustomHttpResponse<Profile>>(this.server + 'user/update/password', requestPassword);
   }
 
+  public updateUserSettings(form: { enabled: boolean; notLocked: boolean }): Observable<CustomHttpResponse<Profile>> {
+    return this.http.patch<CustomHttpResponse<Profile>>(this.server + 'user/update/settings', form);
+  }
+
   public updateUserRole(form: { roleName: string }): Observable<CustomHttpResponse<Profile>> {
     return this.http.patch<CustomHttpResponse<Profile>>(this.server + 'user/update/role', form).pipe(
       tap({

@@ -1,0 +1,19 @@
+<div #checkboxContainer class="dgd-core-checkbox">
+  <input
+    #input
+    class="dgd-core-checkbox--input"
+    type="checkbox"
+    [attr.name]="nameSig()"
+    [attr.value]="valueSig()"
+    [id]="identifierSig()"
+    [checked]="checkedSig()"
+    [disabled]="disabledSig()"
+    [indeterminate]="indeterminateSig()"
+    [required]="requiredSig()"
+    (click)="onClicked($event)"
+    (change)="onChanged($event)"
+  />
+  <label #label [for]="identifierSig()" class="dgd-core-checkbox--label" (click)="onClicked($event)" [ngClass]="{ disabled: disabledSig(), '--checked': checkedSig() }"
+    ><ng-content></ng-content
+  ></label>
+</div>

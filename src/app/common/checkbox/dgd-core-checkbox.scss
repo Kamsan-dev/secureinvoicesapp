@@ -1,0 +1,17 @@
+@import '../../../../../../../shared/styles/variables';
+
+.is-invalid {
+  .dgd-core-checkbox .dgd-core-checkbox--label {
+    color: $clr-error !important;
+  }
+  .dgd-core-checkbox input.dgd-core-checkbox--input {
+    border: 1px solid $clr-error !important;
+
+    &:checked {
+      background-color: $clr-error !important;
+    }
+    &:indeterminate {
+      background-color: $clr-error !important;
+    }
+  }
+}

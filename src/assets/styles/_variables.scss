@@ -1,0 +1,325 @@
+// ===========
+// BREAKPOINTS
+// ===========
+// Warning: if you edit one of these values, you should edit
+//              JS breakpoints in 'responsive.service.ts' AND '_variables.bootstrap.scss'
+$breakpoints: (
+  phone: 300px,
+  tablet: 450px,
+  desktop: 992px,
+  large-desktop: 1200px,
+);
+$unit-intervals: (
+  px: 1,
+  rem: 0.1,
+  em: 0.01,
+);
+$media-expressions: (
+  'screen': 'screen',
+  'print': 'print',
+  'handheld': 'handheld',
+  'retina2x': (
+    '(-webkit-min-device-pixel-ratio: 2)',
+    '(min-resolution: 192dpi)',
+  ),
+  'retina3x': (
+    '(-webkit-min-device-pixel-ratio: 3)',
+    '(min-resolution: 350dpi)',
+  ),
+) !default;
+
+// =====
+// SIZES
+// =====
+$appbar-height: 56px;
+$drawer-width: (
+  open: 256px,
+  small: 56px,
+  close: 0px,
+);
+$drawer-partial-width: 72px;
+$icon-width: 24px;
+
+// COLORS
+$digi-blue: #144d9d;
+$digi-blue-contrast: #eeeeee;
+$digi-blue-light: #d8e6fa; // 85%
+$digi-blue-alt: #4186e6; // 85%
+$digi-green: #74bf20;
+$digi-green-light: hsl(88, 71%, 80%);
+$digi-green-contrast: #081c39;
+$digi-gray: #555555;
+$digi-gray-contrast: #ffffec;
+// colors for texts or dividers
+$gray-light: #f3f3f3;
+$gray: #dfdfdf;
+$gray-dark: #787878;
+$red: #f44336;
+$orange: #ff8d00;
+// colors for buttons
+$btn-default: #c0c0c0;
+
+// COLORS - V2
+$default-1: #212529;
+$default-2: #f3f3f3;
+$success-1: #073d10;
+$success-2: #ccf9d3;
+$warn-1: #6d5d0b;
+$warn-2: #f7edbd;
+$info-1: #0f3974;
+$info-2: #ccdff9;
+$feature-1: #883bcf;
+$feature-2: #e6d6f5;
+
+// Z-INDEX
+// Warning : 1000 is reserved by .cdk-overlay-container class used by mat-datepicker and maybe other components (@angular/cdk)
+$z-layout-appbar: 900;
+$z-layout-content-backdrop: 901;
+$z-layout-drawer: 902;
+$z-logo: 903;
+$z-menu-btn: 903;
+$z-overlay: 904;
+
+// #region New variables
+$font-1: 3.052rem;
+$font-2: 2.441rem;
+$font-3: 1.953rem;
+$font-4: 1.563rem;
+$font-5: 1.25rem;
+$font-6: 1rem;
+$font-7: 0.8rem;
+$font-8: 0.64rem;
+
+$radius-1: 3px;
+$radius-2: 4px;
+$radius-3: 5px;
+
+$shadow-0:
+  0px 0px 0px 0px rgb(0 0 0 / 10%),
+  0px 0px 0px 0px rgb(0 0 0 / 8%),
+  0px 0px 0px 0px rgb(0 0 0 / 5%);
+$shadow-1:
+  0px 2px 1px -1px rgb(0 0 0 / 10%),
+  0px 1px 1px 0px rgb(0 0 0 / 8%),
+  0px 1px 3px 0px rgb(0 0 0 / 5%);
+$shadow-2:
+  0px 3px 1px -2px rgb(0 0 0 / 10%),
+  0px 2px 2px 0px rgb(0 0 0 / 8%),
+  0px 1px 5px 0px rgb(0 0 0 / 5%);
+$shadow-3:
+  0px 3px 3px -2px rgb(0 0 0 / 10%),
+  0px 3px 4px 0px rgb(0 0 0 / 8%),
+  0px 1px 8px 0px rgb(0 0 0 / 5%);
+$shadow-4:
+  0px 2px 4px -1px rgb(0 0 0 / 10%),
+  0px 4px 5px 0px rgb(0 0 0 / 8%),
+  0px 1px 10px 0px rgb(0 0 0 / 5%);
+$shadow-5:
+  0px 3px 5px -1px rgb(0 0 0 / 10%),
+  0px 5px 8px 0px rgb(0 0 0 / 8%),
+  0px 1px 14px 0px rgb(0 0 0 / 5%);
+$shadow-6:
+  0px 3px 5px -1px rgb(0 0 0 / 10%),
+  0px 6px 10px 0px rgb(0 0 0 / 8%),
+  0px 1px 18px 0px rgb(0 0 0 / 5%);
+$shadow-7:
+  0px 4px 5px -2px rgb(0 0 0 / 10%),
+  0px 7px 10px 1px rgb(0 0 0 / 8%),
+  0px 2px 16px 1px rgb(0 0 0 / 5%);
+$shadow-8:
+  0px 5px 5px -3px rgb(0 0 0 / 10%),
+  0px 8px 10px 1px rgb(0 0 0 / 8%),
+  0px 3px 14px 2px rgb(0 0 0 / 5%);
+$shadow-9:
+  0px 5px 6px -3px rgb(0 0 0 / 10%),
+  0px 9px 12px 1px rgb(0 0 0 / 8%),
+  0px 3px 16px 2px rgb(0 0 0 / 5%);
+$shadow-10:
+  0px 6px 6px -3px rgb(0 0 0 / 10%),
+  0px 10px 14px 1px rgb(0 0 0 / 8%),
+  0px 4px 18px 3px rgb(0 0 0 / 5%);
+$shadow-11:
+  0px 6px 7px -4px rgb(0 0 0 / 10%),
+  0px 11px 15px 1px rgb(0 0 0 / 8%),
+  0px 4px 20px 3px rgb(0 0 0 / 5%);
+$shadow-12:
+  0px 7px 8px -4px rgb(0 0 0 / 10%),
+  0px 12px 17px 2px rgb(0 0 0 / 8%),
+  0px 5px 22px 4px rgb(0 0 0 / 5%);
+$shadow-13:
+  0px 7px 8px -4px rgb(0 0 0 / 10%),
+  0px 13px 19px 2px rgb(0 0 0 / 8%),
+  0px 5px 24px 4px rgb(0 0 0 / 5%);
+$shadow-14:
+  0px 7px 9px -4px rgb(0 0 0 / 10%),
+  0px 14px 21px 2px rgb(0 0 0 / 8%),
+  0px 5px 26px 4px rgb(0 0 0 / 5%);
+$shadow-15:
+  0px 8px 9px -5px rgb(0 0 0 / 10%),
+  0px 15px 22px 2px rgb(0 0 0 / 8%),
+  0px 6px 28px 5px rgb(0 0 0 / 5%);
+$shadow-16:
+  0px 8px 10px -5px rgb(0 0 0 / 10%),
+  0px 16px 24px 2px rgb(0 0 0 / 8%),
+  0px 6px 30px 5px rgb(0 0 0 / 5%);
+$shadow-17:
+  0px 8px 11px -5px rgb(0 0 0 / 10%),
+  0px 17px 26px 2px rgb(0 0 0 / 8%),
+  0px 6px 32px 5px rgb(0 0 0 / 5%);
+$shadow-18:
+  0px 9px 11px -5px rgb(0 0 0 / 10%),
+  0px 18px 28px 2px rgb(0 0 0 / 8%),
+  0px 7px 34px 6px rgb(0 0 0 / 5%);
+$shadow-19:
+  0px 9px 12px -6px rgb(0 0 0 / 10%),
+  0px 19px 29px 2px rgb(0 0 0 / 8%),
+  0px 7px 36px 6px rgb(0 0 0 / 5%);
+$shadow-20:
+  0px 10px 13px -6px rgb(0 0 0 / 10%),
+  0px 20px 31px 3px rgb(0 0 0 / 8%),
+  0px 8px 38px 7px rgb(0 0 0 / 5%);
+$shadow-21:
+  0px 10px 13px -6px rgb(0 0 0 / 10%),
+  0px 21px 33px 3px rgb(0 0 0 / 8%),
+  0px 8px 40px 7px rgb(0 0 0 / 5%);
+$shadow-22:
+  0px 10px 14px -6px rgb(0 0 0 / 10%),
+  0px 22px 35px 3px rgb(0 0 0 / 8%),
+  0px 8px 42px 7px rgb(0 0 0 / 5%);
+$shadow-23:
+  0px 11px 14px -7px rgb(0 0 0 / 10%),
+  0px 23px 36px 3px rgb(0 0 0 / 8%),
+  0px 9px 44px 8px rgb(0 0 0 / 5%);
+$shadow-24:
+  0px 11px 15px -7px rgb(0 0 0 / 10%),
+  0px 24px 38px 3px rgb(0 0 0 / 8%),
+  0px 9px 46px 8px rgb(0 0 0 / 5%);
+
+$c-gray-1: hsl(0, 0%, 95%);
+$c-gray-2: hsl(0, 0%, 87%);
+$c-gray-3: hsl(0, 0%, 80%);
+$c-gray-4: hsl(0, 0%, 60%);
+$c-gray-5: hsl(0, 0%, 40%);
+$c-gray-6: hsl(0, 0%, 20%);
+
+$c-primary-light: hsl(215, 77%, 90%);
+$c-primary-bright: hsl(215, 84%, 45%);
+$c-primary: hsl(215, 77%, 35%);
+$c-primary-dark: hsl(215, 78%, 25%);
+
+$c-success-light: hsl(129, 79%, 89%);
+$c-success-bright: hsl(88, 71%, 44%);
+$c-success: hsl(114, 78%, 23%);
+$c-success-dark: hsl(130, 79%, 13%);
+
+$c-warning-light: hsl(35, 80%, 90%);
+$c-warning-bright: hsl(28deg 100% 50%);
+$c-warning: hsl(28, 87%, 36%);
+$c-warning-dark: hsl(37, 79%, 11%);
+
+$c-error-light: hsl(0, 76%, 90%);
+$c-error-bright: hsl(0, 87%, 44%);
+$c-error: hsl(0, 78%, 30%);
+$c-error-dark: hsl(0, 77%, 20%);
+
+$c-feature-light: hsl(272, 60%, 95%);
+$c-feature-bright: hsl(271, 83%, 50%);
+$c-feature: hsl(271, 60%, 50%);
+$c-feature-dark: hsl(271, 59%, 30%);
+
+$spacing-1: 4px;
+$spacing-2: 8px;
+$spacing-3: 12px;
+$spacing-4: 16px;
+$spacing-5: 24px;
+$spacing-6: 32px;
+$spacing-7: 48px;
+$spacing-8: 56px;
+$spacing-9: 64px;
+// #endregion
+
+/// DESIGN VERSION 3 /// 1rem = 16px///
+///
+//COLORS - V3
+$clr-white: #fcfcfc;
+
+$clr-primary: #144d9d;
+$clr-primary--darkest: #142133;
+$clr-primary--dark: #475466;
+$clr-primary--medium: #8795a8;
+$clr-primary--light: #dae4f2;
+$clr-primary--lightest: #f5f9ff;
+$clr-accent: #3487fa;
+$clr-primary--pressed: #21416e;
+$clr-aqua: #46c7d5;
+$clr-aqua--bg: #e0f4f6;
+$clr-blue--bg: #eef3f7;
+$clr-softblue--bg: #f5f7f9;
+$clr-softblue2--bg: #edf5ff;
+$clr-accent--bg: #d6e7fe;
+$clr-primary--disabled: #b9cae2;
+
+$clr-error: #f7685b;
+$clr-error-accent: #f53e2e;
+$clr-error--bg: #fde7e5;
+$clr-error--dark: #9e1b1b;
+$clr-error--bg--dark: #fcd6d6;
+
+$clr-warning: #ffb946;
+$clr-warning--bg: #ffeed3;
+$clr-orange: #ff8900;
+$clr-orange--bg: #fbe4d7;
+$clr-orange2--bg: #fcc997;
+
+$clr-success: #2ed47a;
+$clr-success--dark: #209d59;
+$clr-succes--bg: #e4f9ed;
+$clr-success--bg: #e4f9ed;
+
+$clr-pink: #f178b6;
+$clr-pink--bg: #fcddec;
+
+$clr-softgray--bg: #f2f2f2;
+$clr-softgray2--bg: #e8e8e8;
+$clr-softgray3--bg: #f8f8fb;
+
+$clr-violet--bg: #eedbf5;
+$clr-violet: #bd49e5;
+$clr-advanced: #883bcf;
+$clr-advanced2: #dbb8f9;
+$clr-advanced--bg: #ead9f9;
+$clr-advanced2--bg: #fcf8fd;
+
+//CORNER-RADIUS//
+$corner-radius--L: 1em;
+$corner-radius--M: 0.5em;
+$corner-radius--S: 0.375em;
+$corner-radius--XS: 0.25em;
+
+//SPACING//
+$space-XXS: 0.25em;
+$space-XS: 0.5em;
+$space-S: 1em;
+$space-M: 1.5em;
+$space-L: 2em;
+$space-XL: 3em;
+$space-XXL: 5em;
+
+//SHADOWS//
+
+$shadow-default:
+  0px 5px 15px 0px rgba(0, 0, 0, 0.08),
+  0px 0px 0px 1px rgba(152, 161, 178, 0.1);
+
+$shadow-default2:
+  0px 0px 0px 1px rgba(152, 161, 178, 0.1),
+  0px 15px 35px -5px rgba(17, 24, 38, 0.15),
+  0px 5px 15px 0px rgba(0, 0, 0, 0.08);
+
+//CARDS WIDTHS//
+
+$card-width--S: 600px;
+$card-width--M: 800px;
+$card-width--L: 1000px;
+
+////VERSION 3 DESIGN -- END SECTION///

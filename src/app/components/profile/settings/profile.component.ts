@@ -31,6 +31,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   public passwordForm!: FormGroup;
   private originalUserProfileFormValue: any;
   public passwordVerified = signal(false);
+  public accountSettingsForm!: FormGroup;
 
   constructor(
     private userService: UserService,
@@ -47,6 +48,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
       address: [''],
       title: [''],
       bio: [''],
+    });
+
+    this.accountSettingsForm = this.fb.group({
+      enabled: [''],
+      notLocked: [''],
     });
     this.loadUserProfile();
 
@@ -74,7 +80,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
             appData: response,
           });
           // Populate the form with the loaded data
-          this.populateForm();
+          this.populateForms();
         },
         error: (error: HttpErrorResponse) => {
           this.profileState.set({
@@ -87,10 +93,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
       });
   }
 
-  private populateForm(): void {
+  private populateForms(): void {
     const user = this.getUserInformations(); // Get user data
 
     if (user) {
+      // Profile Form
       this.profileForm.setValue({
         userId: user.userId || '',
         firstName: user.firstName || '',
@@ -102,9 +109,17 @@ export class ProfileComponent implements OnInit, OnDestroy {
         bio: user.bio || '',
       });
 
-      if (user.roleName === RoleEnum.ROLE_USER) {
+      if (user.roleName !== RoleEnum.ROLE_SYSADMIN && user.roleName !== RoleEnum.ROLE_ADMIN) {
         this.profileForm.disable();
+        this.accountSettingsForm.disable();
       }
+
+      // Account Settings form
+
+      this.accountSettingsForm.setValue({
+        enabled: user.enabled,
+        notLocked: user.notLocked,
+      });
     }
     this.originalUserProfileFormValue = { ...this.profileForm.value };
   }
@@ -245,6 +260,30 @@ export class ProfileComponent implements OnInit, OnDestroy {
         });
     } else {
       this.loading.set(false);
+    }
+  }
+
+  public async onAccountSettingsFormSubmit(event: FormGroup): Promise<void> {
+    this.accountSettingsForm = event;
+    this.loading.set(true);
+    const request = {
+      enabled: this.accountSettingsForm.value.enabled,
+      notLocked: this.accountSettingsForm.value.notLocked,
+    };
+    try {
+      this.accountSettingsForm.disable();
+      await lastValueFrom(of(null).pipe(delay(500)));
+      const response = await lastValueFrom(this.userService.updateUserSettings(request));
+      this.accountSettingsForm.markAsPristine();
+    } catch (error) {
+      if (error instanceof HttpErrorResponse) {
+        console.log(error.error.reason);
+      } else {
+        console.log('An unknown error occurred', error);
+      }
+    } finally {
+      this.loading.set(false);
+      this.accountSettingsForm.enable();
     }
   }
 

@@ -69,29 +69,13 @@
               ></se-profile-authorization>
             </div>
             <div class="tab-pane fade" id="application-tab" role="tabpanel" aria-labelledby="application" style="min-height: 510px">
-              <h3 class="mb-4">Application Settings</h3>
-              <input type="hidden" name="userId" />
-              <div class="row">
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <div class="form-check">
-                      <input type="checkbox" name="enabled" class="form-check-input" />
-                      <label class="form-check-label" for="enabled"> Account Active </label>
-                    </div>
-                    <div class="form-check">
-                      <input type="checkbox" name="notLocked" class="form-check-input" />
-                      <label class="form-check-label" for="notLocked"> Account Unlocked </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <button type="submit" class="btn btn-primary">
-                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 5px"></span>
-                  <span>Loading...</span>
-                  <span>Update</span>
-                </button>
-              </div>
+              <se-profile-account
+                [accountSettingsForm]="accountSettingsForm"
+                [dataState]="profileState().dataState"
+                [loading]="loading()"
+                [userInfos]="getUserInformations()"
+                (accountSettingsFormSubmitted)="onAccountSettingsFormSubmit($event)"
+              ></se-profile-account>
             </div>
             <div class="tab-pane fade" id="notification-tab" role="tabpanel" aria-labelledby="notification" style="min-height: 510px">
               <h3 class="mb-4">Authentication Settings</h3>
