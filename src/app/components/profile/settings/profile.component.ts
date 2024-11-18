@@ -115,12 +115,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
       }
 
       // Account Settings form
-
       this.accountSettingsForm.setValue({
         enabled: user.enabled,
         notLocked: user.notLocked,
       });
     }
+
     this.originalUserProfileFormValue = { ...this.profileForm.value };
   }
 
@@ -274,6 +274,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.accountSettingsForm.disable();
       await lastValueFrom(of(null).pipe(delay(500)));
       const response = await lastValueFrom(this.userService.updateUserSettings(request));
+      // update profile with fetch data
+      this.dataSubject.next({ ...response, data: response.data });
+      this.profileState.set({
+        ...this.profileState(),
+        dataState: DataState.LOADED,
+        appData: response,
+      });
       this.accountSettingsForm.markAsPristine();
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
@@ -284,6 +291,32 @@ export class ProfileComponent implements OnInit, OnDestroy {
     } finally {
       this.loading.set(false);
       this.accountSettingsForm.enable();
+    }
+  }
+
+  public async onAuthenticationSettingsUpdate(event: any): Promise<void> {
+    this.loading.set(true);
+    const request = {
+      usingMfa: !this.getUserInformations()?.usingMfa,
+    };
+    try {
+      await lastValueFrom(of(null).pipe(delay(500)));
+      const response = await lastValueFrom(this.userService.updateUserAuthenticationSettings(request));
+      // update profile with fetch data
+      this.dataSubject.next({ ...response, data: response.data });
+      this.profileState.set({
+        ...this.profileState(),
+        dataState: DataState.LOADED,
+        appData: response,
+      });
+    } catch (error) {
+      if (error instanceof HttpErrorResponse) {
+        console.log(error.error.reason);
+      } else {
+        console.log('An unknown error occurred', error);
+      }
+    } finally {
+      this.loading.set(false);
     }
   }
 

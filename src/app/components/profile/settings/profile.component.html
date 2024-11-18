@@ -78,40 +78,12 @@
               ></se-profile-account>
             </div>
             <div class="tab-pane fade" id="notification-tab" role="tabpanel" aria-labelledby="notification" style="min-height: 510px">
-              <h3 class="mb-4">Authentication Settings</h3>
-              <p>These settings help keep your account more secure.</p>
-              <div class="list-group mb-5 shadow">
-                <div class="list-group-item">
-                  <div class="row align-items-center">
-                    <div class="col">
-                      <strong class="mb-2">Multi-Factor Authentication</strong>
-                      <span class="badge bg-success mx-3">Enabled</span>
-                      <span class="badge bg-warning mx-3">Disabled</span>
-                      <p class="text-muted mb-0">Set up Multi-factor Authentication (MFA) help keep your account more secure</p>
-                    </div>
-                    <div class="col-auto">
-                      <button class="btn btn-primary btn-sm">
-                        Disable
-                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 5px"></span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div class="list-group-item">
-                  <div class="row align-items-center">
-                    <div class="col">
-                      <strong class="mb-2">Activity Logs</strong>
-                      <p class="text-muted mb-0">Show the latst activites on your account</p>
-                    </div>
-                    <div class="col-auto">
-                      <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="activityLog" />
-                        <span class="custom-control-label"></span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <se-profile-authentication
+                [dataState]="profileState().dataState"
+                [loading]="loading()"
+                [userInfos]="getUserInformations()"
+                (authenticationSettingsUpdated)="onAuthenticationSettingsUpdate($event)"
+              ></se-profile-authentication>
             </div>
             <div class="tab-pane fade" id="password-tab" role="tabpanel" aria-labelledby="password" style="min-height: 510px">
               <se-profile-password
