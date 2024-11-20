@@ -145,7 +145,7 @@ export class LoginComponent implements OnDestroy {
   private handleRegularUser(response: CustomHttpResponse<Profile>): void {
     this.persistanceService.set('access-token', response.data?.access_token);
     this.persistanceService.set('refresh-token', response.data?.refresh_token);
-    this.router.navigateByUrl('/register');
+    this.router.navigateByUrl('/');
     this.loginState = {
       ...this.loginState,
       dataState: DataState.LOADED,

@@ -75,6 +75,10 @@ export class UserService {
     return this.http.patch<CustomHttpResponse<Profile>>(this.server + 'user/update/authentication-settings', form);
   }
 
+  public updateUserImage(form: FormData): Observable<CustomHttpResponse<Profile>> {
+    return this.http.patch<CustomHttpResponse<Profile>>(this.server + 'user/update/image', form);
+  }
+
   public updateUserRole(form: { roleName: string }): Observable<CustomHttpResponse<Profile>> {
     return this.http.patch<CustomHttpResponse<Profile>>(this.server + 'user/update/role', form).pipe(
       tap({

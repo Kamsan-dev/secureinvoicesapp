@@ -20,7 +20,7 @@
                   <span style="position: relative">
                     <img [src]="getUserPictureProfile()" alt="John" class="shadow" />
                     <!-- <img src="" alt="John" class="shadow" /> -->
-                    <i class="bi bi-camera-fill right-position"></i>
+                    <i class="bi bi-camera-fill right-position" (click)="fileInput.click()"></i>
                   </span>
                 </div>
                 <h4 class="text-center user-name-text">{{ getUserName() }}</h4>
@@ -140,7 +140,7 @@
 
 <!-- profile image change form -->
 <form enctype="multipart/form-data" style="display: none">
-  <input type="file" name="image" id="image" placeholder="file" ngModel accept="image/*" />
+  <input #fileInput (change)="onUpdateProfilePicture($event)" type="file" name="image" id="image" placeholder="file" ngModel accept="image/*" />
 </form>
 
 <ng-template #spinner>

@@ -16,7 +16,7 @@ import { UserService } from 'src/app/services/user.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfileComponent implements OnInit, OnDestroy {
-  private dataSubject = new BehaviorSubject<CustomHttpResponse<Profile> | null>(null);
+  private dataSubject = new BehaviorSubject<CustomHttpResponse<Profile> | undefined>(undefined);
   public profileState = signal<State<CustomHttpResponse<Profile>>>({
     dataState: DataState.LOADED,
     appData: undefined,
@@ -307,7 +307,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.profileState.set({
         ...this.profileState(),
         dataState: DataState.LOADED,
-        appData: response,
+        appData: this.dataSubject.value,
       });
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
@@ -318,6 +318,45 @@ export class ProfileComponent implements OnInit, OnDestroy {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  public async onUpdateProfilePicture(event: Event): Promise<void> {
+    const inputElement = event.target as HTMLInputElement;
+    // Check if files are selected
+    if (inputElement && inputElement.files && inputElement.files.length > 0) {
+      // Get the first file
+      const file = inputElement.files[0];
+      if (file) {
+        this.loading.set(true);
+        try {
+          const response = await lastValueFrom(this.userService.updateUserImage(this.getFormData(file)));
+          // update profile with fetch data
+          // Modify the imageUrl directly in the response object
+          if (response.data?.user) {
+            response.data.user.imageUrl = `${response.data?.user.imageUrl}?time=${new Date().getTime()}`;
+          }
+          this.dataSubject.next({ ...response, data: response.data });
+          this.profileState.set({
+            ...this.profileState(),
+            dataState: DataState.LOADED,
+            appData: this.dataSubject.value,
+          });
+        } catch (error) {
+          if (error instanceof HttpErrorResponse) {
+            console.log(error.error.reason);
+          } else {
+            console.log('An unknown error occurred', error);
+          }
+        } finally {
+          this.loading.set(false);
+        }
+      }
+    }
+  }
+  private getFormData(image: File): FormData {
+    const formdata = new FormData();
+    formdata.append('image', image);
+    return formdata;
   }
 
   //#endregion
