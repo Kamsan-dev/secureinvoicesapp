@@ -12,8 +12,9 @@ import { ProfileAuthorizationComponent } from './settings/profile-authorization/
 import { ProfileAccountComponent } from './settings/profile-account/profile-account.component';
 import { DgdCoreCheckboxModule } from 'src/app/common/checkbox/dgd-core-checkbox.module';
 import { ProfileAuthenticationComponent } from './settings/profile-authentication/profile-authentication.component';
+import { ProfileEventsHistoryComponent } from './settings/profile-events-history/profile-events-history.component';
 @NgModule({
-  declarations: [ProfileInfoComponent, ProfileComponent, ProfilePasswordComponent, ProfileAuthorizationComponent, ProfileAccountComponent, ProfileAuthenticationComponent],
+  declarations: [ProfileInfoComponent, ProfileComponent, ProfilePasswordComponent, ProfileAuthorizationComponent, ProfileAccountComponent, ProfileAuthenticationComponent, ProfileEventsHistoryComponent],
   imports: [CommonModule, ReactiveFormsModule, SeProgressSpinnerModule, SharedModule, RouterModule, FormsModule, DgdCoreCheckboxModule],
 })
 export class ProfileModule {}

@@ -62,7 +62,7 @@ export class LoginComponent implements OnDestroy {
     };
     this.userService
       .login(request)
-      .pipe(takeUntil(this.destroy), delay(800))
+      .pipe(takeUntil(this.destroy))
       .subscribe({
         next: (response: CustomHttpResponse<Profile>) => {
           this.handleLoginResponse(response);

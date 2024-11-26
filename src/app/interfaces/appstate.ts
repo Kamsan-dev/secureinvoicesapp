@@ -12,23 +12,23 @@ export interface LoginState {
 
 export interface Profile {
   user: User;
-  events: UserEvent[] | undefined;
+  events: UserEvent[];
   roles: Role[];
   access_token: string;
   refresh_token: string;
 }
 
 export interface UserEvent {
-  id: number;
+  eventId: number;
   type: EventType;
   description: string;
   device: string;
   ipAddress: string;
-  createdAt: Date;
+  occuredAt: Date;
 }
 
 export interface Role {
-  id: number;
+  roleId: number;
   name: string;
   permission: string;
 }

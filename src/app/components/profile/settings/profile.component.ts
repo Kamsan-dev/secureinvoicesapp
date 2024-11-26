@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { BehaviorSubject, delay, lastValueFrom, of, Subject, take, takeUntil } from 'rxjs';
 import { DataState } from 'src/app/enums/datastate.enum';
-import { Profile, RoleEnum } from 'src/app/interfaces/appstate';
+import { Profile, RoleEnum, UserEvent } from 'src/app/interfaces/appstate';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
 import { State } from 'src/app/interfaces/state';
 import { User } from 'src/app/interfaces/user';
@@ -206,7 +206,12 @@ export class ProfileComponent implements OnInit, OnDestroy {
           next: (response: CustomHttpResponse<Profile>) => {
             this.resetPasswordForm();
             this.loading.set(false);
-            console.log(response.message);
+            this.dataSubject.next(response);
+            this.profileState.set({
+              ...this.profileState(),
+              dataState: DataState.LOADED,
+              appData: this.dataSubject.value,
+            });
           },
           error: (error: HttpErrorResponse) => {
             console.log(error.error.reason);
@@ -376,6 +381,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   public getUserInformations(): User | null {
     return this.profileState().appData?.data?.user || null;
+  }
+
+  public getUserEvents(): UserEvent[] {
+    return this.profileState()?.appData?.data?.events ?? [];
   }
 
   public ngOnDestroy(): void {
