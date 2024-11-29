@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 export class PersistanceService {
   constructor() {}
 
-  set(key: string, value: any): void {
+  public set(key: string, value: any): void {
     try {
       window.localStorage.setItem(key, JSON.stringify(value));
     } catch (error) {
@@ -14,17 +14,17 @@ export class PersistanceService {
     }
   }
 
-  get(key: string): unknown {
+  public get<T>(key: string): T | null {
     try {
-      const localStorageItem = window.localStorage.getItem(key);
-      return localStorageItem ? JSON.parse(localStorageItem) : null;
+      const item = window.localStorage.getItem(key);
+      return item ? (JSON.parse(item) as T) : null;
     } catch (error) {
-      console.error('Error getting from localStorage', error);
+      console.error(`Error retrieving key "${key}" from localStorage:`, error);
       return null;
     }
   }
 
-  remove(key: string): void {
+  public remove(key: string): void {
     try {
       window.localStorage.removeItem(key);
     } catch (error) {

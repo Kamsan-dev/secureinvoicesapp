@@ -6,6 +6,7 @@ import { CustomHttpResponse } from '../interfaces/custom-http-response';
 import { LoginRequestInterface, updateProfilePasswordRequestInterface, updateProfilRequestInterface } from '../interfaces/login-request';
 import { PersistanceService } from './persistance.service';
 import { Router } from '@angular/router';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Injectable({
   providedIn: 'root',
@@ -17,10 +18,22 @@ export class UserService {
     private router: Router,
   ) {}
   private readonly server: string = 'http://localhost:8080/';
+  private jwtHelper = new JwtHelperService();
+
+  public isAuthenticated = (): boolean => {
+    const token = this.persistanceService.get<string>('access-token');
+    return token ? !this.jwtHelper.isTokenExpired(token) : false;
+  };
 
   public login(requestLogin: LoginRequestInterface): Observable<CustomHttpResponse<Profile>> {
     const body = { email: requestLogin.email, password: requestLogin.password };
     return this.http.post<CustomHttpResponse<Profile>>(this.server + 'user/login', body);
+  }
+
+  public logout(): void {
+    this.persistanceService.remove('refresh-token');
+    this.persistanceService.remove('access-token');
+    this.router.navigate(['login']);
   }
 
   public verifyCode(request: any): Observable<CustomHttpResponse<Profile>> {

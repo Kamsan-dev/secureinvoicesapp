@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { Subject, delay, takeUntil } from 'rxjs';
@@ -18,7 +18,7 @@ import { UserService } from 'src/app/services/user.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
-export class LoginComponent implements OnDestroy {
+export class LoginComponent implements OnDestroy, OnInit {
   public loginForm: FormGroup;
   public verificationForm: FormGroup;
   public readonly phoneSig = signal<string | undefined>('');
@@ -38,6 +38,9 @@ export class LoginComponent implements OnDestroy {
     this.verificationForm = this.fb.nonNullable.group({
       code: ['', Validators.required],
     });
+  }
+  public ngOnInit(): void {
+    this.userService.isAuthenticated() ? this.router.navigate(['/']) : null;
   }
 
   public loginState: LoginState = {

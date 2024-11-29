@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { PersistanceService } from 'src/app/services/persistance.service';
+import { ChangeDetectionStrategy, Component, Input, signal } from '@angular/core';
+import { User } from 'src/app/interfaces/user';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-navbar',
@@ -9,15 +9,23 @@ import { PersistanceService } from 'src/app/services/persistance.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavbarComponent {
-  constructor(
-    private persistanceService: PersistanceService,
-    private router: Router,
-  ) {}
+  constructor(private userService: UserService) {}
+
+  public readonly userInformations = signal<User | null>(null);
+  @Input() public set userInfos(userInformations: User | null) {
+    this.userInformations.set(userInformations);
+  }
 
   public async logout(event: MouseEvent | TouchEvent): Promise<void> {
     event.stopImmediatePropagation();
-    this.persistanceService.remove('refresh-token');
-    this.persistanceService.remove('access-token');
-    this.router.navigate(['login']);
+    this.userService.logout();
+  }
+
+  //#region UserInformations
+  public getUserName(): string {
+    return this.userInformations()?.firstName + ' ' + this.userInformations()?.lastName;
+  }
+  public getUserPictureProfile(): string {
+    return this.userInformations()?.imageUrl || 'https://img.freepik.com/free-icon/user_318-159711.jpg';
   }
 }
