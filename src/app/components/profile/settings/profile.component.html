@@ -19,7 +19,6 @@
                 <div class="img-circle text-center mb-3">
                   <span style="position: relative">
                     <img [src]="getUserPictureProfile()" alt="John" class="shadow" />
-                    <!-- <img src="" alt="John" class="shadow" /> -->
                     <i class="bi bi-camera-fill right-position" (click)="fileInput.click()"></i>
                   </span>
                 </div>
@@ -83,6 +82,7 @@
                 [loading]="loading()"
                 [userInfos]="getUserInformations()"
                 (authenticationSettingsUpdated)="onAuthenticationSettingsUpdate($event)"
+                (showActivityLogsUpdated)="showProfileEvents = !showProfileEvents"
               ></se-profile-authentication>
             </div>
             <div class="tab-pane fade" id="password-tab" role="tabpanel" aria-labelledby="password" style="min-height: 510px">
@@ -97,7 +97,12 @@
             </div>
           </div>
         </div>
-        <se-profile-events-history [dataState]="profileState().dataState" [loading]="loading()" [userEvents]="getUserEvents()"></se-profile-events-history>
+        <se-profile-events-history
+          *ngIf="showProfileEvents"
+          [dataState]="profileState().dataState"
+          [loading]="loading()"
+          [userEvents]="getUserEvents()"
+        ></se-profile-events-history>
       </div>
     </section>
   </ng-container>

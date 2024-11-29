@@ -28,8 +28,9 @@
       </div>
       <div class="col-auto">
         <div class="custom-control custom-switch">
-          <input type="checkbox" class="custom-control-input" id="activityLog" />
-          <span class="custom-control-label"></span>
+          <!-- <input type="checkbox" class="custom-control-input" id="activityLog" />
+          <span class="custom-control-label"></span> -->
+          <dgd-core-checkbox [checked]="showLastestActivities" (onCheckedChange)="onShowLastestActivitiesChange()"></dgd-core-checkbox>
         </div>
       </div>
     </div>

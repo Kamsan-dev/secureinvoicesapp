@@ -9,6 +9,7 @@ import { User } from 'src/app/interfaces/user';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfileAuthenticationComponent {
+  public showLastestActivities: boolean = true;
   public readonly dataStateSig = signal<DataState>(DataState.LOADED);
   @Input() public set dataState(dataState: DataState) {
     this.dataStateSig.set(dataState);
@@ -25,7 +26,7 @@ export class ProfileAuthenticationComponent {
   }
 
   @Output() public authenticationSettingsUpdated = new EventEmitter<void>();
-  @Output() public showActivityLogsUpdated = new EventEmitter<void>();
+  @Output() public showActivityLogsUpdated = new EventEmitter<boolean>();
 
   public async onUpdateMfa(event: MouseEvent | TouchEvent): Promise<void> {
     event.stopImmediatePropagation();
@@ -38,5 +39,10 @@ export class ProfileAuthenticationComponent {
       text: usingMfa ? 'Enabled' : 'Disabled',
       class: usingMfa ? 'bg-success' : 'bg-warning',
     };
+  }
+
+  public onShowLastestActivitiesChange(): void {
+    this.showLastestActivities = !this.showLastestActivities;
+    this.showActivityLogsUpdated.emit(this.showLastestActivities);
   }
 }

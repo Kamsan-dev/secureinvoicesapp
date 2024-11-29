@@ -33,6 +33,9 @@ export class ProfileComponent implements OnInit, OnDestroy {
   public passwordVerified = signal(false);
   public accountSettingsForm!: FormGroup;
 
+  //checkbox show events profile
+  public showProfileEvents = true;
+
   constructor(
     private userService: UserService,
     private fb: FormBuilder,
@@ -130,7 +133,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.loading.set(true);
     try {
       this.profileForm.disable();
-      await lastValueFrom(of(null).pipe(delay(3000)));
       const response = await lastValueFrom(this.userService.updateProfile(this.profileForm.value)); // Await the profile update
       // update profile with fetch data
       this.dataSubject.next({ ...response, data: response.data });
@@ -201,7 +203,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     if (request.newPassword === request.confirmPassword) {
       this.userService
         .updateUserPassword(request)
-        .pipe(takeUntil(this.destroy), delay(300))
+        .pipe(takeUntil(this.destroy))
         .subscribe({
           next: (response: CustomHttpResponse<Profile>) => {
             this.resetPasswordForm();
@@ -241,7 +243,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     if (event !== this.getUserInformations()?.roleName) {
       this.userService
         .updateUserRole(request)
-        .pipe(takeUntil(this.destroy), delay(1500))
+        .pipe(takeUntil(this.destroy))
         .subscribe({
           next: (response: CustomHttpResponse<Profile>) => {
             console.log(response);
@@ -277,7 +279,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
     };
     try {
       this.accountSettingsForm.disable();
-      await lastValueFrom(of(null).pipe(delay(500)));
       const response = await lastValueFrom(this.userService.updateUserSettings(request));
       // update profile with fetch data
       this.dataSubject.next({ ...response, data: response.data });
@@ -305,7 +306,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
       usingMfa: !this.getUserInformations()?.usingMfa,
     };
     try {
-      await lastValueFrom(of(null).pipe(delay(500)));
       const response = await lastValueFrom(this.userService.updateUserAuthenticationSettings(request));
       // update profile with fetch data
       this.dataSubject.next({ ...response, data: response.data });
