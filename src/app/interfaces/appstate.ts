@@ -1,4 +1,5 @@
 import { DataState } from '../enums/datastate.enum';
+import { Customer } from './customer.interface';
 import { User } from './user';
 
 export interface LoginState {
@@ -50,4 +51,25 @@ export enum RoleEnum {
   ROLE_MANAGER = 'ROLE_MANAGER',
   ROLE_ADMIN = 'ROLE_ADMIN',
   ROLE_SYSADMIN = 'ROLE_SYSADMIN',
+}
+
+export interface Pageable {
+  pageNumber: number;
+  pageSize: number;
+  offset: number;
+  paged: boolean;
+  unpaged: boolean;
+}
+
+export interface CustomersResponse {
+  content: Customer[];
+  pageable: Pageable;
+  last: boolean;
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  first: boolean;
+  numberOfElements: number;
+  empty: boolean;
 }
