@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, signal } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { DataState } from 'src/app/enums/datastate.enum';
-import { RoleEnum } from 'src/app/interfaces/appstate';
+import { RoleEnum } from 'src/app/enums/role.enum';
 import { User } from 'src/app/interfaces/user';
 
 @Component({

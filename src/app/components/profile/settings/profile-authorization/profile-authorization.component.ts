@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, effect, ElementRef, EventEmitter, Input, OnInit, Output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, EventEmitter, Input, Output, signal } from '@angular/core';
 import { DataState } from 'src/app/enums/datastate.enum';
-import { Profile, Role, RoleEnum } from 'src/app/interfaces/appstate';
+import { RoleEnum } from 'src/app/enums/role.enum';
+import { Profile } from 'src/app/interfaces/appstate';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
 import { User } from 'src/app/interfaces/user';
 

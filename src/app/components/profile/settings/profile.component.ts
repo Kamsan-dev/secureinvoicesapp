@@ -1,9 +1,10 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { BehaviorSubject, delay, lastValueFrom, of, Subject, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, delay, lastValueFrom, of, Subject, takeUntil } from 'rxjs';
 import { DataState } from 'src/app/enums/datastate.enum';
-import { Profile, RoleEnum, UserEvent } from 'src/app/interfaces/appstate';
+import { RoleEnum } from 'src/app/enums/role.enum';
+import { Profile, UserEvent } from 'src/app/interfaces/appstate';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
 import { State } from 'src/app/interfaces/state';
 import { User } from 'src/app/interfaces/user';

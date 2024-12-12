@@ -1,4 +1,5 @@
 import { DataState } from '../enums/datastate.enum';
+import { EventType } from '../enums/event-type.enum';
 import { Customer } from './customer.interface';
 import { User } from './user';
 
@@ -8,7 +9,6 @@ export interface LoginState {
   error: string | undefined;
   message: string | undefined;
   isUsingMfa: boolean | undefined;
-  currentUser: User | undefined;
 }
 
 export interface Profile {
@@ -34,25 +34,6 @@ export interface Role {
   permission: string;
 }
 
-export enum EventType {
-  LOGIN_ATTEMPT = 'LOGIN_ATTEMPT',
-  LOGIN_ATTEMPT_FAILURE = 'LOGIN_ATTEMPT_FAILURE',
-  LOGIN_ATTEMPT_SUCCESS = 'LOGIN_ATTEMPT_SUCCESS',
-  PROFIL_UPDATE = 'PROFIL_UPDATE',
-  PROFIL_PICTURE_UPDATE = 'PROFIL_PICTURE_UPDATE',
-  ROLE_UPDATE = 'ROLE_UPDATE',
-  ACCOUNT_SETTINGS_UPDATE = 'ACCOUNT_SETTINGS_UPDATE',
-  PASSWORD_UPDATE = 'PASSWORD_UPDATE',
-  MFA_UPDATE = 'MFA_UPDATE',
-}
-
-export enum RoleEnum {
-  ROLE_USER = 'ROLE_USER',
-  ROLE_MANAGER = 'ROLE_MANAGER',
-  ROLE_ADMIN = 'ROLE_ADMIN',
-  ROLE_SYSADMIN = 'ROLE_SYSADMIN',
-}
-
 export interface Pageable {
   pageNumber: number;
   pageSize: number;
@@ -61,7 +42,7 @@ export interface Pageable {
   unpaged: boolean;
 }
 
-export interface CustomersResponse {
+export interface CustomersPageable {
   content: Customer[];
   pageable: Pageable;
   last: boolean;
@@ -72,4 +53,9 @@ export interface CustomersResponse {
   first: boolean;
   numberOfElements: number;
   empty: boolean;
+}
+
+export interface CustomersPage {
+  page: CustomersPageable;
+  user: User;
 }

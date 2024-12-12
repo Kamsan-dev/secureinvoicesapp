@@ -49,7 +49,6 @@ export class LoginComponent implements OnDestroy, OnInit {
     loginSuccess: false,
     message: undefined,
     isUsingMfa: false,
-    currentUser: undefined,
   };
 
   //#region Forms
@@ -98,7 +97,6 @@ export class LoginComponent implements OnDestroy, OnInit {
             loginSuccess: true,
             dataState: DataState.LOADED,
             isUsingMfa: false,
-            currentUser: response.data?.user,
           };
           this.router.navigateByUrl('/');
         },
@@ -141,7 +139,6 @@ export class LoginComponent implements OnDestroy, OnInit {
       loginSuccess: false,
       dataState: DataState.LOADED,
       isUsingMfa: true,
-      currentUser: user,
     };
   }
 
@@ -153,7 +150,6 @@ export class LoginComponent implements OnDestroy, OnInit {
       ...this.loginState,
       dataState: DataState.LOADED,
       loginSuccess: true,
-      currentUser: response.data?.user,
       isUsingMfa: false,
       message: response.message,
     };
