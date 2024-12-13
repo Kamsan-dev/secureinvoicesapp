@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { lastValueFrom, Subject } from 'rxjs';
+import { delay, lastValueFrom, Subject } from 'rxjs';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { CustomersPage } from 'src/app/interfaces/appstate';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
@@ -34,6 +34,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
   ) {}
   public ngOnInit(): void {
+    this.customerState().dataState = DataState.LOADING;
     this.loadCustomers();
   }
 
@@ -47,7 +48,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     //this.customerState().dataState = DataState.LOADING;
     this.loading.set(true);
     try {
-      const response = await lastValueFrom(this.customerService.getCustomers(page));
+      const response = await lastValueFrom(
+        this.customerService.getCustomers(page).pipe(
+          delay(1000), // Delay by 1000ms (1 second)
+        ),
+      );
       console.log(response);
       this.customerState.set({
         ...this.customerState(),
@@ -104,7 +109,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   //#region Customers
 
   public getCustomersPage(): Customer[] {
-    return this.customerState().appData?.data?.page.content as Customer[];
+    return (this.customerState().appData?.data?.page.content as Customer[]) || [];
   }
 
   //#endregion

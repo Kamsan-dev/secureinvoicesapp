@@ -58,4 +58,11 @@ export interface CustomersPageable {
 export interface CustomersPage {
   page: CustomersPageable;
   user: User;
+  stats: Statistics;
+}
+
+export interface Statistics {
+  totalBilled: number;
+  totalCustomers: number;
+  totalInvoices: number;
 }
