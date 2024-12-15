@@ -22,7 +22,15 @@ export class UserService {
 
   public isAuthenticated = (): boolean => {
     const token = this.persistanceService.get<string>('access-token');
-    return token ? !this.jwtHelper.isTokenExpired(token) : false;
+    const refreshToken = this.persistanceService.get<string>('refresh-token');
+
+    if (token && !this.jwtHelper.isTokenExpired(token)) {
+      return true;
+    }
+    if (refreshToken && !this.jwtHelper.isTokenExpired(refreshToken)) {
+      return true;
+    }
+    return false;
   };
 
   public login(requestLogin: LoginRequestInterface): Observable<CustomHttpResponse<Profile>> {
