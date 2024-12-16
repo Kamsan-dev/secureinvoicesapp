@@ -1,7 +1,7 @@
 <ng-container>
   <ng-container>
     <app-navbar [userInfos]="getUserInformations()"></app-navbar>
-    <div *ngIf="customerState().dataState !== 'LOADING_STATE'; else spinner">
+    <div>
       <section>
         <div class="container bg-white shadow rounded-lg d-block" style="border-radius: 8px">
           <div class="row mt-3">
@@ -23,7 +23,7 @@
                     name="name"
                     #input_search
                     class="form-control"
-                    [ngModel]="nameFilter"
+                    [ngModel]="nameFilter()"
                     placeholder="Customer name"
                     (input)="onSearchChange(input_search.value)"
                   />
@@ -31,7 +31,7 @@
               </div>
             </div>
             <div class="col-xm-12">
-              <table class="table table-hover" *ngIf="getCustomersPage().length > 0; else emptyResult">
+              <table class="table table-hover">
                 <thead>
                   <tr>
                     <th class="text-center" scope="col">ID</th>
@@ -44,31 +44,42 @@
                     <th scope="col">Action</th>
                   </tr>
                 </thead>
-                <tbody class="table-body">
-                  <tr class="cell-1" *ngFor="let customer of getCustomersPage()">
-                    <th class="text-center">{{ customer.customerId }}</th>
-                    <td><img [src]="customer.imageUrl" width="42" height="42" class="rounded-circle" alt="Avatar" /></td>
-                    <td>{{ customer.name }}</td>
-                    <td>{{ customer.email }}</td>
-                    <td>{{ customer.phone }}</td>
-                    <td>
-                      <span
-                        class="badge"
-                        [ngClass]="{
-                          'bg-info': customer.status.toUpperCase() === 'INACTIVE',
-                          'bg-danger': customer.status.toUpperCase() === 'BANNED',
-                          'bg-primary': customer.status.toUpperCase() === 'PENDING',
-                          'bg-success': customer.status.toUpperCase() === 'ACTIVE'
-                        }"
-                        >{{ customer.status }}
-                      </span>
-                    </td>
-                    <td>{{ customer.type }}</td>
-                    <td>
-                      <button type="button" class="btn btn-info" (click)="selectCustomer(customer)">View</button>
+                <tbody class="table-body" *ngIf="customerState().dataState === 'LOADING_STATE'; else contentOrEmpty">
+                  <tr>
+                    <td colspan="8" class="text-center">
+                      <div class="d-flex align-items-center justify-content-center">
+                        <se-progress-spinner mode="indeterminate"></se-progress-spinner>
+                      </div>
                     </td>
                   </tr>
                 </tbody>
+                <ng-template #contentOrEmpty>
+                  <tbody *ngIf="getCustomersPage().length > 0; else emptyResult">
+                    <tr class="cell-1" *ngFor="let customer of getCustomersPage()">
+                      <th class="text-center">{{ customer.customerId }}</th>
+                      <td><img [src]="customer.imageUrl" width="42" height="42" class="rounded-circle" alt="Avatar" /></td>
+                      <td>{{ customer.name }}</td>
+                      <td>{{ customer.email }}</td>
+                      <td>{{ customer.phone }}</td>
+                      <td>
+                        <span
+                          class="badge"
+                          [ngClass]="{
+                            'bg-info': customer.status.toUpperCase() === 'INACTIVE',
+                            'bg-danger': customer.status.toUpperCase() === 'BANNED',
+                            'bg-primary': customer.status.toUpperCase() === 'PENDING',
+                            'bg-success': customer.status.toUpperCase() === 'ACTIVE'
+                          }"
+                          >{{ customer.status }}
+                        </span>
+                      </td>
+                      <td>{{ customer.type }}</td>
+                      <td>
+                        <button type="button" class="btn btn-info" (click)="selectCustomer(customer)">View</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </ng-template>
               </table>
 
               <nav aria-label="Page navigation example" *ngIf="getCustomersPage().length > 0">
@@ -80,7 +91,7 @@
                     </a>
                   </li>
                   <li class="page-item" [ngClass]="{ disabled: currentPage() === 0 }">
-                    <a class="page-link" (click)="goToNextOrPreviousPage('previous')" aria-label="Previous">
+                    <a class="page-link" (click)="onPageChange('previous')" aria-label="Previous">
                       <span aria-hidden="true">&laquo;</span>
                       <span class="sr-only">Previous</span>
                     </a>
@@ -89,7 +100,7 @@
                     <a class="page-link">{{ currentPage() + 1 }} <span class="sr-only"></span></a>
                   </li>
                   <li class="page-item" [ngClass]="{ disabled: currentPage() === getLastPageNumber() }">
-                    <a class="page-link" (click)="goToNextOrPreviousPage('forward')" aria-label="Next">
+                    <a class="page-link" (click)="onPageChange('forward')" aria-label="Next">
                       <span aria-hidden="true">&raquo;</span>
                       <span class="sr-only">Next</span>
                     </a>
@@ -110,14 +121,10 @@
   </ng-container>
 </ng-container>
 
-<ng-template #spinner>
-  <div class="d-flex align-items-center justify-content-center pt-1">
-    <se-progress-spinner [size]="'l'" mode="indeterminate"></se-progress-spinner>
-  </div>
-</ng-template>
-
 <ng-template #emptyResult>
-  <div class="d-flex justify-content-center">
-    <h5>Empty list</h5>
-  </div>
+  <tbody>
+    <tr>
+      <td colspan="8" class="text-center">No customers found.</td>
+    </tr>
+  </tbody>
 </ng-template>

@@ -27,11 +27,11 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
   });
 
   public loading = signal(false);
-  public currentPage = signal<number>(0);
   private destroy: Subject<void> = new Subject<void>();
 
   //filter
-  public nameFilter: string = '';
+  public nameFilter = signal<string>('');
+  public currentPage = signal<number>(0);
   public searchCustomerByNameSubject = new Subject<string>();
 
   constructor(
@@ -42,32 +42,32 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
   ) {}
   public ngOnInit(): void {
     // Read query params immediately on initialization
-    this.nameFilter = this.route.snapshot.queryParamMap.get('name') || '';
+    this.nameFilter.set(this.route.snapshot.queryParamMap.get('name') || '');
+    const page = this.route.snapshot.queryParamMap.get('page');
+    this.currentPage.set(page ? parseInt(page, 10) : 0);
 
-    // Load customers based on the presence of the nameFilter
-    if (this.nameFilter) {
-      this.loadCustomersWithFilterSearch();
-    } else {
-      this.loadCustomers();
-    }
     // Observable to handle the search debounce
     this.searchCustomerByNameSubject.pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy)).subscribe((filter: string) => {
-      // Update the query params in the URL
+      // Update the query params in the URL and reset the page to 0
       this.router.navigate([], {
         relativeTo: this.route,
-        queryParams: { name: filter || null },
+        queryParams: { name: filter || null, page: 0 },
         queryParamsHandling: 'merge',
       });
     });
 
-    // Listen for query param changes to update filter and reload data
+    // Listen for query parameter changes
     this.route.queryParams.pipe(takeUntil(this.destroy)).subscribe((params) => {
       const newNameFilter = params['name'] || '';
-      // Avoid unnecessary reloads when the filter hasn't changed
-      if (this.nameFilter !== newNameFilter) {
-        this.nameFilter = newNameFilter;
+      const newPage = Number(params['page']) || 0;
+
+      if (this.nameFilter() !== newNameFilter) {
+        this.nameFilter.set(newNameFilter);
         this.currentPage.set(0);
-        this.loadCustomersWithFilterSearch();
+        this.loadCustomersWithFilterSearch(newPage);
+      } else if (this.currentPage() === newPage) {
+        this.currentPage.set(newPage);
+        this.loadCustomersWithFilterSearch(newPage);
       }
     });
   }
@@ -77,58 +77,6 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
     this.destroy.complete();
   }
 
-  //#region customers
-  private async loadCustomers(page: number = 0): Promise<void> {
-    this.customerState().dataState = DataState.LOADING;
-    this.loading.set(true);
-    try {
-      const response = await lastValueFrom(
-        this.customerService.getCustomers(page).pipe(
-          delay(1000), // Delay by 1000ms (1 second)
-        ),
-      );
-      console.log(response);
-      this.customerState.set({
-        ...this.customerState(),
-        dataState: DataState.LOADED,
-        appData: response,
-      });
-    } catch (error) {
-      if (error instanceof HttpErrorResponse) {
-        this.customerState.set({
-          ...this.customerState(),
-          dataState: DataState.ERROR,
-          error: error.error.reason,
-        });
-      } else {
-        console.log('An unknown error occurred', error);
-      }
-    } finally {
-      this.loading.set(false);
-    }
-  }
-
-  public goToNextOrPreviousPage(direction: direction): void {
-    direction === 'forward' ? this.currentPage.set(this.currentPage() + 1) : this.currentPage.set(this.currentPage() - 1);
-    this.goToPage(this.currentPage());
-  }
-
-  public goToPage(page: number): void {
-    this.currentPage.set(page);
-    console.log('current page: ' + this.currentPage());
-    if (this.nameFilter === '') {
-      this.loadCustomers(page);
-    } else this.loadCustomersWithFilterSearch(page);
-  }
-
-  public getLastPageNumber(): number {
-    const totalPages = this.customerState().appData?.data?.page?.totalPages || 0;
-    return totalPages > 0 ? totalPages - 1 : 0;
-  }
-
-  public selectCustomer(_t32: Customer) {
-    throw new Error('Method not implemented.');
-  }
   //#endregion
 
   //#region UserInformations
@@ -145,6 +93,10 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
   }
   //#region Customers
 
+  public selectCustomer(_t32: Customer) {
+    throw new Error('Method not implemented.');
+  }
+
   public getCustomersPage(): Customer[] {
     return (this.customerState().appData?.data?.page.content as Customer[]) || [];
   }
@@ -154,8 +106,8 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
     this.loading.set(true);
     try {
       const response = await lastValueFrom(
-        this.customerService.searchCustomer(this.nameFilter, page).pipe(
-          delay(1000), // Delay by 1000ms (1 second)
+        this.customerService.searchCustomer(this.nameFilter(), page).pipe(
+          delay(800), // Delay by 1000ms (1 second)
         ),
       );
       console.log(response);
@@ -164,6 +116,19 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
         dataState: DataState.LOADED,
         appData: response,
       });
+      const content = response?.data?.page?.content || [];
+      const totalElements = response.data?.page?.totalElements || 0;
+      // If no customers are found on the given page and there are customers to display,
+      // we load the last valid page of data
+      if (content.length === 0 && totalElements > 0) {
+        const lastPage = response.data?.page?.totalPages ? response.data.page.totalPages - 1 : 0;
+        this.currentPage.set(lastPage);
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { name: this.nameFilter() || null, page: lastPage },
+          queryParamsHandling: 'merge',
+        });
+      }
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
         this.customerState.set({
@@ -186,5 +151,33 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
   public onSearchChange(searchTerm: string) {
     this.searchCustomerByNameSubject.next(searchTerm);
   }
+
+  //#endregion
+
+  //#region pagination
+
+  public onPageChange(direction: direction): void {
+    direction === 'forward' ? this.currentPage.set(this.currentPage() + 1) : this.currentPage.set(this.currentPage() - 1);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { name: this.nameFilter() || null, page: this.currentPage() },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  public goToPage(page: number): void {
+    this.currentPage.set(page);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { name: this.nameFilter() || null, page: this.currentPage() },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  public getLastPageNumber(): number {
+    const totalPages = this.customerState().appData?.data?.page?.totalPages || 0;
+    return totalPages > 0 ? totalPages - 1 : 0;
+  }
+
   //#endregion
 }

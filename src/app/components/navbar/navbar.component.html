@@ -25,7 +25,9 @@
               <a class="dropdown-item" [routerLink]="['/customer/edit']"><i style="padding-right: 8px" class="bi bi-person-plus-fill"></i>New Customer</a>
             </li>
             <li>
-              <a class="dropdown-item" [routerLink]="['/customer']"><i style="padding-right: 8px" class="bi bi-people-fill"></i>All Customers</a>
+              <a class="dropdown-item" [routerLink]="['/customer']" [queryParams]="{ page: 0 }"
+                ><i style="padding-right: 8px" class="bi bi-people-fill"></i>All Customers</a
+              >
             </li>
           </ul>
         </li>
