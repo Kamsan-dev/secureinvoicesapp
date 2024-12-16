@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { debounceTime, delay, distinctUntilChanged, lastValueFrom, pipe, Subject, take, takeUntil } from 'rxjs';
+import { debounceTime, delay, distinctUntilChanged, lastValueFrom, Subject, takeUntil } from 'rxjs';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { CustomersPage } from 'src/app/interfaces/appstate';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
@@ -93,8 +93,8 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
   }
   //#region Customers
 
-  public selectCustomer(_t32: Customer) {
-    throw new Error('Method not implemented.');
+  public selectCustomer(id: number): void {
+    this.router.navigate(['/customer/view/' + id]);
   }
 
   public getCustomersPage(): Customer[] {

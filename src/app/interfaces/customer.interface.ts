@@ -19,6 +19,11 @@ export interface EditCustomer {
   customer: Customer;
   user: User;
 }
+
+export interface ViewCustomer {
+  customer: Customer;
+  user: User;
+}
 export interface EditCustomerRequest {
   name: string;
   email: string;
