@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { CustomersPage } from '../interfaces/appstate';
 import { CustomHttpResponse } from '../interfaces/custom-http-response';
-import { EditCustomer, EditCustomerRequest, ViewCustomer } from '../interfaces/customer.interface';
+import { Customer, EditCustomer, EditCustomerRequest, ViewCustomer } from '../interfaces/customer.interface';
 import { PersistanceService } from './persistance.service';
 
 @Injectable({
@@ -32,5 +32,9 @@ export class CustomerService {
 
   public getCustomer(id: number): Observable<CustomHttpResponse<ViewCustomer>> {
     return this.http.get<CustomHttpResponse<ViewCustomer>>(`${this.server}customer/get/${id}`);
+  }
+
+  public updateCustomer(customer: Customer): Observable<CustomHttpResponse<ViewCustomer>> {
+    return this.http.put<CustomHttpResponse<ViewCustomer>>(`${this.server}customer/update`, customer);
   }
 }

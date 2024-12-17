@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { lastValueFrom, Subject } from 'rxjs';
+import { delay, lastValueFrom, Subject, takeUntil } from 'rxjs';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
 import { Customer, ViewCustomer } from 'src/app/interfaces/customer.interface';
@@ -27,21 +27,27 @@ export class ViewCustomerComponent implements OnInit {
 
   //customer
   public customerId = signal<number>(-1);
+  private readonly CUSTOMER_ID = 'id';
 
   //form
   public customerForm!: FormGroup;
   constructor(
     private customerService: CustomerService,
     private fb: FormBuilder,
-    private route: ActivatedRoute,
+    private activatedRoute: ActivatedRoute,
     private router: Router,
   ) {}
 
   public ngOnInit(): void {
     // Get the id from the route
-    this.customerId.set(Number(this.route.snapshot.paramMap.get('id')));
+    this.activatedRoute.paramMap.pipe(takeUntil(this.destroy)).subscribe((params) => {
+      const id = Number(params.get(this.CUSTOMER_ID));
+      this.customerId.set(id);
+      this.loadCustomerData();
+    });
 
     this.customerForm = this.fb.group({
+      customerId: [''],
       name: [''],
       email: [''],
       imageUrl: [''],
@@ -51,8 +57,6 @@ export class ViewCustomerComponent implements OnInit {
       phone: [''],
       createdAt: [''],
     });
-
-    this.loadCustomerData();
   }
 
   //#region customer
@@ -61,7 +65,7 @@ export class ViewCustomerComponent implements OnInit {
     this.loading.set(true);
     this.customerState().dataState = DataState.LOADING;
     try {
-      const response = await lastValueFrom(this.customerService.getCustomer(this.customerId()));
+      const response = await lastValueFrom(this.customerService.getCustomer(this.customerId()).pipe(delay(200)));
       console.log(response);
       this.customerState.set({
         ...this.customerState(),
@@ -69,6 +73,9 @@ export class ViewCustomerComponent implements OnInit {
         appData: response,
       });
       this.populateForm();
+      // if (this.customerState().appData?.data?.user.roleName !== 'ROLE_SYSADMIN') {
+      //   this.customerForm.disable();
+      // }
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
         this.customerState.set({
@@ -84,18 +91,51 @@ export class ViewCustomerComponent implements OnInit {
     }
   }
 
+  public async onUpdateCustomer(): Promise<void> {
+    this.loading.set(true);
+    this.customerForm.disable();
+    try {
+      const response = await lastValueFrom(this.customerService.updateCustomer(this.customerForm.value).pipe(delay(800)));
+      console.log(response);
+      const invoices = this.customerState().appData?.data?.customer.invoices;
+      if (response.data?.customer) {
+        response.data.customer['invoices'] = invoices;
+      }
+      this.customerState.set({
+        ...this.customerState(),
+        dataState: DataState.LOADED,
+        appData: response,
+      });
+    } catch (error) {
+      if (error instanceof HttpErrorResponse) {
+        this.customerState.set({
+          ...this.customerState(),
+          dataState: DataState.ERROR,
+          error: error.error.reason,
+        });
+      } else {
+        console.log('An unknown error occurred', error);
+      }
+    } finally {
+      this.loading.set(false);
+      this.customerForm.enable();
+      this.customerForm.markAsPristine();
+    }
+  }
+
   private populateForm(): void {
     const customer = this.customerState().appData?.data?.customer;
 
     if (customer) {
       this.customerForm.setValue({
+        customerId: customer.customerId,
         name: customer.name,
         email: customer.email,
         phone: customer.phone,
         address: customer.address,
         type: customer.type,
         status: customer.status,
-        createdAt: customer.createdAt,
+        createdAt: customer.createdAt || '',
         imageUrl: customer.imageUrl,
       });
     }
@@ -108,8 +148,6 @@ export class ViewCustomerComponent implements OnInit {
   public getCustomerPictureProfile(): string {
     return this.customerState().appData?.data?.customer?.imageUrl || 'https://img.freepik.com/free-icon/user_318-159711.jpg';
   }
-
-  public onUpdateCustomer(): void {}
 
   //#endregion
 }
