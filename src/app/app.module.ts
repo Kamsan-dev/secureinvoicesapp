@@ -14,6 +14,7 @@ import { SharedModule } from './shared.module';
 import { StatsModule } from './components/stats/stats.module';
 import { SeProgressSpinnerModule } from './common/progress-spinner/se-progress-spinner.module';
 import { CustomerModule } from './components/customers/customer.module';
+import { InvoiceModule } from './components/invoices/invoice.module';
 @NgModule({
   declarations: [AppComponent, HomeComponent],
   imports: [
@@ -30,6 +31,7 @@ import { CustomerModule } from './components/customers/customer.module';
     StatsModule,
     SeProgressSpinnerModule,
     CustomerModule,
+    InvoiceModule,
   ],
   providers: [{ provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }],
   bootstrap: [AppComponent],

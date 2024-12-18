@@ -1,0 +1,88 @@
+<ng-container>
+  <ng-container>
+    <app-navbar></app-navbar>
+    <section>
+      <div class="container">
+        <nav aria-label="breadcrumb" style="margin-top: 8px">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a [routerLink]="['/']">Home</a>
+            </li>
+            <li class="breadcrumb-item"><a [routerLink]="['/invoice']">Invoices</a></li>
+            <li class="breadcrumb-item active" aria-current="page">New</li>
+          </ol>
+        </nav>
+        <div class="row justify-content-center">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-body">
+                <div class="text-center">
+                  <h2><i style="margin-right: 5px" class="bi bi-person-plus-fill"></i> Register a new invoice</h2>
+                </div>
+                <!-- <div *ngIf="editCustomerState().error != undefined" class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show" role="alert">
+                    {{ editCustomerState().error }}
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div> -->
+
+                {{ editInvoiceForm.value | json }}
+                <form [formGroup]="editInvoiceForm" (ngSubmit)="onEditInvoiceSubmit()">
+                  <div class="row">
+                    <div class="col-md-12" style="margin-bottom: 15px">
+                      <div class="form-group">
+                        <label>Services</label>
+                        <input type="text" name="service" class="form-control" required formControlName="service" />
+                      </div>
+                    </div>
+                    <div class="col-md-6" style="margin-bottom: 15px">
+                      <label>Customer</label>
+                      <ng-select
+                        [items]="getCustomersPage()"
+                        bindLabel="name"
+                        bindValue="customerId"
+                        formControlName="customer"
+                        placeholder="Select a customer"
+                        [loading]="loading()"
+                        (scrollToEnd)="loadCustomers()"
+                        [virtualScroll]="true"
+                        (search)="searchCustomers($event)"
+                      >
+                      </ng-select>
+                    </div>
+                    <div class="col-md-6" style="margin-bottom: 15px">
+                      <div class="form-group">
+                        <label>Total</label>
+                        <input type="text" name="total" class="form-control" required formControlName="total" />
+                      </div>
+                    </div>
+                    <div class="col-md-6" style="margin-bottom: 15px">
+                      <div class="form-group">
+                        <label for="address">Date</label>
+                        <input type="date" name="issuedAt" class="form-control" required formControlName="issuedAt" />
+                      </div>
+                    </div>
+                    <div class="col-md-6" style="margin-bottom: 15px">
+                      <label>Status</label>
+                      <select name="status" class="form-control" required formControlName="status">
+                        <option [selected]="true" value="ACTIVE">ACTIVE</option>
+                        <option value="BANNED">BANNED</option>
+                        <option value="PENDING">PENDING</option>
+                        <option value="INACTIVE">INACTIVE</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="mt-2">
+                    <button [disabled]="loading() || editInvoiceForm.pristine || editInvoiceForm.invalid" type="submit" class="btn btn-primary">
+                      <span *ngIf="loading()" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 5px"></span>
+                      <span *ngIf="loading()">loading...</span>
+                      <span *ngIf="!loading()">Save this customer</span>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </ng-container>
+</ng-container>
