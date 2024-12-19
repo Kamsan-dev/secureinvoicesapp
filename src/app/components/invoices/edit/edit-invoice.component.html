@@ -17,7 +17,7 @@
             <div class="card">
               <div class="card-body">
                 <div class="text-center">
-                  <h2><i style="margin-right: 5px" class="bi bi-person-plus-fill"></i> Register a new invoice</h2>
+                  <h2><i style="margin-right: 5px" class="fas fa-file"></i> Register a new invoice</h2>
                 </div>
                 <!-- <div *ngIf="editCustomerState().error != undefined" class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show" role="alert">
                     {{ editCustomerState().error }}
@@ -30,7 +30,7 @@
                     <div class="col-md-12" style="margin-bottom: 15px">
                       <div class="form-group">
                         <label>Services</label>
-                        <input type="text" name="service" class="form-control" required formControlName="service" />
+                        <input type="text" name="services" class="form-control" required formControlName="services" />
                       </div>
                     </div>
                     <div class="col-md-6" style="margin-bottom: 15px">
@@ -39,12 +39,13 @@
                         [items]="getCustomersPage()"
                         bindLabel="name"
                         bindValue="customerId"
-                        formControlName="customer"
+                        formControlName="customerId"
                         placeholder="Select a customer"
                         [loading]="loading()"
                         (scrollToEnd)="loadCustomers()"
                         [virtualScroll]="true"
-                        (search)="searchCustomers($event)"
+                        (search)="onSearch($event)"
+                        (clear)="onClear($event)"
                       >
                       </ng-select>
                     </div>
@@ -63,10 +64,8 @@
                     <div class="col-md-6" style="margin-bottom: 15px">
                       <label>Status</label>
                       <select name="status" class="form-control" required formControlName="status">
-                        <option [selected]="true" value="ACTIVE">ACTIVE</option>
-                        <option value="BANNED">BANNED</option>
-                        <option value="PENDING">PENDING</option>
-                        <option value="INACTIVE">INACTIVE</option>
+                        <option [selected]="true" value="Pending">Pending</option>
+                        <option value="Paid">Paid</option>
                       </select>
                     </div>
                   </div>
