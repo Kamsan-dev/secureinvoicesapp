@@ -1,6 +1,7 @@
 import { DataState } from '../enums/datastate.enum';
 import { EventType } from '../enums/event-type.enum';
 import { Customer } from './customer.interface';
+import { Invoice } from './invoice.interface';
 import { User } from './user';
 
 export interface LoginState {
@@ -42,8 +43,8 @@ export interface Pageable {
   unpaged: boolean;
 }
 
-export interface CustomersPageable {
-  content: Customer[];
+export interface ResponsePageable<T> {
+  content: T[];
   pageable: Pageable;
   last: boolean;
   totalElements: number;
@@ -56,9 +57,14 @@ export interface CustomersPageable {
 }
 
 export interface CustomersPage {
-  page: CustomersPageable;
+  page: ResponsePageable<Customer>;
   user: User;
   stats: Statistics;
+}
+
+export interface InvoicesPage {
+  page: ResponsePageable<Invoice>;
+  user: User;
 }
 
 export interface Statistics {

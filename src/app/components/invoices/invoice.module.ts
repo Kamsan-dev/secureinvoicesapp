@@ -5,8 +5,10 @@ import { InvoiceRoutingModule } from './invoice-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from 'src/app/shared.module';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { ListInvoiceComponent } from './list/list-invoice.component';
+import { SeProgressSpinnerModule } from '../../common/progress-spinner/se-progress-spinner.module';
 @NgModule({
-  declarations: [EditInvoiceComponent],
-  imports: [CommonModule, InvoiceRoutingModule, FormsModule, ReactiveFormsModule, SharedModule, NgSelectModule],
+  declarations: [EditInvoiceComponent, ListInvoiceComponent],
+  imports: [CommonModule, InvoiceRoutingModule, FormsModule, ReactiveFormsModule, SharedModule, NgSelectModule, SeProgressSpinnerModule],
 })
 export class InvoiceModule {}

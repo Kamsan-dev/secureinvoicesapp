@@ -1,0 +1,134 @@
+<ng-container>
+  <ng-container>
+    <app-navbar [userInfos]="getUserInformations()"></app-navbar>
+    <div>
+      <section>
+        <div class="container">
+          <nav aria-label="breadcrumb" style="margin-top: 8px">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Invoices</li>
+            </ol>
+          </nav>
+          <div class="container bg-white shadow rounded-lg d-block" style="border-radius: 8px">
+            <div class="row mt-3">
+              <!-- <div class="progress">
+                        <div class="progress-bar bg-success" role="progressbar" aria-valuenow="" aria-valuemin="0" aria-valuemax="100">5%</div>
+                      </div> -->
+              <div class="col">
+                <h4 class="fw-bold text-start">Invoices</h4>
+              </div>
+              <div class="col">
+                <h4 class="fw-bold text-end"><i style="cursor: pointer; color: green; font-size: 30px" class="bi bi-file-earmark-excel"></i></h4>
+              </div>
+              <!-- <div class="col-xm-12">
+                      <div class="row g-3 float-end">
+                        <div class="col-auto">
+                          <label for="name" class="visually-hidden"></label>
+                          <input
+                            type="text"
+                            name="name"
+                            #input_search
+                            class="form-control"
+                            [ngModel]="nameFilter()"
+                            placeholder="invoice name"
+                            (input)="onSearchChange(input_search.value)"
+                          />
+                        </div>
+                      </div>
+                    </div> -->
+              <div class="col-xm-12">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th class="text-center" scope="col">ID</th>
+                      <th class="text-center" scope="col">Invoice Number</th>
+                      <th scope="col">Services</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Date</th>
+                      <th scope="col">Total</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="table-body" *ngIf="invoiceState().dataState === 'LOADING_STATE'; else contentOrEmpty">
+                    <tr>
+                      <td colspan="8" class="text-center">
+                        <div class="d-flex align-items-center justify-content-center">
+                          <se-progress-spinner mode="indeterminate"></se-progress-spinner>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                  <ng-template #contentOrEmpty>
+                    <tbody *ngIf="getInvoicesPage().length > 0; else emptyResult">
+                      <tr class="cell-1" *ngFor="let invoice of getInvoicesPage()">
+                        <th class="text-center">{{ invoice.invoiceId }}</th>
+                        <td class="text-center">{{ invoice.invoiceNumber }}</td>
+                        <td>{{ invoice.services }}</td>
+                        <td>
+                          <span
+                            class="badge"
+                            [ngClass]="{
+                              'bg-warning': invoice.status === 'Pending',
+                              'bg-success': invoice.status === 'Paid'
+                            }"
+                            >{{ invoice.status }}
+                          </span>
+                        </td>
+                        <td>{{ invoice.issuedAt | date: 'mediumDate' }}</td>
+                        <td>${{ invoice.total }}</td>
+                        <td>
+                          <button type="button" class="btn btn-info" (click)="printInvoice(invoice.invoiceId)">Print</button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </ng-template>
+                </table>
+
+                <nav aria-label="Page navigation example" *ngIf="getInvoicesPage().length > 0">
+                  <ul class="pagination justify-content-end">
+                    <li class="page-item pointer" [ngClass]="{ disabled: currentPage() === 0 }">
+                      <a class="page-link" (click)="goToPage(0)" aria-label="Previous">
+                        <i class="fas fa-chevron-left"></i>
+                        <span class="sr-only">First page</span>
+                      </a>
+                    </li>
+                    <li class="page-item" [ngClass]="{ disabled: currentPage() === 0 }">
+                      <a class="page-link" (click)="onPageChange('previous')" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        <span class="sr-only">Previous</span>
+                      </a>
+                    </li>
+                    <li class="page-item active">
+                      <a class="page-link">{{ currentPage() + 1 }} <span class="sr-only"></span></a>
+                    </li>
+                    <li class="page-item" [ngClass]="{ disabled: currentPage() === getLastPageNumber() }">
+                      <a class="page-link" (click)="onPageChange('forward')" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                        <span class="sr-only">Next</span>
+                      </a>
+                    </li>
+                    <li class="page-item pointer" [ngClass]="{ disabled: currentPage() === getLastPageNumber() }">
+                      <a class="page-link" (click)="goToPage(getLastPageNumber())" aria-label="Next">
+                        <i class="fas fa-chevron-right"></i>
+                        <span class="sr-only">Last page</span>
+                      </a>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </ng-container>
+</ng-container>
+
+<ng-template #emptyResult>
+  <tbody>
+    <tr>
+      <td colspan="8" class="text-center">No invoices found.</td>
+    </tr>
+  </tbody>
+</ng-template>

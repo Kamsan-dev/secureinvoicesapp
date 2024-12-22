@@ -1,20 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { EditInvoiceComponent } from './edit/edit-invoice.component';
+import { ListInvoiceComponent } from './list/list-invoice.component';
 
 const routes: Routes = [
   {
     path: 'edit',
     component: EditInvoiceComponent,
   },
-  //   {
-  //     path: 'view/:id',
-  //     component: ViewCustomerComponent,
-  //   },
-  //   {
-  //     path: '',
-  //     component: ListCustomerComponent,
-  //   },
+  {
+    path: '',
+    component: ListInvoiceComponent,
+  },
 ];
 
 @NgModule({
