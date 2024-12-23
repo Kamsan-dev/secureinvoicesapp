@@ -78,7 +78,7 @@
                         <td>{{ invoice.issuedAt | date: 'mediumDate' }}</td>
                         <td>${{ invoice.total }}</td>
                         <td>
-                          <button type="button" class="btn btn-info" (click)="printInvoice(invoice.invoiceId)">Print</button>
+                          <button type="button" [routerLink]="['/invoice/view', invoice.invoiceId, invoice.invoiceNumber]" class="btn btn-info">Print</button>
                         </td>
                       </tr>
                     </tbody>

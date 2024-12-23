@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { InvoicesPage } from '../interfaces/appstate';
 import { CustomHttpResponse } from '../interfaces/custom-http-response';
-import { EditInvoiceRequest, InvoiceResponse } from '../interfaces/invoice.interface';
+import { EditInvoiceRequest, InvoiceResponse, ViewInvoice } from '../interfaces/invoice.interface';
 import { PersistanceService } from './persistance.service';
 
 @Injectable({
@@ -24,5 +24,9 @@ export class InvoiceService {
 
   public editInvoice(customerId: number, form: EditInvoiceRequest): Observable<CustomHttpResponse<InvoiceResponse>> {
     return this.http.post<CustomHttpResponse<InvoiceResponse>>(`${this.server}invoice/add-to-customer/${customerId}`, form);
+  }
+
+  public getInvoice(invoiceId: number): Observable<CustomHttpResponse<ViewInvoice>> {
+    return this.http.get<CustomHttpResponse<ViewInvoice>>(`${this.server}invoice/get/${invoiceId}`);
   }
 }

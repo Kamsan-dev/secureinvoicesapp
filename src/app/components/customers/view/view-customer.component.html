@@ -162,7 +162,7 @@
                         <td>{{ invoice.issuedAt }}</td>
                         <td>${{ invoice.total }}</td>
                         <td>
-                          <button type="button" [routerLink]="['/invoices', invoice.invoiceId, invoice.invoiceNumber]" class="btn btn-info btn-sm">Print</button>
+                          <button type="button" [routerLink]="['/invoice/view', invoice.invoiceId, invoice.invoiceNumber]" class="btn btn-info btn-sm">Print</button>
                         </td>
                       </tr>
                     </tbody>

@@ -1,3 +1,4 @@
+import { Customer } from './customer.interface';
 import { User } from './user';
 
 export interface Invoice {
@@ -20,4 +21,10 @@ export interface EditInvoiceRequest {
   issuedAt: Date;
   status: string;
   total: number;
+}
+
+export interface ViewInvoice {
+  invoice: Invoice;
+  user: User;
+  customer: Customer;
 }
