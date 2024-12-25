@@ -15,6 +15,7 @@ import { StatsModule } from './components/stats/stats.module';
 import { SeProgressSpinnerModule } from './common/progress-spinner/se-progress-spinner.module';
 import { CustomerModule } from './components/customers/customer.module';
 import { InvoiceModule } from './components/invoices/invoice.module';
+import { CacheInterceptor } from './interceptor/cache.interceptor';
 @NgModule({
   declarations: [AppComponent, HomeComponent],
   imports: [
@@ -33,7 +34,10 @@ import { InvoiceModule } from './components/invoices/invoice.module';
     CustomerModule,
     InvoiceModule,
   ],
-  providers: [{ provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: CacheInterceptor, multi: true },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
