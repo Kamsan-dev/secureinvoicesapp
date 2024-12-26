@@ -12,6 +12,13 @@ export interface LoginState {
   isUsingMfa: boolean | undefined;
 }
 
+export interface RegisterState {
+  dataState: DataState;
+  registerSuccess: boolean | undefined;
+  error: string | undefined;
+  message: string | undefined;
+}
+
 export interface Profile {
   user: User;
   events: UserEvent[];

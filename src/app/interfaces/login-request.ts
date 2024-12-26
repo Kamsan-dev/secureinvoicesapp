@@ -19,3 +19,10 @@ export interface updateProfilePasswordRequestInterface {
   newPassword: string;
   confirmPassword: string;
 }
+
+export interface registerRequestInterface {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}

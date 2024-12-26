@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpEvent } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { catchError, Observable, tap } from 'rxjs';
 import { CustomersPage } from '../interfaces/appstate';
 import { CustomHttpResponse } from '../interfaces/custom-http-response';
 import { Customer, EditCustomer, EditCustomerRequest, ViewCustomer } from '../interfaces/customer.interface';
@@ -36,5 +36,9 @@ export class CustomerService {
 
   public updateCustomer(customer: Customer): Observable<CustomHttpResponse<ViewCustomer>> {
     return this.http.put<CustomHttpResponse<ViewCustomer>>(`${this.server}customer/update`, customer);
+  }
+
+  public downloadReport(): Observable<HttpEvent<Blob>> {
+    return this.http.get(`${this.server}customer/download/report`, { reportProgress: true, observe: 'events', responseType: 'blob' });
   }
 }

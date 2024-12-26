@@ -6,14 +6,16 @@
       <section>
         <div class="container bg-white shadow rounded-lg d-block" style="border-radius: 8px">
           <div class="row mt-3">
-            <!-- <div class="progress">
-              <div class="progress-bar bg-success" role="progressbar" aria-valuenow="" aria-valuemin="0" aria-valuemax="100">5%</div>
-            </div> -->
+            <div *ngIf="downloadStatus() !== undefined" class="progress">
+              <div [style.width.%]="downloadStatus()" class="progress-bar bg-success" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                {{ downloadStatus() }} %
+              </div>
+            </div>
             <div class="col">
               <h4 class="fw-bold text-start">Customers</h4>
             </div>
             <div class="col">
-              <h4 class="fw-bold text-end"><i style="cursor: pointer; color: green; font-size: 30px" class="bi bi-file-earmark-excel"></i></h4>
+              <h4 class="fw-bold text-end"><i (click)="downloadReport()" style="cursor: pointer; color: green; font-size: 30px" class="bi bi-file-earmark-excel"></i></h4>
             </div>
             <div class="col-xm-12">
               <table class="table table-hover">

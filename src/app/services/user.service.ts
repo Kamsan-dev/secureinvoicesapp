@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { Profile } from '../interfaces/appstate';
 import { CustomHttpResponse } from '../interfaces/custom-http-response';
-import { LoginRequestInterface, updateProfilePasswordRequestInterface, updateProfilRequestInterface } from '../interfaces/login-request';
+import { LoginRequestInterface, registerRequestInterface, updateProfilePasswordRequestInterface, updateProfilRequestInterface } from '../interfaces/login-request';
 import { PersistanceService } from './persistance.service';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
@@ -36,6 +36,10 @@ export class UserService {
   public login(requestLogin: LoginRequestInterface): Observable<CustomHttpResponse<Profile>> {
     const body = { email: requestLogin.email, password: requestLogin.password };
     return this.http.post<CustomHttpResponse<Profile>>(this.server + 'user/login', body);
+  }
+
+  public register(request: registerRequestInterface): Observable<CustomHttpResponse<Profile>> {
+    return this.http.post<CustomHttpResponse<Profile>>(this.server + 'user/register', request);
   }
 
   public logout(): void {

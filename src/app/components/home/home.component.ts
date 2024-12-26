@@ -1,7 +1,8 @@
-import { HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpEvent, HttpEventType } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { delay, lastValueFrom, Subject } from 'rxjs';
+import { union } from '@ngrx/store';
+import { BehaviorSubject, delay, lastValueFrom, Subject, takeUntil } from 'rxjs';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { CustomersPage } from 'src/app/interfaces/appstate';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
@@ -29,6 +30,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   public currentPage = signal<number>(0);
   private destroy: Subject<void> = new Subject<void>();
 
+  //excel report
+  private fileStatusSubject = new BehaviorSubject<{ status: string; type: string; value: number } | undefined>(undefined);
+  private fileStatus = this.fileStatusSubject.asObservable();
+  public downloadStatus = signal<number | undefined>(undefined);
+
   constructor(
     private customerService: CustomerService,
     private fb: FormBuilder,
@@ -36,6 +42,12 @@ export class HomeComponent implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.customerState().dataState = DataState.LOADING;
     this.loadCustomers();
+
+    this.fileStatus.pipe(takeUntil(this.destroy)).subscribe((file) => {
+      if (file !== undefined) {
+        this.downloadStatus.set(file.value);
+      }
+    });
   }
 
   public ngOnDestroy(): void {
@@ -110,6 +122,59 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   public getCustomersPage(): Customer[] {
     return (this.customerState().appData?.data?.page.content as Customer[]) || [];
+  }
+
+  public downloadReport(): void {
+    this.customerService
+      .downloadReport()
+      .pipe(takeUntil(this.destroy))
+      .subscribe({
+        next: (response) => {
+          this.reportProgress(response);
+        },
+        error: (err) => {
+          console.error('Download failed:', err);
+        },
+      });
+  }
+  private reportProgress(httpEvent: HttpEvent<Blob | string[]>): void {
+    switch (httpEvent.type) {
+      case HttpEventType.DownloadProgress || HttpEventType.UploadProgress:
+        if (httpEvent.total) {
+          const progress = Math.round((httpEvent.loaded / httpEvent.total) * 100);
+          this.fileStatusSubject.next({ status: 'progress', type: 'Downloading...', value: progress });
+        }
+        break;
+      case HttpEventType.ResponseHeader:
+        console.log('Response headers :', httpEvent);
+        break;
+      case HttpEventType.Response:
+        if (httpEvent.body instanceof Blob) {
+          const blob = httpEvent.body; // Already a Blob
+          this.saveFile(blob, `${httpEvent.headers.get('File-Name')}`);
+        } else if (Array.isArray(httpEvent.body)) {
+          const blob = new Blob(httpEvent.body, { type: `${httpEvent.headers.get('Content-Type')!};charset=utf-8` });
+          this.saveFile(blob, `${httpEvent.headers.get('File-Name')}`);
+        } else {
+          console.error('Unexpected response body type:', typeof httpEvent.body);
+        }
+        this.fileStatusSubject.next(undefined);
+        break;
+      default:
+        console.log(httpEvent);
+        break;
+    }
+  }
+
+  private saveFile(blob: Blob, fileName: string): void {
+    const url = window.URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = fileName;
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+    window.URL.revokeObjectURL(url);
   }
 
   //#endregion
