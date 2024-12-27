@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
-import { Profile } from '../interfaces/appstate';
+import { AccountType, Profile } from '../interfaces/appstate';
 import { CustomHttpResponse } from '../interfaces/custom-http-response';
 import { LoginRequestInterface, registerRequestInterface, updateProfilePasswordRequestInterface, updateProfilRequestInterface } from '../interfaces/login-request';
 import { PersistanceService } from './persistance.service';
@@ -40,6 +40,10 @@ export class UserService {
 
   public register(request: registerRequestInterface): Observable<CustomHttpResponse<Profile>> {
     return this.http.post<CustomHttpResponse<Profile>>(this.server + 'user/register', request);
+  }
+
+  public resetPassword(email: string): Observable<CustomHttpResponse<Profile>> {
+    return this.http.get<CustomHttpResponse<Profile>>(`${this.server}user/resetpassword/${email}`);
   }
 
   public logout(): void {
@@ -114,5 +118,14 @@ export class UserService {
         },
       }),
     );
+  }
+
+  // reset password process
+  public verify(key: string, type: AccountType): Observable<CustomHttpResponse<Profile>> {
+    return this.http.get<CustomHttpResponse<Profile>>(`${this.server}user/verify/${type}/${key}`);
+  }
+
+  public renewPassword(key: string, form: { newPassword: string; confirmPassword: string }): Observable<CustomHttpResponse<null>> {
+    return this.http.patch<CustomHttpResponse<null>>(`${this.server}user/resetpassword/${key}`, form);
   }
 }

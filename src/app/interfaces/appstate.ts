@@ -19,6 +19,12 @@ export interface RegisterState {
   message: string | undefined;
 }
 
+export interface ResetPasswordState {
+  dataState: DataState;
+  error: string | undefined;
+  message: string | undefined;
+}
+
 export interface Profile {
   user: User;
   events: UserEvent[];
@@ -79,3 +85,14 @@ export interface Statistics {
   totalCustomers: number;
   totalInvoices: number;
 }
+
+export interface VerifyState {
+  dataState: DataState;
+  verifySuccess: boolean | undefined;
+  error?: string | undefined;
+  title?: string;
+  type?: AccountType;
+  message?: string | undefined;
+}
+
+export type AccountType = 'account' | 'password';
