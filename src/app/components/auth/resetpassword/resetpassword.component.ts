@@ -11,8 +11,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-resetpassword',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './resetpassword.component.html',
   styleUrls: ['./resetpassword.component.scss'],
 })

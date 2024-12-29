@@ -12,8 +12,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-verify',
-  standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
   templateUrl: './verify.component.html',
   styleUrls: ['./verify.component.scss'],
 })

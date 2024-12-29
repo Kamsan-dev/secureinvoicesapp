@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 import { ListCustomerComponent } from './list/list-customer.component';
 import { ViewCustomerComponent } from './view/view-customer.component';
 
-const routes: Routes = [
+const customerRoutes: Routes = [
   {
     path: 'edit',
     component: EditCustomerComponent,
@@ -20,7 +20,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
+  imports: [RouterModule.forChild(customerRoutes)],
   exports: [RouterModule],
 })
 export class CustomerRoutingModule {}

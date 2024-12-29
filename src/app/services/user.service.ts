@@ -8,9 +8,7 @@ import { PersistanceService } from './persistance.service';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class UserService {
   constructor(
     private http: HttpClient,

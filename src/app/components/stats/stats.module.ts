@@ -1,12 +1,11 @@
 import { NgModule } from '@angular/core';
-import { StatsComponent } from './stats.component';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
 import { SeProgressSpinnerModule } from 'src/app/common/progress-spinner/se-progress-spinner.module';
+import { SharedModule } from 'src/app/shared/shared.module';
+import { StatsComponent } from './stats.component';
 
 @NgModule({
   declarations: [StatsComponent],
-  imports: [CommonModule, ReactiveFormsModule, SeProgressSpinnerModule],
+  imports: [SharedModule, SeProgressSpinnerModule],
   exports: [StatsComponent],
 })
 export class StatsModule {}

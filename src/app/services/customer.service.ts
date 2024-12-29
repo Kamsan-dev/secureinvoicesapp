@@ -1,15 +1,13 @@
 import { HttpClient, HttpEvent } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, Observable, tap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { CustomersPage } from '../interfaces/appstate';
 import { CustomHttpResponse } from '../interfaces/custom-http-response';
 import { Customer, EditCustomer, EditCustomerRequest, ViewCustomer } from '../interfaces/customer.interface';
 import { PersistanceService } from './persistance.service';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class CustomerService {
   constructor(
     private http: HttpClient,

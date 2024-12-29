@@ -7,9 +7,7 @@ import { CustomHttpResponse } from '../interfaces/custom-http-response';
 import { EditInvoiceRequest, InvoiceResponse, ViewInvoice } from '../interfaces/invoice.interface';
 import { PersistanceService } from './persistance.service';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class InvoiceService {
   constructor(
     private http: HttpClient,
