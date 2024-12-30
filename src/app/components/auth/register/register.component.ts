@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { finalize, Subject, takeUntil } from 'rxjs';
+import { ToasterService } from 'src/app/common/toaster/toaster.service';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { Profile, RegisterState } from 'src/app/interfaces/appstate';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
@@ -14,7 +15,7 @@ import { UserService } from 'src/app/services/user.service';
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
 })
-export class RegisterComponent implements OnDestroy {
+export class RegisterComponent implements OnInit, OnDestroy {
   public registerForm!: FormGroup;
   //public verificationForm: FormGroup;
   private destroy: Subject<void> = new Subject<void>();
@@ -30,6 +31,7 @@ export class RegisterComponent implements OnDestroy {
     private fb: FormBuilder,
     private userService: UserService,
     private router: Router,
+    private toasterService: ToasterService,
   ) {
     this.registerForm = this.fb.nonNullable.group({
       firstName: [''],
@@ -37,6 +39,9 @@ export class RegisterComponent implements OnDestroy {
       email: ['', Validators.required],
       password: ['', Validators.required],
     });
+  }
+  ngOnInit(): void {
+    this.toasterService.show('success', 'Well done!', this.registerState.message ?? '');
   }
 
   public onRegisterSubmit(): void {
@@ -58,9 +63,11 @@ export class RegisterComponent implements OnDestroy {
             ...this.registerState,
             dataState: DataState.LOADED,
             registerSuccess: true,
+            message: response.message,
           };
           this.registerForm.reset();
           this.registerForm.markAsPristine();
+          this.toasterService.show('success', 'Well done!', this.registerState.message ?? '');
         },
         error: (errors: HttpErrorResponse) => {
           console.log(errors);
