@@ -41,7 +41,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
     });
   }
   ngOnInit(): void {
-    this.toasterService.show('success', 'Well done!', this.registerState.message ?? '');
+    console.log('Toast sending registration');
+    this.toasterService.show('success', 'Well done!', 'body');
+    this.toasterService.show('error', 'Well done!', 'body');
+    this.toasterService.show('warning', 'Well done!', 'body');
   }
 
   public onRegisterSubmit(): void {

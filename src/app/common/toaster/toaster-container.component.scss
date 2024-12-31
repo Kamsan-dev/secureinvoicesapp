@@ -1,0 +1,9 @@
+.toast-container {
+  display: flex;
+  flex-direction: column;
+  gap: 3px; /* Adjust for a smaller gap */
+}
+
+.toast {
+  margin: 0; /* Ensure no extra spacing from individual toasts */
+}

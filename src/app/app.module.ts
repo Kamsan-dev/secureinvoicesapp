@@ -9,9 +9,10 @@ import { HomeModule } from './components/home/home.module';
 import { InvoiceModule } from './components/invoices/invoice.module';
 import { ProfileModule } from './components/profile/profile.module';
 import { CoreModule } from './Core/core.module';
+import { ToasterModule } from './common/toaster/toaster.module';
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, CoreModule, HomeModule, ProfileModule, SeProgressSpinnerModule, CustomerModule, InvoiceModule, AuthModule, AppRoutingModule],
+  imports: [BrowserModule, CoreModule, HomeModule, ProfileModule, SeProgressSpinnerModule, CustomerModule, InvoiceModule, AuthModule, AppRoutingModule, ToasterModule],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
