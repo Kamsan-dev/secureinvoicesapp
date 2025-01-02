@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { BehaviorSubject, delay, lastValueFrom, of, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, delay, finalize, lastValueFrom, of, Subject, take, takeUntil } from 'rxjs';
 import { ToasterService } from 'src/app/common/toaster/toaster.service';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { RoleEnum } from 'src/app/enums/role.enum';
@@ -78,7 +78,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
       .pipe(delay(1000), takeUntil(this.destroy))
       .subscribe({
         next: (response: CustomHttpResponse<Profile>) => {
-          console.log(response);
           this.dataSubject.next(response);
           this.profileState.set({
             ...this.profileState(),
@@ -153,8 +152,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
           dataState: DataState.ERROR,
           error: error.error.reason,
         });
-      } else {
-        console.log('An unknown error occurred', error);
       }
     } finally {
       this.loading.set(false);
@@ -172,27 +169,29 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   public async onVerifyPasswordButtonClick(): Promise<void> {
     this.loading.set(true);
-    const request = {
-      password: this.passwordForm.value.password,
-    };
-    try {
-      this.passwordForm.disable();
-      await lastValueFrom(of(null).pipe(delay(300)));
-      const response = await lastValueFrom(this.userService.verifyPassword(request));
-      this.passwordForm.controls['newPassword'].enable();
-      this.passwordForm.controls['confirmPassword'].enable();
-      this.passwordVerified.set(true);
-      this.passwordForm.markAsPristine();
-    } catch (error) {
-      if (error instanceof HttpErrorResponse) {
-        console.log(error.error.reason);
-      } else {
-        console.log('An unknown error occurred', error);
-      }
-    } finally {
-      this.loading.set(false);
-      this.passwordForm.controls['password'].enable();
-    }
+    this.passwordForm.disable();
+
+    this.userService
+      .verifyPassword(this.passwordForm.value)
+      .pipe(
+        takeUntil(this.destroy),
+        finalize(() => {
+          this.loading.set(false);
+          this.passwordForm.controls['password'].enable();
+        }),
+      )
+      .subscribe({
+        next: (response: CustomHttpResponse<Profile>) => {
+          // this.passwordForm.controls['newPassword'].enable();
+          // this.passwordForm.controls['confirmPassword'].enable();
+          this.passwordForm.enable();
+          this.passwordVerified.set(true);
+          this.passwordForm.markAsPristine();
+        },
+        error: (error: HttpErrorResponse) => {
+          this.toasterService.show('error', 'Password verification.', error.error.reason ?? '');
+        },
+      });
   }
 
   public onPasswordFormSubmit(event: FormGroup): void {
@@ -203,15 +202,18 @@ export class ProfileComponent implements OnInit, OnDestroy {
       newPassword: this.passwordForm.value.newPassword,
       confirmPassword: this.passwordForm.value.confirmPassword,
     };
-    console.log(request);
     if (request.newPassword === request.confirmPassword) {
       this.userService
         .updateUserPassword(request)
-        .pipe(takeUntil(this.destroy))
+        .pipe(
+          takeUntil(this.destroy),
+          finalize(() => {
+            this.loading.set(false);
+            this.resetPasswordForm();
+          }),
+        )
         .subscribe({
           next: (response: CustomHttpResponse<Profile>) => {
-            this.resetPasswordForm();
-            this.loading.set(false);
             this.dataSubject.next(response);
             this.profileState.set({
               ...this.profileState(),
@@ -221,8 +223,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
             this.toasterService.show('success', 'Success !', this.profileState().appData?.message ?? '');
           },
           error: (error: HttpErrorResponse) => {
-            console.log(error.error.reason);
-            this.resetPasswordForm();
             this.loading.set(false);
           },
         });
@@ -251,7 +251,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.destroy))
         .subscribe({
           next: (response: CustomHttpResponse<Profile>) => {
-            console.log(response);
             this.dataSubject.next(response);
             this.profileState.set({
               ...this.profileState(),
@@ -297,9 +296,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.toasterService.show('success', 'Success !', this.profileState().appData?.message ?? '');
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
-        console.log(error.error.reason);
-      } else {
-        console.log('An unknown error occurred', error);
+        this.toasterService.show('error', 'Error !', error.error.reason ?? '');
       }
     } finally {
       this.loading.set(false);
@@ -324,9 +321,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.toasterService.show('success', 'Success !', this.profileState().appData?.message ?? '');
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
-        console.log(error.error.reason);
-      } else {
-        console.log('An unknown error occurred', error);
+        this.toasterService.show('error', 'Error !', error.error.reason ?? '');
       }
     } finally {
       this.loading.set(false);
@@ -357,9 +352,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
           this.toasterService.show('success', 'Success !', this.profileState().appData?.message ?? '');
         } catch (error) {
           if (error instanceof HttpErrorResponse) {
-            console.log(error.error.reason);
-          } else {
-            console.log('An unknown error occurred', error);
+            this.toasterService.show('error', 'Error !', error.error.reason ?? '');
           }
         } finally {
           this.loading.set(false);

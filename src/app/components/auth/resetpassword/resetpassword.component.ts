@@ -49,7 +49,6 @@ export class ResetpasswordComponent implements OnDestroy {
       )
       .subscribe({
         next: (response: CustomHttpResponse<Profile>) => {
-          console.log(response);
           this.resetPasswordState = {
             ...this.resetPasswordState,
             dataState: DataState.LOADED,
@@ -59,14 +58,12 @@ export class ResetpasswordComponent implements OnDestroy {
           this.resetPasswordForm.markAsPristine();
         },
         error: (errors: HttpErrorResponse) => {
-          console.log(errors);
           this.resetPasswordState = {
             ...this.resetPasswordState,
             dataState: DataState.ERROR,
             error: errors.error.reason,
           };
           this.resetPasswordForm.enable();
-          console.log(errors);
         },
       });
   }

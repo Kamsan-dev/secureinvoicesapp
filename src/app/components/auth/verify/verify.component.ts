@@ -92,7 +92,6 @@ export class VerifyComponent implements OnInit, OnDestroy {
     this.loading.set(true);
     this.resetPasswordForm.disable();
     const key = this.activatedRoute.snapshot.params['key'];
-    console.log(this.resetPasswordForm.value);
     this.userService
       .renewPassword(key, this.resetPasswordForm.value)
       .pipe(

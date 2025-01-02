@@ -18,7 +18,7 @@ export class CacheInterceptor implements HttpInterceptor {
 
     const cachedResponse: HttpResponse<any> | null | undefined = this.httpCache.get(request.url);
     if (cachedResponse) {
-      console.log('Found response in cache', cachedResponse);
+      //console.log('Found response in cache', cachedResponse);
       this.httpCache.logCache();
       return of(cachedResponse);
     }

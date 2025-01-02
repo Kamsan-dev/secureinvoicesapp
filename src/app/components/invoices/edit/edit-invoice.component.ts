@@ -60,7 +60,6 @@ export class EditInvoiceComponent {
     this.searchSubject.pipe(debounceTime(500), takeUntil(this.destroy), distinctUntilChanged()).subscribe((searchTerm) => {
       this.searchTerm.set(searchTerm);
       if (searchTerm !== '') {
-        console.log(searchTerm);
         this.currentPage.set(0);
         this.loadCustomers();
       } else {
@@ -113,19 +112,12 @@ export class EditInvoiceComponent {
             dataState: DataState.ERROR,
             error: error.error.reason,
           });
-        } else {
-          console.log('An unknown error occurred', error);
         }
       } finally {
         this.loading.set(false);
       }
     }
   }
-
-  public searchCustomers(event: any): void {
-    console.log(event);
-  }
-
   public getCustomersPage(): Customer[] {
     return (this.customerState().appData?.data?.page.content as Customer[]) || [];
   }
@@ -153,8 +145,6 @@ export class EditInvoiceComponent {
           dataState: DataState.ERROR,
           error: error.error.reason,
         });
-      } else {
-        console.log('An unknown error occurred', error);
       }
     } finally {
       this.loading.set(false);
@@ -167,7 +157,6 @@ export class EditInvoiceComponent {
   //#region events
 
   public onClear(event: any): void {
-    console.log(event);
     this.currentPage.set(0);
     this.searchSubject.next('');
     this.loadCustomers();

@@ -62,7 +62,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.loading.set(true);
     try {
       const response = await lastValueFrom(this.customerService.getCustomers(page));
-      console.log(response);
       this.customerState.set({
         ...this.customerState(),
         dataState: DataState.LOADED,
@@ -75,8 +74,6 @@ export class HomeComponent implements OnInit, OnDestroy {
           dataState: DataState.ERROR,
           error: error.error.reason,
         });
-      } else {
-        console.log('An unknown error occurred', error);
       }
     } finally {
       this.loading.set(false);
@@ -143,7 +140,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
         break;
       case HttpEventType.ResponseHeader:
-        console.log('Response headers :', httpEvent);
         break;
       case HttpEventType.Response:
         if (httpEvent.body instanceof Blob) {
@@ -158,7 +154,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.fileStatusSubject.next(undefined);
         break;
       default:
-        console.log(httpEvent);
         break;
     }
   }

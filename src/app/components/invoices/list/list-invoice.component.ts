@@ -64,7 +64,6 @@ export class ListInvoiceComponent implements OnInit {
           delay(800), // Delay by 1000ms (1 second)
         ),
       );
-      console.log(response);
       this.invoiceState.set({
         ...this.invoiceState(),
         dataState: DataState.LOADED,
@@ -90,8 +89,6 @@ export class ListInvoiceComponent implements OnInit {
           dataState: DataState.ERROR,
           error: error.error.reason,
         });
-      } else {
-        console.log('An unknown error occurred', error);
       }
     } finally {
       this.loading.set(false);

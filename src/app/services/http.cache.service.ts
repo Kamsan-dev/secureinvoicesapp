@@ -7,7 +7,7 @@ export class HttpCacheService {
   constructor() {}
 
   public put(key: string, response: HttpResponse<any>): void {
-    console.log('caching response');
+    //console.log('caching response');
     this.httpResponse[key] = response;
   }
   public get(key: string): HttpResponse<any> | undefined | null {
@@ -17,7 +17,6 @@ export class HttpCacheService {
     delete this.httpResponse[key];
   }
   public clear(): void {
-    console.log('clearing entire cache');
     this.httpResponse = {};
   }
   public logCache(): void {

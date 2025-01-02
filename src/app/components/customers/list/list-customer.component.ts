@@ -110,7 +110,6 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
           delay(800), // Delay by 1000ms (1 second)
         ),
       );
-      console.log(response);
       this.customerState.set({
         ...this.customerState(),
         dataState: DataState.LOADED,
@@ -136,8 +135,6 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
           dataState: DataState.ERROR,
           error: error.error.reason,
         });
-      } else {
-        console.log('An unknown error occurred', error);
       }
     } finally {
       this.loading.set(false);

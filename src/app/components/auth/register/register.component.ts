@@ -54,7 +54,6 @@ export class RegisterComponent implements OnDestroy {
       )
       .subscribe({
         next: (response: CustomHttpResponse<Profile>) => {
-          console.log(response);
           this.registerState = {
             ...this.registerState,
             dataState: DataState.LOADED,
@@ -66,7 +65,6 @@ export class RegisterComponent implements OnDestroy {
           this.toasterService.show('success', 'Register success !', this.registerState.message ?? '');
         },
         error: (errors: HttpErrorResponse) => {
-          console.log(errors);
           this.registerState = {
             ...this.registerState,
             dataState: DataState.ERROR,
@@ -74,7 +72,6 @@ export class RegisterComponent implements OnDestroy {
             error: errors.error.reason,
           };
           this.registerForm.enable();
-          console.log(errors);
         },
       });
   }

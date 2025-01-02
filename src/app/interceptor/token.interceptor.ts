@@ -33,7 +33,7 @@ export class TokenInterceptor implements HttpInterceptor {
   }
   private handleRefreshToken(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     if (!this.isTokenRefreshing) {
-      console.log('Refreshing token');
+      //console.log('Refreshing token');
       this.isTokenRefreshing = true;
       this.refreshTokenSubject.next(null);
       return this.userService.refreshToken().pipe(
@@ -44,7 +44,7 @@ export class TokenInterceptor implements HttpInterceptor {
         }),
       );
     } else {
-      console.log('using new access-token');
+      //console.log('using new access-token');
       return this.refreshTokenSubject.pipe(
         filter((response: CustomHttpResponse<Profile> | null): response is CustomHttpResponse<Profile> => response !== null), // Type guard to filter out null values
         switchMap((response: CustomHttpResponse<Profile>) => {

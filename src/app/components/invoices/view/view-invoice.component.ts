@@ -53,14 +53,11 @@ export class ViewInvoiceComponent implements OnInit {
     this.invoiceState().dataState = DataState.LOADING;
     try {
       const response = await lastValueFrom(this.invoiceService.getInvoice(this.invoiceId()).pipe(delay(200)));
-      console.log(response);
       this.invoiceState.set({
         ...this.invoiceState(),
         dataState: DataState.LOADED,
         appData: response,
       });
-
-      console.log(this.getServices());
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
         this.invoiceState.set({
@@ -68,8 +65,6 @@ export class ViewInvoiceComponent implements OnInit {
           dataState: DataState.ERROR,
           error: error.error.reason,
         });
-      } else {
-        console.log('An unknown error occurred', error);
       }
     } finally {
       this.loading.set(false);

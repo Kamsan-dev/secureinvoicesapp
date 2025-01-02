@@ -68,8 +68,6 @@ export class EditCustomerComponent implements OnInit {
           dataState: DataState.ERROR,
           error: error.error.reason,
         });
-      } else {
-        console.log('An unknown error occurred', error);
       }
     } finally {
       this.loading.set(false);

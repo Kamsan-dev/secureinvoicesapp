@@ -85,9 +85,7 @@ export class UserService {
   }
 
   public verifyPassword(requestPassword: any): Observable<CustomHttpResponse<Profile>> {
-    const body = { password: requestPassword.password };
-    console.log(body);
-    return this.http.post<CustomHttpResponse<Profile>>(this.server + 'user/update/password/verification', body);
+    return this.http.post<CustomHttpResponse<Profile>>(this.server + 'user/update/password/verification', requestPassword);
   }
 
   public updateUserPassword(requestPassword: updateProfilePasswordRequestInterface): Observable<CustomHttpResponse<Profile>> {

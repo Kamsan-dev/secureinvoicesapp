@@ -68,7 +68,6 @@ export class ViewCustomerComponent implements OnInit {
     this.customerState().dataState = DataState.LOADING;
     try {
       const response = await lastValueFrom(this.customerService.getCustomer(this.customerId()).pipe(delay(200)));
-      console.log(response);
       this.customerState.set({
         ...this.customerState(),
         dataState: DataState.LOADED,
@@ -85,8 +84,6 @@ export class ViewCustomerComponent implements OnInit {
           dataState: DataState.ERROR,
           error: error.error.reason,
         });
-      } else {
-        console.log('An unknown error occurred', error);
       }
     } finally {
       this.loading.set(false);
@@ -98,7 +95,6 @@ export class ViewCustomerComponent implements OnInit {
     this.customerForm.disable();
     try {
       const response = await lastValueFrom(this.customerService.updateCustomer(this.customerForm.value).pipe(delay(800)));
-      console.log(response);
       const invoices = this.customerState().appData?.data?.customer.invoices;
       if (response.data?.customer) {
         response.data.customer['invoices'] = invoices;
@@ -116,8 +112,6 @@ export class ViewCustomerComponent implements OnInit {
           dataState: DataState.ERROR,
           error: error.error.reason,
         });
-      } else {
-        console.log('An unknown error occurred', error);
       }
     } finally {
       this.loading.set(false);
