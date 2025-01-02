@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { debounceTime, delay, distinctUntilChanged, lastValueFrom, Subject, takeUntil } from 'rxjs';
+import { ToasterService } from 'src/app/common/toaster/toaster.service';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { CustomersPage } from 'src/app/interfaces/appstate';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
@@ -43,6 +44,7 @@ export class EditInvoiceComponent {
     private fb: FormBuilder,
     private customerService: CustomerService,
     private invoiceService: InvoiceService,
+    private toasterService: ToasterService,
   ) {}
 
   public ngOnInit(): void {
@@ -78,11 +80,7 @@ export class EditInvoiceComponent {
       this.loading.set(true);
       try {
         const response = await lastValueFrom(this.customerService.searchCustomer(this.searchTerm(), this.currentPage(), 10));
-        const newCustomers = response.data?.page.content || [];
-        const currentCustomers = this.customerState().appData?.data?.page?.content || [];
-
         this.lastCustomersPage.set(response.data?.page.totalPages ? response.data.page.totalPages - 1 : 0);
-        console.log(response);
         // on new search term registered and first page, we clear the customer list
         if (this.currentPage() === 0 && this.searchTerm() !== '') {
           this.customerState.set({
@@ -101,13 +99,12 @@ export class EditInvoiceComponent {
                 ...this.customerState().appData?.data!,
                 page: {
                   ...this.customerState().appData?.data?.page!,
-                  content: [...currentCustomers, ...newCustomers],
+                  content: [...(this.customerState().appData?.data?.page?.content || []), ...(response.data?.page.content || [])],
                 },
               },
             },
           });
         }
-
         this.currentPage.set(this.currentPage() + 1);
       } catch (error) {
         if (error instanceof HttpErrorResponse) {
@@ -148,6 +145,7 @@ export class EditInvoiceComponent {
         dataState: DataState.LOADED,
         appData: response,
       });
+      this.toasterService.show('success', 'Success !', this.invoiceState().appData?.message ?? '');
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
         this.invoiceState.set({

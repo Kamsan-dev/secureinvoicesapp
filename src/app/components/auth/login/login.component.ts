@@ -4,6 +4,7 @@ import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
+import { ToasterService } from 'src/app/common/toaster/toaster.service';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { LoginState, Profile } from 'src/app/interfaces/appstate';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
@@ -27,6 +28,7 @@ export class LoginComponent implements OnDestroy, OnInit {
     private userService: UserService,
     private persistanceService: PersistanceService,
     private router: Router,
+    private toasterService: ToasterService,
   ) {
     this.loginForm = this.fb.nonNullable.group({
       email: ['dev@email.com', Validators.required],
@@ -97,6 +99,7 @@ export class LoginComponent implements OnDestroy, OnInit {
             isUsingMfa: false,
           };
           this.router.navigateByUrl('/');
+          this.toasterService.show('success', 'Login success !', this.loginState.message ?? '');
         },
         error: (errors: HttpErrorResponse) => {
           this.loginState = {
@@ -138,6 +141,7 @@ export class LoginComponent implements OnDestroy, OnInit {
       dataState: DataState.LOADED,
       isUsingMfa: true,
     };
+    this.toasterService.show('success', 'Confirm authentication.', this.loginState.message ?? '');
   }
 
   private handleRegularUser(response: CustomHttpResponse<Profile>): void {
@@ -151,6 +155,7 @@ export class LoginComponent implements OnDestroy, OnInit {
       isUsingMfa: false,
       message: response.message,
     };
+    this.toasterService.show('success', 'Login success !', this.loginState.message ?? '');
   }
 
   private handleError(errors: HttpErrorResponse): void {

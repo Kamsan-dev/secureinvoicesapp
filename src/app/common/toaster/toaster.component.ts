@@ -40,6 +40,23 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
       ),
       transition('visible => hidden', animate('300ms ease-out')),
     ]),
+    trigger('toastAnimation2', [
+      state(
+        'fixed',
+        style({
+          opacity: 1,
+          transform: 'translateY(0)',
+        }),
+      ),
+      state(
+        'translation',
+        style({
+          opacity: 1,
+          transform: 'translateY(-80px)',
+        }),
+      ),
+      transition('fixed => translation', animate('300ms ease-out')),
+    ]),
   ],
 })
 export class ToasterComponent {
@@ -47,6 +64,8 @@ export class ToasterComponent {
   @Input() public i!: number;
 
   @Output() remove = new EventEmitter<number>();
+
+  //public toastAnimation2 = 'fixed';
 
   public onClose(): void {
     this.toast.animationState = 'hidden';

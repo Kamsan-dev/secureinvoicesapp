@@ -15,9 +15,8 @@ import { UserService } from 'src/app/services/user.service';
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
 })
-export class RegisterComponent implements OnInit, OnDestroy {
+export class RegisterComponent implements OnDestroy {
   public registerForm!: FormGroup;
-  //public verificationForm: FormGroup;
   private destroy: Subject<void> = new Subject<void>();
   public registerState: RegisterState = {
     dataState: DataState.LOADED,
@@ -39,12 +38,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
       email: ['', Validators.required],
       password: ['', Validators.required],
     });
-  }
-  ngOnInit(): void {
-    console.log('Toast sending registration');
-    this.toasterService.show('success', 'Well done!', 'body');
-    this.toasterService.show('error', 'Well done!', 'body');
-    this.toasterService.show('warning', 'Well done!', 'body');
   }
 
   public onRegisterSubmit(): void {
@@ -70,7 +63,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
           };
           this.registerForm.reset();
           this.registerForm.markAsPristine();
-          this.toasterService.show('success', 'Well done!', this.registerState.message ?? '');
+          this.toasterService.show('success', 'Register success !', this.registerState.message ?? '');
         },
         error: (errors: HttpErrorResponse) => {
           console.log(errors);

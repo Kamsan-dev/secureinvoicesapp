@@ -17,7 +17,6 @@ export class ToasterService {
   }
 
   show(type: ToastType, title: string, body: string, delay?: number) {
-    console.log('service called');
     this.subject.next({ type, title, body, delay: delay ?? 4000, animationState: 'visible' });
   }
 }

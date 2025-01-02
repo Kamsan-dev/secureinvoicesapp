@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { BehaviorSubject, delay, lastValueFrom, Subject } from 'rxjs';
+import { ToasterService } from 'src/app/common/toaster/toaster.service';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
 import { EditCustomer } from 'src/app/interfaces/customer.interface';
@@ -31,6 +32,7 @@ export class EditCustomerComponent implements OnInit {
   constructor(
     private customerService: CustomerService,
     private fb: FormBuilder,
+    private toasterService: ToasterService,
   ) {}
 
   public ngOnInit(): void {
@@ -57,7 +59,7 @@ export class EditCustomerComponent implements OnInit {
         dataState: DataState.LOADED,
         appData: response,
       });
-      console.log(response);
+      this.toasterService.show('success', 'Success !', this.editCustomerState().appData?.message ?? '');
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
         this.editCustomerState.set({

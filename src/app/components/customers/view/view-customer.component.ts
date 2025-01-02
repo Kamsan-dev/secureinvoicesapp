@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/cor
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { delay, lastValueFrom, Subject, takeUntil } from 'rxjs';
+import { ToasterService } from 'src/app/common/toaster/toaster.service';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
 import { Customer, ViewCustomer } from 'src/app/interfaces/customer.interface';
@@ -36,6 +37,7 @@ export class ViewCustomerComponent implements OnInit {
     private fb: FormBuilder,
     private activatedRoute: ActivatedRoute,
     private router: Router,
+    private toasterService: ToasterService,
   ) {}
 
   public ngOnInit(): void {
@@ -106,6 +108,7 @@ export class ViewCustomerComponent implements OnInit {
         dataState: DataState.LOADED,
         appData: response,
       });
+      this.toasterService.show('success', 'Success !', this.customerState().appData?.message ?? '');
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
         this.customerState.set({

@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { BehaviorSubject, delay, lastValueFrom, of, Subject, takeUntil } from 'rxjs';
+import { ToasterService } from 'src/app/common/toaster/toaster.service';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { RoleEnum } from 'src/app/enums/role.enum';
 import { Profile, UserEvent } from 'src/app/interfaces/appstate';
@@ -40,6 +41,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   constructor(
     private userService: UserService,
     private fb: FormBuilder,
+    private toasterService: ToasterService,
   ) {}
 
   public ngOnInit(): void {
@@ -142,6 +144,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
         dataState: DataState.LOADED,
         appData: response,
       });
+      this.toasterService.show('success', 'Success !', this.profileState().appData?.message ?? '');
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
         this.profileState.set({
@@ -215,6 +218,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
               dataState: DataState.LOADED,
               appData: this.dataSubject.value,
             });
+            this.toasterService.show('success', 'Success !', this.profileState().appData?.message ?? '');
           },
           error: (error: HttpErrorResponse) => {
             console.log(error.error.reason);
@@ -255,6 +259,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
               appData: response,
             });
             this.loading.set(false);
+            this.toasterService.show('success', 'Success !', this.profileState().appData?.message ?? '');
           },
           error: (error: HttpErrorResponse) => {
             this.profileState.set({
@@ -289,6 +294,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
         appData: response,
       });
       this.accountSettingsForm.markAsPristine();
+      this.toasterService.show('success', 'Success !', this.profileState().appData?.message ?? '');
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
         console.log(error.error.reason);
@@ -315,6 +321,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
         dataState: DataState.LOADED,
         appData: this.dataSubject.value,
       });
+      this.toasterService.show('success', 'Success !', this.profileState().appData?.message ?? '');
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
         console.log(error.error.reason);
@@ -347,6 +354,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
             dataState: DataState.LOADED,
             appData: this.dataSubject.value,
           });
+          this.toasterService.show('success', 'Success !', this.profileState().appData?.message ?? '');
         } catch (error) {
           if (error instanceof HttpErrorResponse) {
             console.log(error.error.reason);

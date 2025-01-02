@@ -23,6 +23,6 @@ export class ToasterContainerComponent implements OnInit {
   }
 
   remove(index: number) {
-    this.toasts = this.toasts.filter((v, i) => i !== index);
+    this.toasts = this.toasts.filter((v, i) => i !== index).map((toast) => toast);
   }
 }

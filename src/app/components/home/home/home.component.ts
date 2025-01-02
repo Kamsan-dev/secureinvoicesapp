@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@
 import { FormBuilder } from '@angular/forms';
 import { union } from '@ngrx/store';
 import { BehaviorSubject, delay, lastValueFrom, Subject, takeUntil } from 'rxjs';
+import { ToasterService } from 'src/app/common/toaster/toaster.service';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { CustomersPage } from 'src/app/interfaces/appstate';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
@@ -60,11 +61,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     //this.customerState().dataState = DataState.LOADING;
     this.loading.set(true);
     try {
-      const response = await lastValueFrom(
-        this.customerService.getCustomers(page).pipe(
-          delay(1000), // Delay by 1000ms (1 second)
-        ),
-      );
+      const response = await lastValueFrom(this.customerService.getCustomers(page));
       console.log(response);
       this.customerState.set({
         ...this.customerState(),
