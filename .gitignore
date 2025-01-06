@@ -40,3 +40,14 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Ignore the environment folder and all its contents
+environments/
+
+# Ignore Docker-related files
+.dockerignore
+docker-compose.yml
+Dockerfile
+
+# Ignore all .conf files
+*.conf

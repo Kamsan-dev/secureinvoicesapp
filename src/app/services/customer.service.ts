@@ -6,6 +6,7 @@ import { CustomersPage } from '../interfaces/appstate';
 import { CustomHttpResponse } from '../interfaces/custom-http-response';
 import { Customer, EditCustomer, EditCustomerRequest, ViewCustomer } from '../interfaces/customer.interface';
 import { PersistanceService } from './persistance.service';
+import { environment } from 'src/environments/environment';
 
 @Injectable()
 export class CustomerService {
@@ -14,7 +15,7 @@ export class CustomerService {
     private persistanceService: PersistanceService,
     private router: Router,
   ) {}
-  private readonly server: string = 'http://localhost:8080/';
+  private readonly server: string = environment.API_BASE_URL;
 
   public getCustomers(page: number = 0, size: number = 5): Observable<CustomHttpResponse<CustomersPage>> {
     return this.http.get<CustomHttpResponse<CustomersPage>>(`${this.server}customer/list?page=${page}&size=${size}`);

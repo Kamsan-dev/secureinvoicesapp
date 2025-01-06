@@ -8,6 +8,7 @@ import { PersistanceService } from './persistance.service';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { User } from '../interfaces/user';
+import { environment } from 'src/environments/environment';
 
 @Injectable()
 export class UserService {
@@ -16,7 +17,7 @@ export class UserService {
     private persistanceService: PersistanceService,
     private router: Router,
   ) {}
-  private readonly server: string = 'http://localhost:8080/';
+  private readonly server: string = environment.API_BASE_URL;
   private jwtHelper = new JwtHelperService();
   private userSubject = new BehaviorSubject<User | null>(null);
   public user$: Observable<User | null> = this.userSubject.asObservable();
@@ -39,7 +40,9 @@ export class UserService {
     return this.http.post<CustomHttpResponse<Profile>>(this.server + 'user/login', body).pipe(
       tap({
         next: (response: CustomHttpResponse<Profile>) => {
-          this.userSubject.next(response.data?.user || null);
+          if (response.data?.user.usingMfa === false) {
+            this.userSubject.next(response.data.user);
+          }
         },
       }),
     );
@@ -61,7 +64,13 @@ export class UserService {
   }
 
   public verifyCode(request: any): Observable<CustomHttpResponse<Profile>> {
-    return this.http.get<CustomHttpResponse<Profile>>(this.server + 'user/verify/code/' + request.email + '/' + request.code);
+    return this.http.get<CustomHttpResponse<Profile>>(this.server + 'user/verify/code/' + request.email + '/' + request.code).pipe(
+      tap({
+        next: (response: CustomHttpResponse<Profile>) => {
+          this.userSubject.next(response.data?.user || null);
+        },
+      }),
+    );
   }
 
   public profile(): Observable<CustomHttpResponse<Profile>> {

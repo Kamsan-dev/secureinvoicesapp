@@ -6,6 +6,7 @@ import { InvoicesPage } from '../interfaces/appstate';
 import { CustomHttpResponse } from '../interfaces/custom-http-response';
 import { EditInvoiceRequest, InvoiceResponse, ViewInvoice } from '../interfaces/invoice.interface';
 import { PersistanceService } from './persistance.service';
+import { environment } from 'src/environments/environment';
 
 @Injectable()
 export class InvoiceService {
@@ -14,7 +15,7 @@ export class InvoiceService {
     private persistanceService: PersistanceService,
     private router: Router,
   ) {}
-  private readonly server: string = 'http://localhost:8080/';
+  private readonly server: string = environment.API_BASE_URL;
 
   public getInvoices(page: number = 0, size: number = 5): Observable<CustomHttpResponse<InvoicesPage>> {
     return this.http.get<CustomHttpResponse<InvoicesPage>>(`${this.server}invoice/list?page=${page}&size=${size}`);

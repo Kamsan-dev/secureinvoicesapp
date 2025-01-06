@@ -97,6 +97,7 @@ export class LoginComponent implements OnDestroy, OnInit {
             loginSuccess: true,
             dataState: DataState.LOADED,
             isUsingMfa: false,
+            message: response.message,
           };
           this.router.navigateByUrl('/');
           this.toasterService.show('success', 'Login success !', this.loginState.message ?? '');
@@ -126,13 +127,13 @@ export class LoginComponent implements OnDestroy, OnInit {
   private handleLoginResponse(response: CustomHttpResponse<Profile>): void {
     const user = response.data?.user;
     if (user?.usingMfa) {
-      this.handleMfaUser(user);
+      this.handleMfaUser(user, response);
     } else {
       this.handleRegularUser(response);
     }
   }
 
-  private handleMfaUser(user: User): void {
+  private handleMfaUser(user: User, response: CustomHttpResponse<Profile>): void {
     this.phoneSig.set('...' + user.phone?.substring(6));
     this.emailSig.set(user.email);
     this.loginState = {
@@ -140,6 +141,7 @@ export class LoginComponent implements OnDestroy, OnInit {
       loginSuccess: false,
       dataState: DataState.LOADED,
       isUsingMfa: true,
+      message: response.message,
     };
     this.toasterService.show('success', 'Confirm authentication.', this.loginState.message ?? '');
   }
