@@ -1,9 +1,7 @@
 import { HttpErrorResponse, HttpEvent, HttpEventType } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { union } from '@ngrx/store';
-import { BehaviorSubject, delay, lastValueFrom, Subject, takeUntil } from 'rxjs';
-import { ToasterService } from 'src/app/common/toaster/toaster.service';
+import { BehaviorSubject, lastValueFrom, Subject, takeUntil } from 'rxjs';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { CustomersPage } from 'src/app/interfaces/appstate';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
@@ -49,11 +47,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.downloadStatus.set(file.value);
       }
     });
-  }
-
-  public ngOnDestroy(): void {
-    this.destroy.next();
-    this.destroy.complete();
   }
 
   //#region customers
@@ -170,4 +163,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   //#endregion
+
+  public ngOnDestroy(): void {
+    this.destroy.next();
+    this.destroy.complete();
+  }
 }

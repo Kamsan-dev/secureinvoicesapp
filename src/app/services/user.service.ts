@@ -1,12 +1,13 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { AccountType, Profile } from '../interfaces/appstate';
 import { CustomHttpResponse } from '../interfaces/custom-http-response';
 import { LoginRequestInterface, registerRequestInterface, updateProfilePasswordRequestInterface, updateProfilRequestInterface } from '../interfaces/login-request';
 import { PersistanceService } from './persistance.service';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { User } from '../interfaces/user';
 
 @Injectable()
 export class UserService {
@@ -17,6 +18,8 @@ export class UserService {
   ) {}
   private readonly server: string = 'http://localhost:8080/';
   private jwtHelper = new JwtHelperService();
+  private userSubject = new BehaviorSubject<User | null>(null);
+  public user$: Observable<User | null> = this.userSubject.asObservable();
 
   public isAuthenticated = (): boolean => {
     const token = this.persistanceService.get<string>('access-token');
@@ -33,7 +36,13 @@ export class UserService {
 
   public login(requestLogin: LoginRequestInterface): Observable<CustomHttpResponse<Profile>> {
     const body = { email: requestLogin.email, password: requestLogin.password };
-    return this.http.post<CustomHttpResponse<Profile>>(this.server + 'user/login', body);
+    return this.http.post<CustomHttpResponse<Profile>>(this.server + 'user/login', body).pipe(
+      tap({
+        next: (response: CustomHttpResponse<Profile>) => {
+          this.userSubject.next(response.data?.user || null);
+        },
+      }),
+    );
   }
 
   public register(request: registerRequestInterface): Observable<CustomHttpResponse<Profile>> {
@@ -48,6 +57,7 @@ export class UserService {
     this.persistanceService.remove('refresh-token');
     this.persistanceService.remove('access-token');
     this.router.navigate(['login']);
+    this.userSubject.next(null);
   }
 
   public verifyCode(request: any): Observable<CustomHttpResponse<Profile>> {
@@ -55,11 +65,23 @@ export class UserService {
   }
 
   public profile(): Observable<CustomHttpResponse<Profile>> {
-    return this.http.get<CustomHttpResponse<Profile>>(this.server + 'user/profile');
+    return this.http.get<CustomHttpResponse<Profile>>(this.server + 'user/profile').pipe(
+      tap({
+        next: (response: CustomHttpResponse<Profile>) => {
+          this.userSubject.next(response.data?.user || null);
+        },
+      }),
+    );
   }
 
   public updateProfile(updateRequest: updateProfilRequestInterface): Observable<CustomHttpResponse<Profile>> {
-    return this.http.patch<CustomHttpResponse<Profile>>(this.server + 'user/update', updateRequest);
+    return this.http.patch<CustomHttpResponse<Profile>>(this.server + 'user/update', updateRequest).pipe(
+      tap({
+        next: (response: CustomHttpResponse<Profile>) => {
+          this.userSubject.next(response.data?.user || null);
+        },
+      }),
+    );
   }
 
   public refreshToken(): Observable<CustomHttpResponse<Profile>> {
@@ -101,7 +123,13 @@ export class UserService {
   }
 
   public updateUserImage(form: FormData): Observable<CustomHttpResponse<Profile>> {
-    return this.http.patch<CustomHttpResponse<Profile>>(this.server + 'user/update/image', form);
+    return this.http.patch<CustomHttpResponse<Profile>>(this.server + 'user/update/image', form).pipe(
+      tap({
+        next: (response: CustomHttpResponse<Profile>) => {
+          this.userSubject.next(response.data?.user || null);
+        },
+      }),
+    );
   }
 
   public updateUserRole(form: { roleName: string }): Observable<CustomHttpResponse<Profile>> {

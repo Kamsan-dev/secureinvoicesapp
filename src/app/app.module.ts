@@ -6,9 +6,10 @@ import { AuthModule } from './components/auth/auth.module';
 import { HomeModule } from './components/home/home.module';
 import { CoreModule } from './Core/core.module';
 import { ToasterModule } from './common/toaster/toaster.module';
+import { NavbarModule } from './components/navbar/navbar.module';
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, CoreModule, HomeModule, AuthModule, AppRoutingModule, ToasterModule],
+  imports: [BrowserModule, CoreModule, HomeModule, AuthModule, AppRoutingModule, ToasterModule, NavbarModule],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
