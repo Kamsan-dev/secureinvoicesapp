@@ -1,63 +1,30 @@
-<!-- Navigation-->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container">
-    <a class="navbar-brand" [routerLink]="['/']">
-      <i style="margin-right: 5px" class="bi bi-safe"></i>
-      SecureInvoices
-    </a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent" *ngIf="userInformations() !== null">
-      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" id="navbarDropdownBlog" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"> Customers </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownBlog">
-            <li>
-              <a class="dropdown-item" [routerLink]="['/customer/edit']"><i style="padding-right: 8px" class="bi bi-person-plus-fill"></i>New Customer</a>
-            </li>
-            <li>
-              <a class="dropdown-item" [routerLink]="['/customer']" [queryParams]="{ page: 0 }"
-                ><i style="padding-right: 8px" class="bi bi-people-fill"></i>All Customers</a
-              >
-            </li>
-          </ul>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" id="navbarDropdownBlog" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"> Invoices </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownBlog">
-            <li>
-              <a class="dropdown-item" [routerLink]="['/invoice/edit']"><i style="padding-right: 8px" class="bi bi-receipt"></i>New Invoice</a>
-            </li>
-            <li>
-              <a class="dropdown-item" [routerLink]="['/invoice']" [queryParams]="{ page: 0 }"
-                ><i style="padding-right: 8px" class="bi bi-receipt-cutoff"></i>All Invoices</a
-              >
-            </li>
-          </ul>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" id="navbarDropdownBlog" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <img [src]="getUserPictureProfile()" [alt]="getUserName()" class="user-avatar-md rounded-circle"
-          /></a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownBlog">
-            <li>
-              <a class="dropdown-item" [routerLink]="['/profile']"><i style="padding-right: 8px" class="bi bi-person-circle"></i>{{ getUserName() }}</a>
-            </li>
-            <li style="cursor: pointer">
-              <a (click)="logout($event)" class="dropdown-item"><i style="padding-right: 8px" class="bi bi-box-arrow-in-right"></i>Logout</a>
-            </li>
-          </ul>
-        </li>
-      </ul>
+<nav class="secure-invoices--topbar">
+  <div class="max-w-screen-2xl mx-auto px-4 flex justify-between align-items-center w-full gap-8">
+    <div class="topbar--item-left">
+      <div class="flex align-content-center">
+        <i class="fa-solid fa-file-shield text-3xl"></i>
+        <span class="topbar--item-left-icon text-slate-200 italic pl-2 text-2xl hidden lg:block" [routerLink]="['/']">SecureInvoices</span>
+      </div>
+    </div>
+    <div class="top-bar--item-right">
+      <div class="relative w-full max-w-xs">
+        <input
+          type="text"
+          placeholder="Search..."
+          class="w-full pl-10 text-black text-sm pr-4 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        />
+        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+      </div>
+      <i class="fa-regular fa-envelope text-slate-200 text-xl pl-2"></i>
+      <i class="fa-regular fa-bell text-slate-200 text-xl p-2"></i>
+      <div class="border-l border-slate-500 h-20"></div>
+      <div class="flex gap-2 cursor-pointer shrink-0" [routerLink]="['profile']">
+        <img [src]="getUserPictureProfile()" [alt]="getUserName()" class="rounded-full w-10 h-10 ml-2" />
+        <div class="d-flex flex-column gap-1 align-content-center justify-content-center hidden lg:block">
+          <p class="item-right--name font-semibold">{{ userInformations()?.firstName }} {{ userInformations()?.lastName }}</p>
+          <p class="text-xs font-light text-wrap">{{ userInformations()?.roleName }}</p>
+        </div>
+      </div>
     </div>
   </div>
 </nav>

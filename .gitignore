@@ -51,3 +51,4 @@ Dockerfile
 
 # Ignore all .conf files
 *.conf
+tailwind.config.js
