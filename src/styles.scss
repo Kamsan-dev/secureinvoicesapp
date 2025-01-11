@@ -14,99 +14,126 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
-  background-color: hsl(210, 10%, 20%) !important;
+  // background-color: hsl(210, 10%, 20%) !important;
+  background-color: #22252a;
   display: flex;
   flex-direction: column;
   font-family: 'Be Vietnam Pro', serif !important;
   font-weight: 400 !important;
 }
 
-.disabled {
-  pointer-events: none;
-  opacity: 0.6;
+.p-panel {
+  &-header {
+    background-color: #000;
+  }
+
+  &-content {
+    background-color: #272a30;
+    border: solid 1px;
+    border-color: #000;
+  }
 }
 
-.pointer {
-  cursor: pointer;
+.se-card {
+  border-radius: 10px;
+  overflow: hidden;
+  color: $clr-white;
+  &-header {
+    background-color: #3c3f44;
+    padding: 20px;
+  }
+  &-body {
+    background-color: #67696e;
+    padding: 20px;
+  }
 }
 
-/*---- User icon sizes ---*/
+// .disabled {
+//   pointer-events: none;
+//   opacity: 0.6;
+// }
 
-.user-avatar-xxl {
-  height: 128px;
-  width: 128px;
-}
+// .pointer {
+//   cursor: pointer;
+// }
 
-.user-avatar-xl {
-  height: 90px;
-  width: 90px;
-}
+// /*---- User icon sizes ---*/
 
-.user-avatar-lg {
-  height: 48px;
-  width: 48px;
-}
+// .user-avatar-xxl {
+//   height: 128px;
+//   width: 128px;
+// }
 
-.user-avatar-md {
-  height: 32px;
-  width: 32px;
-}
+// .user-avatar-xl {
+//   height: 90px;
+//   width: 90px;
+// }
 
-.user-avatar-sm {
-  height: 24px;
-  width: 24px;
-}
+// .user-avatar-lg {
+//   height: 48px;
+//   width: 48px;
+// }
 
-.user-avatar-xs {
-  height: 18px;
-  width: 18px;
-}
+// .user-avatar-md {
+//   height: 32px;
+//   width: 32px;
+// }
 
-.card {
-  box-shadow: 0 0 2px 0 rgb(0 0 0 / 10%);
-  margin-bottom: 24px;
-}
-.card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  word-wrap: break-word;
-  background-color: #fff;
-  background-clip: border-box;
-  border: 0 solid #ecf2f5;
-  border-radius: 0.25rem;
-}
-.avatar-lg {
-  height: 4.5rem;
-  width: 4.5rem;
-}
+// .user-avatar-sm {
+//   height: 24px;
+//   width: 24px;
+// }
 
-.font-13 {
-  font-size: 13px !important;
-}
+// .user-avatar-xs {
+//   height: 18px;
+//   width: 18px;
+// }
 
-input[type='text']:disabled {
-  border: 0;
-  outline: 0;
-  background-color: #ecf2f5;
-}
+// .card {
+//   box-shadow: 0 0 2px 0 rgb(0 0 0 / 10%);
+//   margin-bottom: 24px;
+// }
+// .card {
+//   position: relative;
+//   display: flex;
+//   flex-direction: column;
+//   min-width: 0;
+//   word-wrap: break-word;
+//   background-color: #fff;
+//   background-clip: border-box;
+//   border: 0 solid #ecf2f5;
+//   border-radius: 0.25rem;
+// }
+// .avatar-lg {
+//   height: 4.5rem;
+//   width: 4.5rem;
+// }
 
-/* .select-cl {
-    background-color: #ecf2f5;
-    border: 0;
-    outline: 0;
-} */
+// .font-13 {
+//   font-size: 13px !important;
+// }
 
-.cell-1 {
-  border-collapse: separate;
-  border-spacing: 0 4em;
-  background: #fff;
-  border-bottom: 5px solid transparent;
-  /*background-color: gold;*/
-  background-clip: padding-box;
-}
+// input[type='text']:disabled {
+//   border: 0;
+//   outline: 0;
+//   background-color: #ecf2f5;
+// }
 
-thead {
-  background: #dddcdc;
-}
+// /* .select-cl {
+//     background-color: #ecf2f5;
+//     border: 0;
+//     outline: 0;
+// } */
+
+// .cell-1 {
+//   border-collapse: separate;
+//   border-spacing: 0 4em;
+//   background: #fff;
+//   border-bottom: 5px solid transparent;
+//   /*background-color: gold;*/
+//   background-clip: padding-box;
+// }
+
+// thead {
+//   background: #dddcdc;
+// }
