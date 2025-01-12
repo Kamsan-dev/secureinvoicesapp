@@ -14,8 +14,8 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
-  // background-color: hsl(210, 10%, 20%) !important;
-  background-color: #22252a;
+  // background-color: #22252a;
+  background-color: #000;
   display: flex;
   flex-direction: column;
   font-family: 'Be Vietnam Pro', serif !important;
@@ -38,13 +38,14 @@ body {
   border-radius: 10px;
   overflow: hidden;
   color: $clr-white;
+  background-color: #191919;
   &-header {
-    background-color: #3c3f44;
-    padding: 20px;
+    padding: 25px 25px 0 25px;
+    font-weight: 700;
+    font-size: 1.25rem;
   }
   &-body {
-    background-color: #67696e;
-    padding: 20px;
+    padding: 25px;
   }
 }
 

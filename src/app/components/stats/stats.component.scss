@@ -1,10 +1,5 @@
 .grid-stats {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: 20px;
+  gap: 10px;
 }
-
-// .child--featured {
-//   grid-column: span 6;
-//   grid-row: span 6;
-// }

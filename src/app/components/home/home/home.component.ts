@@ -1,7 +1,7 @@
 import { HttpErrorResponse, HttpEvent, HttpEventType } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { BehaviorSubject, lastValueFrom, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, finalize, lastValueFrom, Subject, takeUntil } from 'rxjs';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { CustomersPage } from 'src/app/interfaces/appstate';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
@@ -9,6 +9,8 @@ import { Customer } from 'src/app/interfaces/customer.interface';
 import { State } from 'src/app/interfaces/state';
 import { User } from 'src/app/interfaces/user';
 import { CustomerService } from 'src/app/services/customer.service';
+import { StatisticService } from 'src/app/services/statistic.service';
+import { MonthlyInvoiceStatistic, MonthlyInvoiceStatistics } from '../../stats/statistic';
 
 declare type direction = 'forward' | 'previous';
 
@@ -25,6 +27,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     error: undefined,
   });
 
+  public statisticState = signal<State<CustomHttpResponse<MonthlyInvoiceStatistics>>>({
+    dataState: DataState.LOADED,
+    appData: undefined,
+    error: undefined,
+  });
+
   public loading = signal(false);
   public currentPage = signal<number>(0);
   private destroy: Subject<void> = new Subject<void>();
@@ -36,11 +44,13 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   constructor(
     private customerService: CustomerService,
+    private statisticService: StatisticService,
     private fb: FormBuilder,
   ) {}
   public ngOnInit(): void {
     this.customerState().dataState = DataState.LOADING;
     this.loadCustomers();
+    this.loadStatistics();
 
     this.fileStatus.pipe(takeUntil(this.destroy)).subscribe((file) => {
       if (file !== undefined) {
@@ -48,50 +58,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
     });
   }
-
-  //#region customers
-  private async loadCustomers(page: number = 0): Promise<void> {
-    //this.customerState().dataState = DataState.LOADING;
-    this.loading.set(true);
-    try {
-      const response = await lastValueFrom(this.customerService.getCustomers(page));
-      this.customerState.set({
-        ...this.customerState(),
-        dataState: DataState.LOADED,
-        appData: response,
-      });
-    } catch (error) {
-      if (error instanceof HttpErrorResponse) {
-        this.customerState.set({
-          ...this.customerState(),
-          dataState: DataState.ERROR,
-          error: error.error.reason,
-        });
-      }
-    } finally {
-      this.loading.set(false);
-    }
-  }
-
-  public goToNextOrPreviousPage(direction: direction): void {
-    direction === 'forward' ? this.currentPage.set(this.currentPage() + 1) : this.currentPage.set(this.currentPage() - 1);
-    this.goToPage(this.currentPage());
-  }
-
-  public goToPage(page: number): void {
-    this.currentPage.set(page);
-    this.loadCustomers(page);
-  }
-
-  public getLastPageNumber(): number {
-    const totalPages = this.customerState().appData?.data?.page?.totalPages || 0;
-    return totalPages > 0 ? totalPages - 1 : 0;
-  }
-
-  public selectCustomer(_t32: Customer) {
-    throw new Error('Method not implemented.');
-  }
-  //#endregion
 
   //#region UserInformations
   public getUserName(): string {
@@ -160,6 +126,79 @@ export class HomeComponent implements OnInit, OnDestroy {
     anchor.click();
     document.body.removeChild(anchor);
     window.URL.revokeObjectURL(url);
+  }
+
+  private async loadCustomers(page: number = 0): Promise<void> {
+    //this.customerState().dataState = DataState.LOADING;
+    this.loading.set(true);
+    try {
+      const response = await lastValueFrom(this.customerService.getCustomers(page));
+      this.customerState.set({
+        ...this.customerState(),
+        dataState: DataState.LOADED,
+        appData: response,
+      });
+    } catch (error) {
+      if (error instanceof HttpErrorResponse) {
+        this.customerState.set({
+          ...this.customerState(),
+          dataState: DataState.ERROR,
+          error: error.error.reason,
+        });
+      }
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  public goToNextOrPreviousPage(direction: direction): void {
+    direction === 'forward' ? this.currentPage.set(this.currentPage() + 1) : this.currentPage.set(this.currentPage() - 1);
+    this.goToPage(this.currentPage());
+  }
+
+  public goToPage(page: number): void {
+    this.currentPage.set(page);
+    this.loadCustomers(page);
+  }
+
+  public getLastPageNumber(): number {
+    const totalPages = this.customerState().appData?.data?.page?.totalPages || 0;
+    return totalPages > 0 ? totalPages - 1 : 0;
+  }
+
+  public selectCustomer(_t32: Customer) {
+    throw new Error('Method not implemented.');
+  }
+
+  //#endregion
+
+  //#region Statistics
+
+  public loadStatistics(): void {
+    this.loading.set(true);
+    this.statisticService
+      .getMonthlyInvoiceStatistics()
+      .pipe(
+        takeUntil(this.destroy),
+        finalize(() => this.loading.set(false)),
+      )
+      .subscribe({
+        next: (response: CustomHttpResponse<MonthlyInvoiceStatistics>) => {
+          this.statisticState.set({
+            ...this.statisticState(),
+            dataState: DataState.LOADED,
+            appData: response,
+          });
+          console.log(response);
+        },
+        error: (error: HttpErrorResponse) => {
+          this.statisticState.set({
+            ...this.statisticState(),
+            dataState: DataState.ERROR,
+            error: error.error.reason,
+          });
+        },
+      });
   }
 
   //#endregion

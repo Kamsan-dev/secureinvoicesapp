@@ -7,6 +7,7 @@ import { HttpCacheService } from '../services/http.cache.service';
 import { PersistanceService } from '../services/persistance.service';
 import { UserService } from '../services/user.service';
 import { InvoiceService } from '../services/invoice.service';
+import { StatisticService } from '../services/statistic.service';
 
 @NgModule({
   declarations: [],
@@ -16,6 +17,7 @@ import { InvoiceService } from '../services/invoice.service';
     PersistanceService,
     UserService,
     InvoiceService,
+    StatisticService,
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: CacheInterceptor, multi: true },
   ],

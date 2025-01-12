@@ -13,11 +13,10 @@
   height: 80px;
   width: calc(100% - 270px);
   z-index: 1006;
-  // background-color: hsl(210, 15%, 15%);
-  background-color: #18191b;
+  //background-color: #18191b;
+  background-color: #191919;
   color: #ededed;
   align-content: center;
-  border-bottom: 1px solid $clr-primary--medium;
   color: $clr-primary--lightest;
 
   .container-xxl.topbar--content {

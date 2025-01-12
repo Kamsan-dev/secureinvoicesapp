@@ -1,8 +1,8 @@
 <ng-container>
   <ng-container>
     <div *ngIf="customerState().dataState !== 'LOADING_STATE'; else spinner">
-      <se-stats [dataState]="customerState().dataState" [stats]="customerState().appData?.data?.stats"></se-stats>
-      <section>
+      <se-stats [dataState]="customerState().dataState" [stats]="customerState().appData?.data?.stats" [monthlyStats]="statisticState().appData?.data?.stats"></se-stats>
+      <!-- <section>
         <div class="container bg-white shadow rounded-lg d-block" style="border-radius: 8px">
           <div class="row mt-3">
             <div *ngIf="downloadStatus() !== undefined" class="progress">
@@ -91,7 +91,7 @@
             </div>
           </div>
         </div>
-      </section>
+      </section> -->
     </div>
   </ng-container>
 </ng-container>
