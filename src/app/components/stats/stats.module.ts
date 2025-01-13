@@ -5,10 +5,13 @@ import { StatsComponent } from './stats.component';
 import { PanelModule } from 'primeng/panel';
 import { CardModule } from 'primeng/card';
 import { ChartModule } from 'primeng/chart';
+import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
+import { ListInvoiceDialogComponent } from './dialog/list-invoice-dialog.component';
 
 @NgModule({
   declarations: [StatsComponent],
-  imports: [SharedModule, SeProgressSpinnerModule, PanelModule, CardModule, ChartModule],
+  providers: [DialogService],
+  imports: [SharedModule, SeProgressSpinnerModule, PanelModule, CardModule, ChartModule, DynamicDialogModule, ListInvoiceDialogComponent],
   exports: [StatsComponent],
 })
 export class StatsModule {}

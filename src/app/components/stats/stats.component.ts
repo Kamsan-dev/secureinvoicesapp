@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, Input, OnInit, signal } from '@angu
 import { DataState } from 'src/app/enums/datastate.enum';
 import { Statistics } from 'src/app/interfaces/appstate';
 import { getStatusColor, MonthlyInvoiceStatistic } from './statistic';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { ListInvoiceDialogComponent } from './dialog/list-invoice-dialog.component';
 
 @Component({
   selector: 'se-stats',
@@ -11,6 +13,9 @@ import { getStatusColor, MonthlyInvoiceStatistic } from './statistic';
 })
 export class StatsComponent implements OnInit {
   public monthlyinvoiceChart: any;
+  private ref: DynamicDialogRef | undefined;
+
+  constructor(private dialogService: DialogService) {}
   public ngOnInit(): void {
     const { months, datasets } = this.transformData();
 
@@ -47,6 +52,7 @@ export class StatsComponent implements OnInit {
             stacked: true,
             ticks: {
               color: 'lightgray', // X-axis label color
+              precision: 0,
             },
           }, // Stack the X-axis
           y: {
@@ -101,6 +107,22 @@ export class StatsComponent implements OnInit {
   //#endregion
 
   public onToast(event: any) {
-    console.log(event);
+    // Get dataset index and data index
+    const datasetIndex = event.element.datasetIndex;
+    const dataIndex = event.element.index;
+
+    // Retrieve status (dataset label) and date (label from labels array)
+    const status = this.monthlyinvoiceChart.data.datasets.at(datasetIndex).label;
+    const date = this.monthlyinvoiceChart.data.labels[dataIndex];
+    console.log(status + ' - ' + date);
+    this.ref = this.dialogService.open(ListInvoiceDialogComponent, {
+      header: 'Select a Product',
+      width: '50vw',
+      modal: true,
+      breakpoints: {
+        '960px': '75vw',
+        '640px': '90vw',
+      },
+    });
   }
 }
