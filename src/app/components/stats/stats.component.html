@@ -1,7 +1,7 @@
 <section>
   <div class="grid-stats">
     <!-- customers card -->
-    <div class="col-span-4 se-card">
+    <div class="col-span-12 lg:col-span-6 xl:col-span-4 se-card">
       <div class="se-card-header">
         <div class="flex justify-between items-center">
           <span>Customers registered</span>
@@ -24,7 +24,7 @@
       </div>
     </div>
     <!-- invoices card -->
-    <div class="col-span-4 se-card">
+    <div class="col-span-12 lg:col-span-6 xl:col-span-4 se-card">
       <div class="se-card-header">
         <div class="flex justify-between items-center">
           <span>Invoice issued this month</span>
@@ -47,7 +47,7 @@
       </div>
     </div>
     <!-- Total billed invoices card -->
-    <div class="col-span-4 se-card">
+    <div class="col-span-12 lg:col-span-6 xl:col-span-4 se-card">
       <div class="se-card-header">
         <div class="flex justify-between items-center">
           <span>Total billed invoices</span>
@@ -68,7 +68,7 @@
         </div>
       </div>
     </div>
-    <div class="col-span-7 row-span-2 se-card">
+    <div class="col-span-12 lg:col-span-6 xl:col-span-7 row-span-2 se-card">
       <div class="se-card-header">
         <div class="flex justify-between items-center">
           <span>Monthly Invoice Status Breakdown</span>
@@ -76,10 +76,16 @@
         </div>
       </div>
       <div class="se-card-body">
-        <p-chart type="bar" [data]="monthlyinvoiceChart.data" [options]="monthlyinvoiceChart.options" (onDataSelect)="onToast($event)"></p-chart>
+        <p-chart
+          style="display: block"
+          type="bar"
+          [data]="monthlyinvoiceChart.data"
+          [options]="monthlyinvoiceChart.options"
+          (onDataSelect)="onMonthlyInvoicesChartClick($event)"
+        ></p-chart>
       </div>
     </div>
-    <div class="col-span-5 row-span-2 se-card">
+    <div class="col-span-12 lg:col-span-6 xl:col-span-5 row-span-2 se-card">
       <div class="se-card-header">
         <p>toast</p>
       </div>

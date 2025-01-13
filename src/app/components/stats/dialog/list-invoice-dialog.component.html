@@ -1,18 +1,39 @@
-<p-table [value]="invoices" [tableStyle]="{ 'min-width': '50rem' }">
+<p-table [value]="invoices()" [tableStyle]="{ 'min-width': '50rem' }" [loading]="invoiceState().dataState === DataState.LOADING">
   <ng-template pTemplate="header">
     <tr>
       <th>Code</th>
-      <th>Name</th>
-      <th>Category</th>
-      <th>Quantity</th>
+      <th>Status</th>
+      <th>Issued at</th>
+      <th>Total</th>
+      <th>Action</th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-invoices>
     <tr>
-      <td>{{ invoices.invoiceNumber }}</td>
-      <td>{{ invoices.status }}</td>
-      <td>{{ invoices.issuedAt }}</td>
-      <td>{{ invoices.total }}</td>
+      <td>
+        <span class="font-bold">{{ invoices.invoiceNumber }}</span>
+      </td>
+      <td>
+        <p-chip
+          [styleClass]="
+            invoices.status === 'Paid'
+              ? 'bg-green-300 text-green-700 p-2'
+              : invoices.status === 'Pending'
+                ? 'bg-orange-300 text-black p-2'
+                : invoices.status === 'Overdue'
+                  ? 'bg-red-300 text-red-700 p-2'
+                  : ''
+          "
+        >
+          <span>{{ invoices.status }}</span>
+        </p-chip>
+      </td>
+      <td>{{ invoices.issuedAt | date: 'mediumDate' }}</td>
+      <td>${{ invoices.total }}</td>
+      <td>
+        <p-button label="See more" severity="info" [size]="'small'" (onClick)="onCloseDialog(invoices.invoiceId, invoices.invoiceNumber)" />
+      </td>
     </tr>
   </ng-template>
 </p-table>
+<p-paginator (onPageChange)="onPageChange($event)" [rows]="sizePage()" [totalRecords]="totalRecords()" />

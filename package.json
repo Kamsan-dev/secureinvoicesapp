@@ -24,6 +24,7 @@
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.7",
     "jspdf": "^2.5.2",
+    "primeicons": "^7.0.0",
     "primeng": "^17.2.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

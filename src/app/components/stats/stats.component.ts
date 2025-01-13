@@ -13,8 +13,6 @@ import { ListInvoiceDialogComponent } from './dialog/list-invoice-dialog.compone
 })
 export class StatsComponent implements OnInit {
   public monthlyinvoiceChart: any;
-  private ref: DynamicDialogRef | undefined;
-
   constructor(private dialogService: DialogService) {}
   public ngOnInit(): void {
     const { months, datasets } = this.transformData();
@@ -82,7 +80,7 @@ export class StatsComponent implements OnInit {
     console.log(this.monthlystatsSig());
   }
 
-  //#region Statistics
+  //#region Monthly Stats Statistics
 
   private transformData() {
     // Extract unique months and statuses
@@ -106,7 +104,7 @@ export class StatsComponent implements OnInit {
 
   //#endregion
 
-  public onToast(event: any) {
+  public onMonthlyInvoicesChartClick(event: any) {
     // Get dataset index and data index
     const datasetIndex = event.element.datasetIndex;
     const dataIndex = event.element.index;
@@ -114,11 +112,14 @@ export class StatsComponent implements OnInit {
     // Retrieve status (dataset label) and date (label from labels array)
     const status = this.monthlyinvoiceChart.data.datasets.at(datasetIndex).label;
     const date = this.monthlyinvoiceChart.data.labels[dataIndex];
-    console.log(status + ' - ' + date);
-    this.ref = this.dialogService.open(ListInvoiceDialogComponent, {
-      header: 'Select a Product',
-      width: '50vw',
+    this.dialogService.open(ListInvoiceDialogComponent, {
+      header: `${status} invoices of ${date}`,
+      width: '35vw',
       modal: true,
+      data: {
+        status: status,
+        date: date,
+      },
       breakpoints: {
         '960px': '75vw',
         '640px': '90vw',

@@ -11,18 +11,18 @@
         <input
           type="text"
           placeholder="Search..."
-          class="w-full pl-10 text-black text-sm pr-4 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          class="w-full pl-10 text-slate-400 text-sm pr-4 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         />
-        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+        <i class="fas fa-search absolute left-3 top-1/4 transform -translate-y-1/2 text-gray-400"></i>
       </div>
       <i class="fa-regular fa-envelope text-slate-200 text-xl pl-2"></i>
       <i class="fa-regular fa-bell text-slate-200 text-xl p-2"></i>
-      <div class="border-l border-slate-500 h-20"></div>
-      <div class="flex gap-2 cursor-pointer shrink-0" [routerLink]="['profile']">
+      <div class="border border-solid border-slate-300 h-20"></div>
+      <div class="flex gap-2 cursor-pointer shrink-0 items-center border" [routerLink]="['profile']">
         <img [src]="getUserPictureProfile()" [alt]="getUserName()" class="rounded-full w-10 h-10 ml-2" />
-        <div class="d-flex flex-column gap-1 align-content-center justify-content-center hidden lg:block">
-          <p class="item-right--name font-semibold">{{ userInformations()?.firstName }} {{ userInformations()?.lastName }}</p>
-          <p class="text-xs font-light text-wrap">{{ userInformations()?.roleName }}</p>
+        <div class="flex-col gap-1 align-content-center justify-content-center hidden lg:flex">
+          <span class="item-right--name font-semibold">{{ userInformations()?.firstName }} {{ userInformations()?.lastName }}</span>
+          <span class="text-xs font-light text-wrap">{{ userInformations()?.roleName }}</span>
         </div>
       </div>
     </div>

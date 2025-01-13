@@ -28,4 +28,8 @@ export class InvoiceService {
   public getInvoice(invoiceId: number): Observable<CustomHttpResponse<ViewInvoice>> {
     return this.http.get<CustomHttpResponse<ViewInvoice>>(`${this.server}invoice/get/${invoiceId}`);
   }
+
+  public getMonthlyStatusInvoices(request: { status: string; monthYear: string }, page: number = 0, size: number = 5): Observable<CustomHttpResponse<InvoicesPage>> {
+    return this.http.post<CustomHttpResponse<InvoicesPage>>(`${this.server}invoice/list/monthly-status?page=${page}&size=${size}`, request);
+  }
 }
