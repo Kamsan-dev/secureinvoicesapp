@@ -10,6 +10,14 @@ import { ProfileEventsHistoryComponent } from './settings/profile-events-history
 import { ProfileInfoComponent } from './settings/profile-info/profile-info.component';
 import { ProfilePasswordComponent } from './settings/profile-password/profile-password.component';
 import { ProfileComponent } from './settings/profile.component';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { TabViewModule } from 'primeng/tabview';
+import { InputTextModule } from 'primeng/inputtext';
+import { InputTextareaModule } from 'primeng/inputtextarea';
+import { ButtonModule } from 'primeng/button';
+import { DropdownModule } from 'primeng/dropdown';
+import { ChipModule } from 'primeng/chip';
+import { TableModule } from 'primeng/table';
 @NgModule({
   declarations: [
     ProfileInfoComponent,
@@ -20,6 +28,19 @@ import { ProfileComponent } from './settings/profile.component';
     ProfileAuthenticationComponent,
     ProfileEventsHistoryComponent,
   ],
-  imports: [SeProgressSpinnerModule, SharedModule, DgdCoreCheckboxModule, ProfileRoutingModule],
+  imports: [
+    SeProgressSpinnerModule,
+    SharedModule,
+    DgdCoreCheckboxModule,
+    ProfileRoutingModule,
+    BreadcrumbModule,
+    TabViewModule,
+    InputTextModule,
+    ButtonModule,
+    InputTextareaModule,
+    DropdownModule,
+    ChipModule,
+    TableModule,
+  ],
 })
 export class ProfileModule {}

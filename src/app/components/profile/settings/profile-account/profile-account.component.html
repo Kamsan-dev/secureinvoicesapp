@@ -1,5 +1,4 @@
 <form [formGroup]="accountSettingsForm" (ngSubmit)="onSettingsSubmit($event)">
-  <h3 class="mb-4">Account Settings</h3>
   <input type="hidden" name="userId" />
   <div class="row" *ngIf="dataStateSig() !== 'LOADING_STATE'; else spinner">
     <div class="col-md-6">
@@ -13,17 +12,15 @@
       </div>
     </div>
   </div>
-  <div>
-    <button
+  <div class="mt-4">
+    <p-button
+      severity="success"
+      [loading]="loadingSig()"
+      [label]="loadingSig() ? 'Loading...' : 'Update'"
       *ngIf="isSysAdminOrAdmin() && dataStateSig() !== 'LOADING_STATE'"
       [disabled]="loadingSig() || accountSettingsForm.pristine"
       type="submit"
-      class="btn btn-primary"
-    >
-      <span *ngIf="loadingSig()" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 5px"></span>
-      <span *ngIf="loadingSig()">loading...</span>
-      <span *ngIf="!loadingSig()">Update</span>
-    </button>
+    ></p-button>
   </div>
 </form>
 

@@ -6,6 +6,7 @@ import { ToasterService } from 'src/app/common/toaster/toaster.service';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { RoleEnum } from 'src/app/enums/role.enum';
 import { Profile, UserEvent } from 'src/app/interfaces/appstate';
+import { BreadcrumbItem } from 'src/app/interfaces/common.interface';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
 import { State } from 'src/app/interfaces/state';
 import { User } from 'src/app/interfaces/user';
@@ -37,6 +38,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   //checkbox show events profile
   public showProfileEvents = true;
+
+  // breadcrumbs
+
+  public items: BreadcrumbItem[] = [{ label: '', route: '/home', icon: 'pi pi-home' }, { label: 'Users', route: '/' }, { label: 'current-user' }];
 
   constructor(
     private userService: UserService,

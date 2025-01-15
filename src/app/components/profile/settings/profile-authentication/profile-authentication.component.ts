@@ -37,8 +37,13 @@ export class ProfileAuthenticationComponent {
     const usingMfa = this.userInformations()?.usingMfa;
     return {
       text: usingMfa ? 'Enabled' : 'Disabled',
-      class: usingMfa ? 'bg-success' : 'bg-warning',
+      class: usingMfa ? 'bg-green-300 text-green-700 p-2' : 'bg-orange-300 text-black p-2',
     };
+  }
+
+  public getButtonLabel(): string {
+    const usingMfa = this.userInformations()?.usingMfa;
+    return usingMfa ? 'Disabled MFA' : 'Enabled MFA';
   }
 
   public onShowLastestActivitiesChange(): void {

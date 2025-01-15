@@ -1,119 +1,162 @@
 <ng-container>
-  <ng-container>
-    <section>
-      <div class="container">
-        <nav aria-label="breadcrumb" style="margin-top: 8px">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-              <a [routerLink]="['/']">Home</a>
-            </li>
-            <li class="breadcrumb-item active">Users</li>
-            <li class="breadcrumb-item active" aria-current="page">{{ profileState().dataState !== 'LOADING_STATE' ? getUserName() : 'Loading...' }}</li>
-          </ol>
-        </nav>
-        <div class="bg-white shadow rounded-lg d-block d-sm-flex" style="border-radius: 8px">
-          <div class="profile-tab-nav border-right">
-            <div class="p-4">
-              <div *ngIf="profileState().dataState !== 'LOADING_STATE'; else spinner">
-                <div class="img-circle text-center mb-3">
-                  <span style="position: relative">
-                    <img [src]="getUserPictureProfile()" alt="John" class="shadow" />
-                    <i class="bi bi-camera-fill right-position" (click)="fileInput.click()"></i>
-                  </span>
-                </div>
-                <h4 class="text-center user-name-text">{{ getUserName() }}</h4>
-                <div class="w-100 text-center">
-                  <span class="text-center">Since {{ getUserJoinDate() | date: 'MMM d, y' }}</span>
-                </div>
-              </div>
-            </div>
-            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-              <a class="nav-link active" id="profile" data-bs-toggle="pill" data-bs-target="#profile-tab" aria-selected="true" aria-controls="profile" role="tab">
-                <i class="bi bi-person-circle" style="margin-right: 12px"></i> Profile
-              </a>
-              <a class="nav-link" id="password" data-bs-toggle="pill" data-bs-target="#password-tab" aria-selected="true" aria-controls="password" role="tab">
-                <i class="bi bi-key-fill" style="margin-right: 12px"></i> Password
-              </a>
-              <a class="nav-link" id="security" data-bs-toggle="pill" data-bs-target="#security-tab" aria-selected="true" aria-controls="security" role="tab">
-                <i class="bi bi-shield-shaded" style="margin-right: 12px"></i> Authorization
-              </a>
-              <a class="nav-link" id="application" data-bs-toggle="pill" data-bs-target="#application-tab" aria-selected="true" aria-controls="application" role="tab">
-                <i class="bi bi-gear" style="margin-right: 12px"></i> Account
-              </a>
-              <a class="nav-link" id="notification" data-bs-toggle="pill" data-bs-target="#notification-tab" aria-selected="true" aria-controls="notification" role="tab">
-                <i class="bi bi-lock-fill" style="margin-right: 12px"></i> Authentication
-              </a>
-            </div>
-          </div>
-          <div class="tab-content p-4 p-md-5" id="v-pills-tabContent" style="border-left: 1px solid #d4d0d0">
-            <div class="tab-pane fade show active" id="profile-tab" role="tabpanel" aria-labelledby="profile" style="min-height: 510px">
-              <se-profile-info
-                [profileForm]="profileForm"
-                [appData]="profileState().appData"
-                [dataState]="profileState().dataState"
-                [loading]="loading()"
-                [userInfos]="getUserInformations()"
-                (profileFormSubmitted)="onProfileSubmit($event)"
-                (undoFormProfileChanges)="onCancelUserProfileChanges()"
-              ></se-profile-info>
-            </div>
-            <div class="tab-pane fade" id="security-tab" role="tabpanel" aria-labelledby="security" style="min-height: 510px">
-              <se-profile-authorization
-                [appData]="profileState().appData"
-                [dataState]="profileState().dataState"
-                [loading]="loading()"
-                [userInfos]="getUserInformations()"
-                (handleUserRoleChange)="onUserRoleUpdate($event)"
-              ></se-profile-authorization>
-            </div>
-            <div class="tab-pane fade" id="application-tab" role="tabpanel" aria-labelledby="application" style="min-height: 510px">
-              <se-profile-account
-                [accountSettingsForm]="accountSettingsForm"
-                [dataState]="profileState().dataState"
-                [loading]="loading()"
-                [userInfos]="getUserInformations()"
-                (accountSettingsFormSubmitted)="onAccountSettingsFormSubmit($event)"
-              ></se-profile-account>
-            </div>
-            <div class="tab-pane fade" id="notification-tab" role="tabpanel" aria-labelledby="notification" style="min-height: 510px">
-              <se-profile-authentication
-                [dataState]="profileState().dataState"
-                [loading]="loading()"
-                [userInfos]="getUserInformations()"
-                (authenticationSettingsUpdated)="onAuthenticationSettingsUpdate($event)"
-                (showActivityLogsUpdated)="showProfileEvents = !showProfileEvents"
-              ></se-profile-authentication>
-            </div>
-            <div class="tab-pane fade" id="password-tab" role="tabpanel" aria-labelledby="password" style="min-height: 510px">
-              <se-profile-password
-                [passwordForm]="passwordForm"
-                [dataState]="profileState().dataState"
-                [loading]="loading()"
-                [passwordVerified]="passwordVerified()"
-                (passwordFormSubmit)="onPasswordFormSubmit($event)"
-                (verifyPassword)="onVerifyPasswordButtonClick()"
-              ></se-profile-password>
+  <p-breadcrumb class="max-w-full" [model]="items">
+    <ng-template pTemplate="item" let-item>
+      <ng-container *ngIf="item.route; else elseBlock">
+        <a [routerLink]="item.route" class="p-menuitem-link">
+          <span [ngClass]="[item.icon ? item.icon : '', 'text-white mr-1']"></span>
+          <span class="text-white font-semibold">{{ item.label }}</span>
+        </a>
+      </ng-container>
+      <ng-template #elseBlock>
+        <span class="text-slate-200">{{ profileState().dataState !== 'LOADING_STATE' ? getUserName() : 'Loading...' }}</span>
+      </ng-template>
+    </ng-template>
+  </p-breadcrumb>
+  <section>
+    <!-- header -->
+    <div class="mt-4 mb-4 se-card">
+      <div class="se-card-body flex gap-5 content-center" *ngIf="profileState().dataState !== 'LOADING_STATE'; else spinner">
+        <div class="w-fit">
+          <div class="relative">
+            <img [src]="getUserPictureProfile()" alt="John" class="rounded-full w-[120px] h-[120px]" />
+            <div class="cursor-pointer absolute bottom-[10px] left-[85px] flex items-center p-2 bg-blue-500 border-3 border-solid border-[#191919] rounded-full">
+              <i class="fa-solid fa-camera w-[14px] h-[14px]" (click)="fileInput.click()"></i>
             </div>
           </div>
         </div>
-        <se-profile-events-history
-          *ngIf="showProfileEvents"
-          [dataState]="profileState().dataState"
-          [loading]="loading()"
-          [userEvents]="getUserEvents()"
-        ></se-profile-events-history>
+        <div class="flex flex-col gap-2 justify-center content-center">
+          <span class="font-bold text-2xl">{{ getUserName() }}</span>
+          <span class="italic text-sm text-slate-400">Joinded since {{ getUserJoinDate() | date: 'MMM d, y' }}</span>
+        </div>
       </div>
-    </section>
-  </ng-container>
-</ng-container>
+    </div>
 
-<!-- profile image change form -->
-<form enctype="multipart/form-data" style="display: none">
-  <input #fileInput (change)="onUpdateProfilePicture($event)" type="file" name="image" id="image" placeholder="file" ngModel accept="image/*" />
-</form>
+    <div class="flex flex-wrap gap-4">
+      <div class="se-card w-full md:w-[30%] h-fit">
+        <div class="se-card-header">
+          <span>Personal Informations</span>
+        </div>
+        <div class="se-card-body text-slate-300">
+          <ng-container *ngIf="profileState().dataState !== 'LOADING_STATE'; else spinner">
+            <span class="text-sm">{{ getUserInformations()?.bio }}</span>
+            <div class="flex flex-col gap-2 mt-6">
+              <span><i class="fa-solid fa-envelope pr-4"></i>{{ getUserInformations()?.email }}</span>
+              <span><i class="fa-solid fa-location-dot pr-4"></i>{{ getUserInformations()?.address }}</span>
+              <span><i class="fa-solid fa-phone pr-4"></i>{{ getUserInformations()?.phone }}</span>
+              <span><i class="fa-solid fa-user pr-4"></i>{{ getUserInformations()?.title }}</span>
+              <span><i class="fa-solid fa-hammer pr-4"></i>{{ getUserInformations()?.roleName }}</span>
+            </div>
+          </ng-container>
+        </div>
+      </div>
 
-<ng-template #spinner>
-  <div class="d-flex align-items-center justify-content-center">
-    <se-progress-spinner mode="indeterminate"></se-progress-spinner>
-  </div>
-</ng-template>
+      <div class="flex-grow w-full md:w-[calc(70%-1rem)]">
+        <p-tabView>
+          <p-tabPanel header="Settings">
+            <div class="se-card">
+              <div class="se-card-header">
+                <span>Personal Information</span>
+              </div>
+              <div class="se-card-body">
+                <se-profile-info
+                  [profileForm]="profileForm"
+                  [appData]="profileState().appData"
+                  [dataState]="profileState().dataState"
+                  [loading]="loading()"
+                  [userInfos]="getUserInformations()"
+                  (profileFormSubmitted)="onProfileSubmit($event)"
+                  (undoFormProfileChanges)="onCancelUserProfileChanges()"
+                ></se-profile-info>
+              </div>
+            </div>
+            <div class="se-card mt-4">
+              <div class="se-card-header">
+                <span>Authorization Settings</span>
+              </div>
+              <div class="se-card-body mt-4">
+                <se-profile-authorization
+                  [appData]="profileState().appData"
+                  [dataState]="profileState().dataState"
+                  [loading]="loading()"
+                  [userInfos]="getUserInformations()"
+                  (handleUserRoleChange)="onUserRoleUpdate($event)"
+                ></se-profile-authorization>
+              </div>
+            </div>
+            <div class="se-card mt-4">
+              <div class="se-card-header">
+                <span>Account Settings</span>
+              </div>
+              <div class="se-card-body">
+                <se-profile-account
+                  [accountSettingsForm]="accountSettingsForm"
+                  [dataState]="profileState().dataState"
+                  [loading]="loading()"
+                  [userInfos]="getUserInformations()"
+                  (accountSettingsFormSubmitted)="onAccountSettingsFormSubmit($event)"
+                ></se-profile-account>
+              </div>
+            </div>
+            <div class="se-card mt-4">
+              <div class="se-card-header">
+                <span>Authentication Settings</span>
+              </div>
+              <div class="se-card-body">
+                <se-profile-authentication
+                  [dataState]="profileState().dataState"
+                  [loading]="loading()"
+                  [userInfos]="getUserInformations()"
+                  (authenticationSettingsUpdated)="onAuthenticationSettingsUpdate($event)"
+                  (showActivityLogsUpdated)="showProfileEvents = !showProfileEvents"
+                ></se-profile-authentication>
+              </div>
+            </div>
+            <div class="se-card mt-4">
+              <div class="se-card-header">
+                <span>Password Settings </span>
+              </div>
+              <div class="se-card-body">
+                <se-profile-password
+                  [passwordForm]="passwordForm"
+                  [dataState]="profileState().dataState"
+                  [loading]="loading()"
+                  [passwordVerified]="passwordVerified()"
+                  (passwordFormSubmit)="onPasswordFormSubmit($event)"
+                  (verifyPassword)="onVerifyPasswordButtonClick()"
+                ></se-profile-password>
+              </div>
+            </div>
+          </p-tabPanel>
+          <p-tabPanel header="General">
+            <div class="se-card">
+              <p>toast</p>
+            </div>
+          </p-tabPanel>
+          <p-tabPanel header="Account history">
+            <div class="se-card">
+              <div class="se-card-header">Account history</div>
+              <div class="se-card-body">
+                <se-profile-events-history
+                  *ngIf="showProfileEvents"
+                  [dataState]="profileState().dataState"
+                  [loading]="loading()"
+                  [userEvents]="getUserEvents()"
+                ></se-profile-events-history>
+              </div>
+            </div>
+          </p-tabPanel>
+        </p-tabView>
+      </div>
+    </div>
+
+    <!-- profile image change form -->
+    <form enctype="multipart/form-data" style="display: none">
+      <input #fileInput (change)="onUpdateProfilePicture($event)" type="file" name="image" id="image" placeholder="file" ngModel accept="image/*" />
+    </form>
+
+    <ng-template #spinner>
+      <div class="se-card-body flex justify-center content-center">
+        <se-progress-spinner mode="indeterminate"></se-progress-spinner>
+      </div>
+    </ng-template></section
+></ng-container>

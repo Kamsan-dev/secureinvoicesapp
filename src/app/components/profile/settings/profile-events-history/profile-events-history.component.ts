@@ -43,15 +43,15 @@ export class ProfileEventsHistoryComponent {
   public getEventTypeClassColor(eventType: string): string {
     switch (this.getTypeEvent(eventType)) {
       case 'success':
-        return 'bg-success';
+        return 'bg-green-300';
       case 'failure':
-        return 'bg-danger';
+        return 'bg-red-300';
       case 'attempt':
-        return 'bg-warning';
+        return 'bg-orange-300';
       case 'update':
-        return 'bg-info';
+        return 'bg-blue-300';
       default:
-        return 'bg-success';
+        return 'bg-blue-300';
     }
   }
 }

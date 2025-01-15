@@ -1,26 +1,19 @@
-<h3 class="mb-4">Authentication Settings</h3>
-<p>These settings help keep your account more secure.</p>
+<p>Set up Multi-factor Authentication (MFA) help keep your account more secure</p>
 <div class="list-group mb-5 shadow" *ngIf="dataStateSig() !== 'LOADING_STATE'; else spinner">
   <div class="list-group-item">
     <div class="row align-items-center">
       <div class="col">
-        <strong class="mb-2">Multi-Factor Authentication</strong>
-        <span class="badge mx-3" [ngClass]="getMfaStatus().class">
-          {{ getMfaStatus().text }}
-        </span>
-
-        <p class="text-muted mb-0">Set up Multi-factor Authentication (MFA) help keep your account more secure</p>
-      </div>
-      <div class="col-auto">
-        <button class="btn btn-primary btn-sm" (click)="onUpdateMfa($event)">
-          <span *ngIf="loadingSig()" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 5px"></span>
-          <span *ngIf="loadingSig()">loading...</span>
-          <span *ngIf="!loadingSig()">{{ userInformations()?.usingMfa ? 'Disabled' : 'Enabled' }}</span>
-        </button>
+        <span class="font-bold text-slate-400 mr-2">Multi-Factor Authentication</span>
+        <p-chip [styleClass]="getMfaStatus().class">
+          <span>{{ getMfaStatus().text }}</span>
+        </p-chip>
       </div>
     </div>
   </div>
-  <div class="list-group-item">
+  <div class="mt-4">
+    <p-button severity="success" [loading]="loadingSig()" [label]="loadingSig() ? 'Loading...' : getButtonLabel()" (onClick)="onUpdateMfa($event)"></p-button>
+  </div>
+  <!-- <div class="list-group-item">
     <div class="row align-items-center">
       <div class="col">
         <strong class="mb-2">Activity Logs</strong>
@@ -28,13 +21,11 @@
       </div>
       <div class="col-auto">
         <div class="custom-control custom-switch">
-          <!-- <input type="checkbox" class="custom-control-input" id="activityLog" />
-          <span class="custom-control-label"></span> -->
           <dgd-core-checkbox [checked]="showLastestActivities" (onCheckedChange)="onShowLastestActivitiesChange()"></dgd-core-checkbox>
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 </div>
 
 <ng-template #spinner>
