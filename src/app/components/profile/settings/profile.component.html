@@ -71,6 +71,35 @@
             </div>
             <div class="se-card mt-4">
               <div class="se-card-header">
+                <span>Password Settings </span>
+              </div>
+              <div class="se-card-body">
+                <se-profile-password
+                  [passwordForm]="passwordForm"
+                  [dataState]="profileState().dataState"
+                  [loading]="loading()"
+                  [passwordVerified]="passwordVerified()"
+                  (passwordFormSubmit)="onPasswordFormSubmit($event)"
+                  (verifyPassword)="onVerifyPasswordButtonClick()"
+                ></se-profile-password>
+              </div>
+            </div>
+            <div class="se-card mt-4">
+              <div class="se-card-header">
+                <span>Authentication Settings</span>
+              </div>
+              <div class="se-card-body">
+                <se-profile-authentication
+                  [dataState]="profileState().dataState"
+                  [loading]="loading()"
+                  [userInfos]="getUserInformations()"
+                  (authenticationSettingsUpdated)="onAuthenticationSettingsUpdate($event)"
+                  (showActivityLogsUpdated)="showProfileEvents = !showProfileEvents"
+                ></se-profile-authentication>
+              </div>
+            </div>
+            <div class="se-card mt-4">
+              <div class="se-card-header">
                 <span>Authorization Settings</span>
               </div>
               <div class="se-card-body mt-4">
@@ -95,35 +124,6 @@
                   [userInfos]="getUserInformations()"
                   (accountSettingsFormSubmitted)="onAccountSettingsFormSubmit($event)"
                 ></se-profile-account>
-              </div>
-            </div>
-            <div class="se-card mt-4">
-              <div class="se-card-header">
-                <span>Authentication Settings</span>
-              </div>
-              <div class="se-card-body">
-                <se-profile-authentication
-                  [dataState]="profileState().dataState"
-                  [loading]="loading()"
-                  [userInfos]="getUserInformations()"
-                  (authenticationSettingsUpdated)="onAuthenticationSettingsUpdate($event)"
-                  (showActivityLogsUpdated)="showProfileEvents = !showProfileEvents"
-                ></se-profile-authentication>
-              </div>
-            </div>
-            <div class="se-card mt-4">
-              <div class="se-card-header">
-                <span>Password Settings </span>
-              </div>
-              <div class="se-card-body">
-                <se-profile-password
-                  [passwordForm]="passwordForm"
-                  [dataState]="profileState().dataState"
-                  [loading]="loading()"
-                  [passwordVerified]="passwordVerified()"
-                  (passwordFormSubmit)="onPasswordFormSubmit($event)"
-                  (verifyPassword)="onVerifyPasswordButtonClick()"
-                ></se-profile-password>
               </div>
             </div>
           </p-tabPanel>

@@ -1,82 +1,74 @@
-<section *ngIf="loginState as state">
-  <div class="container">
-    <div class="row justify-content-center my-5">
-      <div class="col-md-6" style="margin-top: 50px">
-        <div class="card">
-          <div class="card-body">
-            <ng-container *ngIf="!state.loginSuccess && !state.isUsingMfa">
-              <div class="text-center">
-                <h2>SecureInvoices</h2>
-                <h5 class="card-title mt-4 mb-5">Account Login</h5>
-              </div>
-              <div *ngIf="state.error != undefined" class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show" role="alert">
-                {{ state.error }}
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
-              </div>
-              <form [formGroup]="loginForm" (ngSubmit)="onSubmitForm()">
-                <div class="form-outline mb-4">
-                  <label class="form-label" for="email">Email Address</label>
-                  <input type="email" name="email" class="form-control" required formControlName="email" />
-                </div>
-                <div class="form-outline mb-4">
-                  <label for="password" class="form-label">Password</label>
-                  <input type="password" name="password" class="form-control" required formControlName="password" />
-                </div>
-                <div class="d-flex justify-content-center mb-4">
-                  <button [disabled]="state.dataState === 'LOADING_STATE' || loginForm.invalid || loginForm.pristine" type="submit" class="btn btn-primary">
-                    <span
-                      *ngIf="state.dataState === 'LOADING_STATE'"
-                      class="spinner-border spinner-border-sm"
-                      role="status"
-                      aria-hidden="true"
-                      style="margin-right: 5px"
-                    ></span>
-                    <span *ngIf="state.dataState === 'LOADING_STATE'">Loading...</span>
-                    <span *ngIf="!(state.dataState === 'LOADING_STATE')">Log in</span>
-                  </button>
-                </div>
-              </form>
-            </ng-container>
-            <ng-container *ngIf="state.isUsingMfa" class="container">
-              <div class="text-center">
-                <h2>SecureInvoices</h2>
-                <h5 class="card-title mt-4 mb-4">Verification Code Sent To {{ phoneSig() }}</h5>
-
-                <p class="mt-2" style="font-size: 20px">Please access your SMS and enter the code.</p>
-              </div>
-              <div *ngIf="state.error != undefined" class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show" role="alert">
-                {{ state.error }}
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
-              </div>
-              <form [formGroup]="verificationForm" (ngSubmit)="onSubmitVerifyCode()">
-                <div class="form-outline mb-4">
-                  <label class="form-label" for="code">Verification Code</label>
-                  <input type="text" name="code" class="form-control" required formControlName="code" />
-                </div>
-                <div class="d-flex justify-content-center mb-4">
-                  <button [disabled]="state.dataState === 'LOADING_STATE' || verificationForm.invalid || verificationForm.pristine" type="submit" class="btn btn-primary">
-                    <span
-                      *ngIf="state.dataState === 'LOADING_STATE'"
-                      class="spinner-border spinner-border-sm"
-                      role="status"
-                      aria-hidden="true"
-                      style="margin-right: 5px"
-                    ></span>
-                    <span>{{ state.dataState === 'LOADING_STATE' ? 'Loading...' : 'Verify my code' }}</span>
-                  </button>
-                </div>
-              </form>
-            </ng-container>
-            <div class="row mb-4">
-              <div class="d-flex justify-content-evenly">
-                <a *ngIf="state.isUsingMfa" (click)="openLoginPage($event)" style="cursor: pointer; color: blue; text-decoration: underline">Login</a>
-                <a *ngIf="!state.loginSuccess && !state.isUsingMfa" routerLink="/register">Create Account</a>
-                <a routerLink="/resetpassword">Reset password</a>
-              </div>
+<div class="flex justify-center items-center">
+  <div class="se-card lg:w-[50%] w-[90%]">
+    <div class="se-card-header">
+      <div class="flex justify-center items-center">
+        <span class="text-xl">Sign in</span>
+      </div>
+    </div>
+    <div class="se-card-body" *ngIf="loginState() as state">
+      <ng-container *ngIf="!state.loginSuccess && !state.isUsingMfa">
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmitForm()" class="w-full flex flex-col items-center gap-4">
+          <div class="w-full max-w-[90%]">
+            <div class="mb-2" *ngIf="state.error != undefined">
+              <p-message severity="error" [text]="loginState().error"></p-message>
+            </div>
+            <div class="form-row">
+              <label class="form-label" for="email">Email Address</label>
+              <input pInputText type="email" name="email" class="form-input" required formControlName="email" />
+            </div>
+            <div class="form-row">
+              <label for="password" class="form-label">Password</label>
+              <input pInputText type="password" name="password" class="form-input" required formControlName="password" />
             </div>
           </div>
+          <div class="mb-4">
+            <p-button
+              severity="info"
+              type="submit"
+              [loading]="state.dataState === 'LOADING_STATE'"
+              [label]="state.dataState === 'LOADING_STATE' ? 'Loading...' : 'Log in'"
+              [disabled]="state.dataState === 'LOADING_STATE' || loginForm.invalid || loginForm.pristine"
+            ></p-button>
+          </div>
+        </form>
+      </ng-container>
+      <ng-container *ngIf="state.isUsingMfa" class="container">
+        <div class="text-center">
+          <h2>SecureInvoices</h2>
+          <h5 class="card-title mt-4 mb-4">Verification Code Sent To {{ phoneSig() }}</h5>
+
+          <p class="mt-2" style="font-size: 20px">Please access your SMS and enter the code.</p>
+        </div>
+        <div *ngIf="state.error != undefined" class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show" role="alert">
+          {{ state.error }}
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <form [formGroup]="verificationForm" (ngSubmit)="onSubmitVerifyCode()">
+          <div class="form-outline mb-4">
+            <label class="form-label" for="code">Verification Code</label>
+            <input type="text" name="code" class="form-control" required formControlName="code" />
+          </div>
+          <div class="d-flex justify-content-center mb-4">
+            <button [disabled]="state.dataState === 'LOADING_STATE' || verificationForm.invalid || verificationForm.pristine" type="submit" class="btn btn-primary">
+              <span
+                *ngIf="state.dataState === 'LOADING_STATE'"
+                class="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true"
+                style="margin-right: 5px"
+              ></span>
+              <span>{{ state.dataState === 'LOADING_STATE' ? 'Loading...' : 'Verify my code' }}</span>
+            </button>
+          </div>
+        </form>
+      </ng-container>
+      <div class="mb-4">
+        <div class="flex justify-evenly">
+          <a *ngIf="state.isUsingMfa" (click)="openLoginPage($event)" style="cursor: pointer; color: blue; text-decoration: underline">Login</a>
+          <a *ngIf="!state.loginSuccess && !state.isUsingMfa" routerLink="/register">Create Account</a>
+          <a routerLink="/resetpassword">Reset password</a>
         </div>
       </div>
     </div>
   </div>
-</section>
+</div>

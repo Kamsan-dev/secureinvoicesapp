@@ -43,4 +43,8 @@ import { TableModule } from 'primeng/table';
     TableModule,
   ],
 })
-export class ProfileModule {}
+export class ProfileModule {
+  constructor() {
+    console.log('profile module loaded');
+  }
+}

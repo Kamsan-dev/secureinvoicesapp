@@ -10,6 +10,10 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  font-size: 14px !important;
+}
+
 body {
   height: 100%;
   margin: 0;
@@ -20,7 +24,7 @@ body {
   flex-direction: column;
   font-family: 'Be Vietnam Pro', serif !important;
   font-weight: 400 !important;
-  font-size: 14px;
+  font-size: 14px !important;
 }
 
 .p-panel {
@@ -48,6 +52,13 @@ body {
 }
 .p-tabview .p-tabview-panels {
   background: unset;
+}
+
+.p-datatable .p-datatable-tbody > tr {
+  background-color: unset;
+}
+.p-datatable .p-datatable-thead > tr > th {
+  background-color: unset;
 }
 
 .se-card {

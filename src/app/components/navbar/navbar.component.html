@@ -1,12 +1,12 @@
 <nav class="secure-invoices--topbar">
-  <div class="max-w-screen-2xl mx-auto px-4 flex justify-between align-items-center w-full gap-8">
+  <div class="max-w-screen-2xl mx-auto px-4 flex justify-between items-center w-full gap-8">
     <div class="topbar--item-left">
       <div class="flex align-content-center">
         <i class="fa-solid fa-file-shield text-3xl"></i>
         <span class="topbar--item-left-icon text-slate-200 italic pl-2 text-2xl hidden lg:block" [routerLink]="['/']">SecureInvoices</span>
       </div>
     </div>
-    <div class="top-bar--item-right">
+    <div class="top-bar--item-right" *ngIf="userInformations()">
       <div class="relative w-full max-w-xs">
         <input
           type="text"
@@ -18,11 +18,41 @@
       <i class="fa-regular fa-envelope text-slate-200 text-xl pl-2"></i>
       <i class="fa-regular fa-bell text-slate-200 text-xl p-2"></i>
       <div class="border border-solid border-slate-300 h-20"></div>
-      <div class="flex gap-2 cursor-pointer shrink-0 items-center border" [routerLink]="['profile']">
-        <img [src]="getUserPictureProfile()" [alt]="getUserName()" class="rounded-full w-10 h-10 ml-2" />
-        <div class="flex-col gap-1 align-content-center justify-content-center hidden lg:flex">
-          <span class="item-right--name font-semibold">{{ userInformations()?.firstName }} {{ userInformations()?.lastName }}</span>
-          <span class="text-xs font-light text-wrap">{{ userInformations()?.roleName }}</span>
+      <div class="relative inline-block dropdown">
+        <div class="flex gap-2 cursor-pointer shrink-0 items-center border dropdown-trigger" tabindex="0">
+          <img [src]="getUserPictureProfile()" [alt]="getUserName()" class="rounded-full w-10 h-10 ml-2" />
+          <div class="flex-col gap-1 align-content-center justify-content-center hidden lg:flex">
+            <span class="item-right--name font-semibold">{{ userInformations()?.firstName }} {{ userInformations()?.lastName }}</span>
+            <span class="text-xs font-light text-wrap">{{ userInformations()?.roleName }}</span>
+          </div>
+        </div>
+        <div class="dropdown-content" tabindex="0">
+          <div class="flex gap-2 shrink-0 items-center border pl-1 pr-1 pt-2">
+            <img [src]="getUserPictureProfile()" [alt]="getUserName()" class="rounded-full w-9 h-9 ml-2" />
+            <div class="flex-col gap-1 align-content-center justify-content-center flex">
+              <span class="item-right--name font-semibold">{{ userInformations()?.firstName }} {{ userInformations()?.lastName }}</span>
+              <span class="text-xs font-light text-wrap">{{ userInformations()?.title }}</span>
+            </div>
+          </div>
+          <hr class="border-t border-gray-300" />
+          <div class="pl-4 pr-4 mb-2">
+            <span class="font-extralight text-slate-400 text-sm">Account</span>
+            <div class="flex flex-col gap-2 ml-3 mt-1">
+              <span class="text-sm text-slate-300 cursor-pointer" [routerLink]="['profile']"><i class="fa-solid fa-user mr-2"></i>Profile</span>
+              <span class="text-sm text-slate-300 cursor-pointer"><i class="fa-solid fa-message mr-2"></i>Message</span>
+            </div>
+          </div>
+          <div class="pl-4 pr-4 mb-2">
+            <span class="font-extralight text-slate-400 text-sm">Settings</span>
+            <div class="flex flex-col gap-2 ml-3 mt-1">
+              <span class="text-sm text-slate-300 cursor-pointer"><i class="fa-solid fa-shield-halved mr-2"></i>Security</span>
+              <span class="text-sm text-slate-300 cursor-pointer"><i class="fa-solid fa-circle-info mr-2"></i>Help</span>
+            </div>
+          </div>
+          <hr class="border-t border-gray-300" />
+          <div class="pl-4 pt-1 pr-3 pb-3">
+            <span class="text-sm text-red-600 cursor-pointer" (click)="logout($event)"><i class="fa-solid fa-power-off mr-2"></i>Logout</span>
+          </div>
         </div>
       </div>
     </div>

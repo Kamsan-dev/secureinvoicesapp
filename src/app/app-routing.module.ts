@@ -7,7 +7,7 @@ const routes: Routes = [
   {
     path: 'profile',
     loadChildren: () => import('./components/profile/profile.module').then((m) => m.ProfileModule),
-    canActivate: [authenticationGuard],
+    canMatch: [authenticationGuard],
   },
   {
     path: 'customer',

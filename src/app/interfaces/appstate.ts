@@ -6,10 +6,10 @@ import { User } from './user';
 
 export interface LoginState {
   dataState: DataState;
-  loginSuccess: boolean | undefined;
-  error: string | undefined;
-  message: string | undefined;
-  isUsingMfa: boolean | undefined;
+  loginSuccess?: boolean | undefined;
+  error?: string | undefined;
+  message?: string | undefined;
+  isUsingMfa?: boolean | undefined;
 }
 
 export interface RegisterState {
