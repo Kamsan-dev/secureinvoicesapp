@@ -1,8 +1,8 @@
 <nav class="secure-invoices--topbar">
   <div class="max-w-screen-2xl mx-auto px-4 flex justify-between items-center w-full gap-8">
     <div class="topbar--item-left">
-      <div class="flex align-content-center">
-        <i class="fa-solid fa-file-shield text-3xl"></i>
+      <div class="flex justify-center items-center">
+        <img class="w-24 h-24" src="../../../assets/images/logo.png" alt="secure-invoices-logo" />
         <span class="topbar--item-left-icon text-slate-200 italic pl-2 text-2xl hidden lg:block" [routerLink]="['/']">SecureInvoices</span>
       </div>
     </div>
@@ -38,15 +38,15 @@
           <div class="pl-4 pr-4 mb-2">
             <span class="font-extralight text-slate-400 text-sm">Account</span>
             <div class="flex flex-col gap-2 ml-3 mt-1">
-              <span class="text-sm text-slate-300 cursor-pointer" [routerLink]="['profile']"><i class="fa-solid fa-user mr-2"></i>Profile</span>
-              <span class="text-sm text-slate-300 cursor-pointer"><i class="fa-solid fa-message mr-2"></i>Message</span>
+              <span class="text-sm text-slate-300 cursor-pointer hover:text-gray-100" [routerLink]="['profile']"><i class="fa-solid fa-user mr-2"></i>Profile</span>
+              <span class="text-sm text-slate-300 cursor-pointer hover:text-gray-100"><i class="fa-solid fa-message mr-2"></i>Message</span>
             </div>
           </div>
           <div class="pl-4 pr-4 mb-2">
             <span class="font-extralight text-slate-400 text-sm">Settings</span>
             <div class="flex flex-col gap-2 ml-3 mt-1">
-              <span class="text-sm text-slate-300 cursor-pointer"><i class="fa-solid fa-shield-halved mr-2"></i>Security</span>
-              <span class="text-sm text-slate-300 cursor-pointer"><i class="fa-solid fa-circle-info mr-2"></i>Help</span>
+              <span class="text-sm text-slate-300 cursor-pointer hover:text-gray-100"><i class="fa-solid fa-shield-halved mr-2"></i>Security</span>
+              <span class="text-sm text-slate-300 cursor-pointer hover:text-gray-100"><i class="fa-solid fa-circle-info mr-2"></i>Help</span>
             </div>
           </div>
           <hr class="border-t border-gray-300" />

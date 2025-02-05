@@ -1,8 +1,20 @@
 <ng-container>
-  <ng-container>
-    <div *ngIf="customerState().dataState !== 'LOADING_STATE'; else spinner">
-      <se-stats [dataState]="customerState().dataState" [stats]="customerState().appData?.data?.stats" [monthlyStats]="statisticState().appData?.data?.stats"></se-stats>
-      <!-- <section>
+  <p-breadcrumb class="max-w-full" [model]="items">
+    <ng-template pTemplate="item" let-item>
+      <ng-container *ngIf="item.route; else elseBlock">
+        <a [routerLink]="item.route" class="p-menuitem-link">
+          <span [ngClass]="[item.icon ? item.icon : '', 'text-white mr-1']"></span>
+          <span class="text-white font-semibold">{{ item.label }}</span>
+        </a>
+      </ng-container>
+      <ng-template #elseBlock>
+        <span class="text-slate-200">{{ item.label }}</span>
+      </ng-template>
+    </ng-template>
+  </p-breadcrumb>
+  <div *ngIf="customerState().dataState !== 'LOADING_STATE'; else spinner" class="mt-4">
+    <se-stats [dataState]="customerState().dataState" [stats]="customerState().appData?.data?.stats" [monthlyStats]="statisticState().appData?.data?.stats"></se-stats>
+    <!-- <section>
         <div class="container bg-white shadow rounded-lg d-block" style="border-radius: 8px">
           <div class="row mt-3">
             <div *ngIf="downloadStatus() !== undefined" class="progress">
@@ -92,8 +104,7 @@
           </div>
         </div>
       </section> -->
-    </div>
-  </ng-container>
+  </div>
 </ng-container>
 
 <ng-template #spinner>

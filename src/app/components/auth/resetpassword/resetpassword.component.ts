@@ -1,4 +1,4 @@
-import { Component, OnDestroy, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize, Subject, takeUntil } from 'rxjs';
@@ -13,16 +13,17 @@ import { HttpErrorResponse } from '@angular/common/http';
   selector: 'app-resetpassword',
   templateUrl: './resetpassword.component.html',
   styleUrls: ['./resetpassword.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetpasswordComponent implements OnDestroy {
   public resetPasswordForm!: FormGroup;
   //public verificationForm: FormGroup;
   private destroy: Subject<void> = new Subject<void>();
-  public resetPasswordState: ResetPasswordState = {
+  public resetPasswordState = signal<ResetPasswordState>({
     dataState: DataState.LOADED,
     error: undefined,
     message: undefined,
-  };
+  });
   public loading = signal<boolean>(false);
   public readonly dataState = DataState;
   constructor(
@@ -49,20 +50,20 @@ export class ResetpasswordComponent implements OnDestroy {
       )
       .subscribe({
         next: (response: CustomHttpResponse<Profile>) => {
-          this.resetPasswordState = {
+          this.resetPasswordState.set({
             ...this.resetPasswordState,
             dataState: DataState.LOADED,
             message: response.message,
-          };
+          });
           this.resetPasswordForm.reset();
           this.resetPasswordForm.markAsPristine();
         },
         error: (errors: HttpErrorResponse) => {
-          this.resetPasswordState = {
+          this.resetPasswordState.set({
             ...this.resetPasswordState,
             dataState: DataState.ERROR,
             error: errors.error.reason,
-          };
+          });
           this.resetPasswordForm.enable();
         },
       });

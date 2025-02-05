@@ -76,11 +76,7 @@ export class LoginComponent implements OnDestroy, OnInit {
       email: this.emailSig(),
       code: this.verificationForm.value.code,
     };
-    this.loginState.set({
-      ...this.loginState,
-      dataState: DataState.LOADING,
-    });
-
+    this.loginState().dataState = DataState.LOADING;
     this.userService
       .verifyCode(request)
       .pipe(takeUntil(this.destroy))
@@ -92,7 +88,6 @@ export class LoginComponent implements OnDestroy, OnInit {
             ...this.loginState,
             loginSuccess: true,
             dataState: DataState.LOADED,
-            isUsingMfa: false,
             message: response.message,
           });
           this.router.navigateByUrl('/');

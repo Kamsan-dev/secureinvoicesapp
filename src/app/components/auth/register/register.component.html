@@ -1,77 +1,73 @@
-<section *ngIf="registerState as state">
-  <div *ngIf="!state.registerSuccess" class="container">
-    <div class="row justify-content-center my-5">
-      <div class="col-md-6" style="margin-top: 50px">
-        <div class="card">
-          <div class="card-body">
-            <div class="text-center">
-              <h2><i style="margin-right: 5px" class="bi bi-safe"></i>SecureCapita</h2>
-              <h5 class="card-title mt-4 mb-5">Create an Account</h5>
-            </div>
-            <div *ngIf="state.dataState === dataState.ERROR" class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show" role="alert">
-              {{ state.error }}
-              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            <form [formGroup]="registerForm" (ngSubmit)="onRegisterSubmit()">
-              <div class="form-outline mb-4">
+<div class="flex justify-center items-center">
+  <div class="se-card lg:w-[50%] w-[90%] md:w-[50%]">
+    <div class="se-card-header bg-slate-600">
+      <div class="flex flex-col gap-1 justify-center items-center pb-4">
+        <div>
+          <img class="w-[9rem] h-[9rem]" src="../../../assets/images/logo.png" alt="secure-invoices-logo" />
+        </div>
+        <div>
+          <span class="text-xl text-gray-300">Create an account</span>
+        </div>
+      </div>
+    </div>
+    <div class="se-card-body" *ngIf="registerState() as state">
+      <ng-container *ngIf="!state.registerSuccess">
+        <div class="card-body">
+          <form [formGroup]="registerForm" (ngSubmit)="onRegisterSubmit()" class="w-full flex flex-col items-center gap-4">
+            <div class="w-full max-w-[90%]">
+              <div class="mb-2" *ngIf="state.error != undefined">
+                <p-message severity="error" [text]="registerState().error" styleClass="w-full"></p-message>
+              </div>
+              <div class="form-row">
                 <label class="form-label" for="email">First Name</label>
-                <input type="text" formControlName="firstName" name="firstName" class="form-control" required minlength="2" />
+                <input pInputText type="text" formControlName="firstName" name="firstName" class="form-input" required minlength="2" />
               </div>
-              <div class="form-outline mb-4">
+              <div class="form-row">
                 <label for="lastName" class="form-label">Last name</label>
-                <input type="text" formControlName="lastName" name="lastName" class="form-control" required minlength="2" />
+                <input pInputText type="text" formControlName="lastName" name="lastName" class="form-input" required minlength="2" />
               </div>
-              <div class="form-outline mb-4">
+              <div class="form-row">
                 <label for="password" class="form-label">Email Address</label>
-                <input type="email" formControlName="email" name="email" class="form-control" required minlength="3" />
+                <input pInputText type="email" formControlName="email" name="email" class="form-input" required minlength="3" />
               </div>
-              <div class="form-outline mb-4">
+              <div class="form-row">
                 <label for="password" class="form-label">Password</label>
-                <input type="password" formControlName="password" name="password" class="form-control" required minlength="4" />
+                <input pInputText type="password" formControlName="password" name="password" class="form-input" required minlength="4" />
               </div>
-              <div class="d-flex justify-content-center mb-4">
-                <button [disabled]="loading() || registerForm.invalid || registerForm.pristine" type="submit" class="btn btn-primary">
-                  <span *ngIf="loading()" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 5px"></span>
-                  <span *ngIf="loading()">Saving...</span>
-                  <span *ngIf="!loading()">Create Account</span>
-                </button>
-              </div>
-            </form>
-            <div class="row mb-4 justify-content-around">
-              <div class="d-flex justify-content-center gap-5">
-                <a [ngStyle]="{ 'pointer-events': loading() ? 'none' : 'auto' }" [routerLink]="['/login']">Account Login</a>
-                <a [ngStyle]="{ 'pointer-events': loading() ? 'none' : 'auto' }" [routerLink]="['/resetpassword']">Forgot password?</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Success screen -->
-  <div *ngIf="registerState.registerSuccess" class="container">
-    <div class="row justify-content-center my-5">
-      <div class="col-md-6" style="margin-top: 50px">
-        <div class="card">
-          <div class="card-body">
-            <div class="text-center">
-              <h2><i style="margin-right: 5px" class="bi bi-safe"></i>SecureInvoices</h2>
-              <h5 class="card-title mt-4 mb-4">{{ state.message }}</h5>
-              <i class="bi bi-check-circle-fill" style="font-size: 80px; color: green"></i>
-              <p class="mt-2" style="font-size: 20px">Please access your email and confirm your account.</p>
+              <p-button
+                severity="info"
+                type="submit"
+                styleClass="w-full mt-4"
+                [loading]="state.dataState === 'LOADING_STATE'"
+                [disabled]="loading() || registerForm.invalid || registerForm.pristine"
+              >
+                <span class="flex justify-center items-center gap-2 w-full">
+                  {{ state.dataState === 'LOADING_STATE' ? 'Saving...' : 'Register' }}
+                  <i class="fa-solid fa-right-to-bracket"></i>
+                </span>
+              </p-button>
             </div>
-            <div class="row mb-4">
-              <div class="col d-flex justify-content-center">
-                <a [routerLink]="['/login']">Account Login</a>
-              </div>
-              <div class="col">
-                <a style="color: #0d6efd; text-decoration: underline; cursor: pointer"> Create another account </a>
-              </div>
-            </div>
-          </div>
+          </form>
         </div>
+      </ng-container>
+
+      <!-- Success screen -->
+      <ng-container *ngIf="registerState().registerSuccess">
+        <div class="text-center">
+          <div class="mb-2" *ngIf="state.message != undefined">
+            <p-message severity="success" [text]="state.message" styleClass="w-full"></p-message>
+          </div>
+          <i class="bi bi-check-circle-fill" style="font-size: 80px; color: green"></i>
+          <p class="mt-2" style="font-size: 20px">Please access your email and confirm your account.</p>
+        </div>
+        <div class="mt-4">
+          <span class="text-sm text-slate-300">Create another account ? <a [routerLink]="['/register']" class="text-sky-500 text-sm no-underline">Register now</a></span>
+        </div>
+      </ng-container>
+      <div class="mt-4">
+        <span class="text-sm text-slate-300">Already have an account ? <a [routerLink]="['/login']" class="text-sky-500 text-sm no-underline">Sign in now</a></span>
       </div>
     </div>
   </div>
-</section>
+</div>

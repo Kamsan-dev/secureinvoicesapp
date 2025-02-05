@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { finalize, Subject, takeUntil } from 'rxjs';
@@ -14,16 +14,17 @@ import { UserService } from 'src/app/services/user.service';
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RegisterComponent implements OnDestroy {
   public registerForm!: FormGroup;
   private destroy: Subject<void> = new Subject<void>();
-  public registerState: RegisterState = {
+  public registerState = signal<RegisterState>({
     dataState: DataState.LOADED,
     error: undefined,
     registerSuccess: false,
     message: undefined,
-  };
+  });
   public loading = signal<boolean>(false);
   public readonly dataState = DataState;
   constructor(
@@ -54,23 +55,23 @@ export class RegisterComponent implements OnDestroy {
       )
       .subscribe({
         next: (response: CustomHttpResponse<Profile>) => {
-          this.registerState = {
+          this.registerState.set({
             ...this.registerState,
             dataState: DataState.LOADED,
             registerSuccess: true,
             message: response.message,
-          };
+          });
           this.registerForm.reset();
           this.registerForm.markAsPristine();
-          this.toasterService.show('success', 'Register success !', this.registerState.message ?? '');
+          this.toasterService.show('success', 'Register success !', this.registerState().message ?? '');
         },
         error: (errors: HttpErrorResponse) => {
-          this.registerState = {
+          this.registerState.set({
             ...this.registerState,
             dataState: DataState.ERROR,
             registerSuccess: false,
             error: errors.error.reason,
-          };
+          });
           this.registerForm.enable();
         },
       });

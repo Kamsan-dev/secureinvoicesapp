@@ -1,0 +1,19 @@
+/* Row with label and input */
+.form-row {
+  display: flex;
+  flex-wrap: wrap; /* Allows label and input to stack on smaller screens */
+  align-items: center; /* Aligns label and input vertically */
+  gap: 20px; /* Space between label and input */
+  margin-bottom: 12px;
+}
+
+/* Input styling */
+.form-input {
+  flex: 1 1 auto;
+}
+
+/* Label styling */
+.form-label {
+  flex: 0 0 150px;
+  max-width: 150px;
+}

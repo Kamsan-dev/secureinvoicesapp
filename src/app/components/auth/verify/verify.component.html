@@ -1,122 +1,81 @@
-<section *ngIf="verifyState as state" [ngSwitch]="state.dataState">
-  <ng-container *ngSwitchCase="DataState.LOADING">
-    <div class="container">
-      <div class="row justify-content-center my-5">
-        <div class="col-md-6" style="margin-top: 50px">
-          <div class="card">
-            <div class="card-body">
-              <div class="text-center">
-                <h2><i style="margin-right: 5px" class="bi bi-safe"></i>SecureInvoices</h2>
-                <h5 class="card-title mt-4 mb-4">{{ state.title }}</h5>
-                <div style="font-size: 30px" class="spinner-border text-secondary" role="status">
-                  <span class="visually-hidden">Loading...</span>
-                </div>
-                <p class="mt-2" style="font-size: 20px">{{ state.message }}</p>
-              </div>
-            </div>
-          </div>
+<div class="flex justify-center items-center">
+  <div class="se-card lg:w-[30%] w-[90%] md:w-[30%]">
+    <div class="se-card-header bg-slate-600">
+      <div class="flex flex-col gap-1 justify-center items-center pb-4">
+        <div>
+          <img class="w-[9rem] h-[9rem]" src="../../../assets/images/logo.png" alt="secure-invoices-logo" />
+        </div>
+        <div>
+          <span class="text-xl text-gray-300">Verification</span>
         </div>
       </div>
     </div>
-  </ng-container>
-
-  <ng-container *ngSwitchCase="DataState.LOADED">
-    <div *ngIf="state.type === 'account'" class="container">
-      <div class="row justify-content-center my-5">
-        <div class="col-md-6" style="margin-top: 50px">
-          <div class="card">
-            <div class="card-body">
-              <div class="text-center">
-                <h2><i style="margin-right: 5px" class="bi bi-safe"></i>SecureCapita</h2>
-                <h5 class="card-title mt-4 mb-4">{{ state.title }}</h5>
-                <i class="bi bi-check-circle-fill" style="font-size: 80px; color: green"></i>
-                <p class="mt-2" style="font-size: 20px">{{ state.message }}</p>
-              </div>
-              <div class="row mb-4">
-                <div class="col d-flex justify-content-center">
-                  <a [routerLink]="['/login']">Account Login</a>
-                </div>
-                <div class="col">
-                  <a [routerLink]="['/register']" style="color: #0d6efd; text-decoration: underline; cursor: pointer">Create another account</a>
-                </div>
-              </div>
+    <div class="se-card-body" *ngIf="verifyState() as state">
+      <section [ngSwitch]="state.dataState">
+        <ng-container *ngSwitchCase="DataState.LOADING">
+          <div class="flex justify-center items-center">
+            <div class="spinner-border text-secondary" role="status">
+              <span class="text-slate-300">Loading...</span>
+              <p class="text-slate-300">{{ state.message }}</p>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
+        </ng-container>
 
-    <div *ngIf="state.type === 'password'" class="container">
-      <div class="row justify-content-center my-5">
-        <div class="col-md-6" style="margin-top: 50px">
-          <div class="card">
-            <div class="card-body">
-              <div class="text-center">
-                <h2><i style="margin-right: 5px" class="bi bi-safe"></i>SecureCapita</h2>
-                <h5 class="card-title mt-4 mb-5">Enter New Password</h5>
-              </div>
-              <div *ngIf="state.error" class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show" role="alert">
-                {{ state.error }}
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
-              </div>
-              <form [formGroup]="resetPasswordForm" (ngSubmit)="renewPassword()">
-                <div class="form-outline mb-4">
-                  <label class="form-label" for="email">New Password</label>
-                  <input type="password" formControlName="newPassword" name="password" class="form-control" required minlength="2" />
-                </div>
-                <div class="form-outline mb-4">
-                  <label for="password" class="form-label">Confirm New Password</label>
-                  <input type="password" formControlName="confirmPassword" name="confirmPassword" class="form-control" required minlength="2" />
-                </div>
-                <div class="d-flex justify-content-center mb-4">
-                  <button [disabled]="loading() || resetPasswordForm.invalid || resetPasswordForm.pristine" type="submit" class="btn btn-primary">
-                    <span *ngIf="loading()" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 5px"></span>
-                    <span *ngIf="loading()">Loading...</span>
-                    <span *ngIf="!loading()">Update Password</span>
-                  </button>
+        <ng-container *ngSwitchCase="DataState.LOADED">
+          <div *ngIf="state.type === 'account'" class="container">
+            <div class="text-center">
+              <i class="bi bi-check-circle-fill" style="font-size: 80px; color: green"></i>
+              <p class="mt-2" style="font-size: 20px">{{ state.message }}</p>
+            </div>
+            <div class="mt-4">
+              <span class="text-sm text-slate-300">Already have an account ? <a [routerLink]="['/login']" class="text-sky-500 text-sm no-underline">Sign in now</a></span>
+            </div>
+          </div>
+
+          <div *ngIf="state.type === 'password'" class="container">
+            <div class="justify-center">
+              <form [formGroup]="resetPasswordForm" (ngSubmit)="renewPassword()" class="w-full flex flex-col items-center gap-4">
+                <div class="w-full max-w-[90%]">
+                  <div class="mb-2" *ngIf="state.error != undefined">
+                    <p-message severity="error" [text]="state.error" styleClass="w-full"></p-message>
+                  </div>
+                  <div class="form-row">
+                    <label class="form-label" for="email">New Password</label>
+                    <input pInputText type="password" formControlName="newPassword" name="password" class="form-input" required minlength="2" />
+                  </div>
+                  <div class="form-row">
+                    <label for="password" class="form-label">Confirm New Password</label>
+                    <input pInputText type="password" formControlName="confirmPassword" name="confirmPassword" class="form-input" required minlength="2" />
+                  </div>
+
+                  <p-button
+                    severity="info"
+                    type="submit"
+                    styleClass="w-full mt-4"
+                    [loading]="state.dataState === 'LOADING_STATE'"
+                    [disabled]="loading() || resetPasswordForm.invalid || resetPasswordForm.pristine"
+                  >
+                    <span class="flex justify-center items-center gap-2 w-full">
+                      {{ state.dataState === 'LOADING_STATE' ? 'Loading...' : 'Update password' }}
+                      <i class="fa-solid fa-right-to-bracket"></i>
+                    </span>
+                  </p-button>
                 </div>
               </form>
-              <div class="row mb-4">
-                <div class="col d-flex justify-content-center">
-                  <a [ngStyle]="{ 'pointer-events': state.dataState === DataState.LOADING || loading() ? 'none' : '' }" [routerLink]="['/login']">Account Login</a>
-                </div>
-                <div class="col">
-                  <a [ngStyle]="{ 'pointer-events': state.dataState === DataState.LOADING || loading() ? 'none' : '' }" [routerLink]="['/resetpassword']"
-                    >Forgot password?</a
-                  >
-                </div>
-              </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  </ng-container>
+        </ng-container>
 
-  <ng-container *ngSwitchCase="DataState.ERROR">
-    <div class="container">
-      <div class="row justify-content-center my-5">
-        <div class="col-md-6" style="margin-top: 50px">
-          <div class="card">
-            <div class="card-body">
-              <div class="text-center">
-                <h2><i style="margin-right: 5px" class="bi bi-safe"></i>SecureInvoices</h2>
-                <h5 class="card-title mt-4 mb-4">{{ state.title }}</h5>
-                <i class="bi bi-exclamation-circle-fill" style="font-size: 80px; color: red"></i>
-                <p class="mt-2" style="font-size: 20px">{{ state.error }}</p>
-              </div>
-              <div class="row mb-4">
-                <div class="col d-flex justify-content-center">
-                  <a [routerLink]="['/login']">Account Login</a>
-                </div>
-                <div class="col">
-                  <a routerLink="['/register']">Create another account</a>
-                </div>
-              </div>
-            </div>
+        <ng-container *ngSwitchCase="DataState.ERROR">
+          <div class="flex flex-col gap-2 justify-center text-center">
+            <span class="mt-2" style="font-size: 20px">{{ state.error }}</span>
+            <i class="bi bi-exclamation-circle-fill" style="font-size: 80px; color: red"></i>
           </div>
-        </div>
-      </div>
+          <div class="mt-4">
+            <span class="text-sm text-slate-300">Already have an account ? <a [routerLink]="['/login']" class="text-sky-500 text-sm no-underline">Sign in here.</a></span>
+          </div>
+        </ng-container>
+      </section>
     </div>
-  </ng-container>
-</section>
+  </div>
+</div>

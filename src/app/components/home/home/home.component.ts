@@ -11,6 +11,7 @@ import { User } from 'src/app/interfaces/user';
 import { CustomerService } from 'src/app/services/customer.service';
 import { StatisticService } from 'src/app/services/statistic.service';
 import { MonthlyInvoiceStatistic, MonthlyInvoiceStatistics } from '../../stats/statistic';
+import { BreadcrumbItem } from 'src/app/interfaces/common.interface';
 
 declare type direction = 'forward' | 'previous';
 
@@ -41,6 +42,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   private fileStatusSubject = new BehaviorSubject<{ status: string; type: string; value: number } | undefined>(undefined);
   private fileStatus = this.fileStatusSubject.asObservable();
   public downloadStatus = signal<number | undefined>(undefined);
+
+  // breadcrumbs
+
+  public items: BreadcrumbItem[] = [{ label: '', route: '/home', icon: 'pi pi-home' }, { label: 'Dashboard' }];
 
   constructor(
     private customerService: CustomerService,

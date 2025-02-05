@@ -14,15 +14,15 @@ export interface LoginState {
 
 export interface RegisterState {
   dataState: DataState;
-  registerSuccess: boolean | undefined;
-  error: string | undefined;
-  message: string | undefined;
+  registerSuccess?: boolean | undefined;
+  error?: string | undefined;
+  message?: string | undefined;
 }
 
 export interface ResetPasswordState {
   dataState: DataState;
-  error: string | undefined;
-  message: string | undefined;
+  error?: string | undefined;
+  message?: string | undefined;
 }
 
 export interface Profile {
@@ -88,7 +88,7 @@ export interface Statistics {
 
 export interface VerifyState {
   dataState: DataState;
-  verifySuccess: boolean | undefined;
+  verifySuccess?: boolean | undefined;
   error?: string | undefined;
   title?: string;
   type?: AccountType;

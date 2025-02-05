@@ -18,12 +18,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class VerifyComponent implements OnInit, OnDestroy {
   public resetPasswordForm!: FormGroup;
   private destroy: Subject<void> = new Subject<void>();
-  public verifyState: VerifyState = {
+  public verifyState = signal<VerifyState>({
     dataState: DataState.LOADING,
     title: 'Verifying...',
     verifySuccess: false,
     message: 'Please, wait while we verify the informations',
-  };
+  });
   public user = signal<User | undefined>(undefined);
   public loading = signal<boolean>(false);
   public readonly DataState = DataState;
@@ -46,33 +46,33 @@ export class VerifyComponent implements OnInit, OnDestroy {
         finalize(() => {
           this.loading.set(false);
         }),
-        takeUntil(this.destroy),
         map((params) => params.get('key') || ''),
         switchMap((key) => this.userService.verify(key, type)),
+        takeUntil(this.destroy),
       )
       .subscribe({
         next: (response: CustomHttpResponse<Profile | null>) => {
           if (type === 'password') {
             this.user.set(response.data?.user);
           }
-          this.verifyState = {
+          this.verifyState.set({
             ...this.verifyState,
             type: type,
             verifySuccess: true,
             dataState: DataState.LOADED,
             message: response.message,
             title: 'Verified !',
-          };
+          });
         },
         error: (error: HttpErrorResponse) => {
-          this.verifyState = {
+          this.verifyState.set({
             ...this.verifyState,
             type: type,
             verifySuccess: false,
             dataState: DataState.ERROR,
             error: error.error.reason,
             title: 'An error occurred',
-          };
+          });
         },
       });
   }
@@ -89,6 +89,10 @@ export class VerifyComponent implements OnInit, OnDestroy {
   //#region form
 
   public renewPassword(): void {
+    if (this.resetPasswordForm.value.newPassword != this.resetPasswordForm.value.confirmPassword) {
+      this.verifyState().error = 'Passwords do not match';
+      return;
+    }
     this.loading.set(true);
     this.resetPasswordForm.disable();
     const key = this.activatedRoute.snapshot.params['key'];
@@ -103,23 +107,23 @@ export class VerifyComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (response: CustomHttpResponse<null>) => {
-          this.verifyState = {
+          this.verifyState.set({
             ...this.verifyState,
             type: 'account',
             verifySuccess: true,
             dataState: DataState.LOADED,
             message: response.message,
             title: 'Password successfully reseted !',
-          };
+          });
           this.resetPasswordForm.reset();
         },
         error: (error: HttpErrorResponse) => {
-          this.verifyState = {
+          this.verifyState.set({
             ...this.verifyState,
             dataState: DataState.LOADED,
             error: error.error.reason,
             title: 'An error occurred',
-          };
+          });
         },
       });
   }
