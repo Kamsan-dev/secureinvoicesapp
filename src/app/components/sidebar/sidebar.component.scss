@@ -1,13 +1,108 @@
 @import '../../../assets/styles/theme.scss';
 @import '../../../assets/styles/_variables.scss';
 
+$tran-2: all 0.2s ease;
+$tran-3: all 0.3s ease;
+$tran-4: all 0.4s ease;
+$tran-5: all 0.5s ease;
+
 .secure-invoices--sidebar {
   position: fixed;
   width: 270px;
-  //background-color: #18191b;
   background-color: #191919;
   top: 0;
   left: 0;
   bottom: 0;
   z-index: 1005;
+  padding: 10px 14px;
+  transition: $tran-5;
+
+  &.close {
+    width: 88px;
+
+    .text,
+    input {
+      opacity: 0;
+    }
+
+    .header {
+      span {
+        opacity: 0;
+      }
+    }
+  }
+
+  .sidebar--toggle {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 30px;
+    width: 30px;
+    background-color: $clr-white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: #191919;
+    z-index: 1010;
+    font-size: 1.2rem;
+  }
+
+  .menu-bar {
+    height: calc(50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .search-box {
+    background-color: $clr-primary--medium;
+
+    input {
+      height: 100%;
+      width: 100%;
+      background-color: $clr-primary--medium;
+      outline: none;
+      border: none;
+      border-radius: 6px;
+    }
+  }
+
+  ul {
+    padding: 0;
+  }
+
+  li {
+    height: 50px;
+    margin-top: 10px;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    border-radius: 6px;
+
+    .icon {
+      min-width: 60px;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .text {
+      color: $clr-white;
+    }
+
+    a {
+      text-decoration: none;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      border-radius: 6px;
+      transition: $tran-4;
+      &:hover {
+        background-color: $clr-primary--dark;
+      }
+    }
+  }
 }

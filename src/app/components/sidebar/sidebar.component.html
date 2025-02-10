@@ -1,1 +1,36 @@
-<aside class="secure-invoices--sidebar">tkntkntk</aside>
+<aside class="secure-invoices--sidebar" [ngClass]="{ close: close(), hidden: responsiveService.phone(), block: !responsiveService.phone(), 'md:block': true }">
+  <header class="relative">
+    <div class="flex justify-center items-center">
+      <img class="w-24 h-24" src="../../../assets/images/logo.png" alt="secure-invoices-logo" />
+      <span [ngClass]="{ 'opacity-0 hidden': close() }" class="text-center text-wrap text-slate-200 text-3xl font-bold" [routerLink]="['/']"> Secure Invoices </span>
+    </div>
+  </header>
+
+  <div class="menu-bar">
+    <div class="menu">
+      <li class="search-box">
+        <i class="fas fa-search icon"></i>
+        <input type="text" placeholder="Search..." class="" />
+      </li>
+      <ul class="menu-links">
+        <li class="nav-link">
+          <a><i class="fa-solid fa-house icon"></i><span class="text nav-text">Home</span> </a>
+        </li>
+        <li class="nav-link">
+          <a> <i class="fa-solid fa-chart-simple icon"></i><span class="text nav-text">Dashboard</span> </a>
+        </li>
+        <li class="nav-link">
+          <a> <i class="fa-solid fa-users icon"></i><span class="text nav-text">Customers</span> </a>
+        </li>
+        <li class="nav-link">
+          <a> <i class="fa-solid fa-file-invoice icon"></i><span class="text nav-text">Invoices</span> </a>
+        </li>
+      </ul>
+    </div>
+    <div class="bottom-content">
+      <li class="nav-link">
+        <a> <i class="fa-solid fa-power-off icon"></i><span class="text nav-text">Log out</span> </a>
+      </li>
+    </div>
+  </div>
+</aside>

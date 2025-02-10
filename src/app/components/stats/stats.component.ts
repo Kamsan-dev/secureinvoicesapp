@@ -77,7 +77,6 @@ export class StatsComponent implements OnInit {
   public readonly monthlystatsSig = signal<MonthlyInvoiceStatistic[] | undefined>(undefined);
   @Input() public set monthlyStats(stats: MonthlyInvoiceStatistic[] | undefined) {
     this.monthlystatsSig.set(stats);
-    console.log(this.monthlystatsSig());
   }
 
   //#region Monthly Stats Statistics

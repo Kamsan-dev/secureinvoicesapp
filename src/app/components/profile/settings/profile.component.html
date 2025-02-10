@@ -40,11 +40,11 @@
           <ng-container *ngIf="profileState().dataState !== 'LOADING_STATE'; else spinner">
             <span class="text-sm">{{ getUserInformations()?.bio }}</span>
             <div class="flex flex-col gap-2 mt-6">
-              <span><i class="fa-solid fa-envelope pr-4"></i>{{ getUserInformations()?.email }}</span>
-              <span><i class="fa-solid fa-location-dot pr-4"></i>{{ getUserInformations()?.address }}</span>
-              <span><i class="fa-solid fa-phone pr-4"></i>{{ getUserInformations()?.phone }}</span>
-              <span><i class="fa-solid fa-user pr-4"></i>{{ getUserInformations()?.title }}</span>
-              <span><i class="fa-solid fa-hammer pr-4"></i>{{ getUserInformations()?.roleName }}</span>
+              <span><i class="fa-fw fa-solid fa-envelope pr-8"></i>{{ getUserInformations()?.email }}</span>
+              <span><i class="fa-fw fa-solid fa-location-dot pr-8"></i>{{ getUserInformations()?.address }}</span>
+              <span><i class="fa-fw fa-solid fa-phone pr-8"></i>{{ getUserInformations()?.phone }}</span>
+              <span><i class="fa-fw fa-solid fa-user pr-8"></i>{{ getUserInformations()?.title }}</span>
+              <span><i class="fa-fw fa-solid fa-hammer pr-8"></i>{{ getUserInformations()?.roleName }}</span>
             </div>
           </ng-container>
         </div>

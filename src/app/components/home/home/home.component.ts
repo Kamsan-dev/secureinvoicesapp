@@ -194,7 +194,6 @@ export class HomeComponent implements OnInit, OnDestroy {
             dataState: DataState.LOADED,
             appData: response,
           });
-          console.log(response);
         },
         error: (error: HttpErrorResponse) => {
           this.statisticState.set({

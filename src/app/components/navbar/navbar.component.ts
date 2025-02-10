@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, signal } 
 import { Subject, takeUntil } from 'rxjs';
 import { User } from 'src/app/interfaces/user';
 import { UserService } from 'src/app/services/user.service';
+import { SidebarService } from '../sidebar/sidebar.service';
+import { ResponsiveService } from 'src/app/services/responsive.service';
 
 @Component({
   selector: 'app-navbar',
@@ -17,7 +19,16 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.userInformations.set(userInformations);
   }
 
-  constructor(private userService: UserService) {}
+  // STYLE
+  public readonly SIDEBAR_WIDTH = 270;
+  public readonly SIDEBAR_CLOSE_WIDTH = 88;
+  public pageMarginLeft = signal(this.SIDEBAR_WIDTH);
+
+  constructor(
+    private userService: UserService,
+    private sidebarService: SidebarService,
+    public responsiveService: ResponsiveService,
+  ) {}
 
   public ngOnInit(): void {
     if (this.userService.isAuthenticated()) {
@@ -31,11 +42,30 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.userService.user$.pipe(takeUntil(this.destroy)).subscribe((user) => {
       this.userInformations.set(user);
     });
+
+    this.sidebarService.sidebarState$.pipe(takeUntil(this.destroy)).subscribe(() => {
+      this.pageMarginLeft.set(this.sidebarService.getSidebarWidth());
+    });
+
+    // handle transition desktop to phone window
+    this.responsiveService
+      .observe()
+      .pipe(takeUntil(this.destroy))
+      .subscribe(() => {
+        if (this.responsiveService.phone()) {
+          this.pageMarginLeft.set(0);
+        }
+      });
   }
 
   public async logout(event: MouseEvent | TouchEvent): Promise<void> {
     event.stopImmediatePropagation();
     this.userService.logout();
+  }
+
+  public async onToggleClick(event: MouseEvent | TouchEvent): Promise<void> {
+    event.stopImmediatePropagation();
+    this.sidebarService.toggleSidebar();
   }
 
   //#region UserInformations

@@ -1,26 +1,30 @@
-<nav class="secure-invoices--topbar">
+<nav class="secure-invoices--topbar" [ngStyle]="{ 'margin-left.px': pageMarginLeft() }">
   <div class="max-w-screen-2xl mx-auto px-4 flex justify-between items-center w-full gap-8">
     <div class="topbar--item-left">
-      <div class="flex justify-center items-center">
-        <img class="w-24 h-24" src="../../../assets/images/logo.png" alt="secure-invoices-logo" />
-        <span class="topbar--item-left-icon text-slate-200 italic pl-2 text-2xl hidden lg:block" [routerLink]="['/']">SecureInvoices</span>
-      </div>
+      <i
+        class="fa-solid sidebar--toggle"
+        [ngClass]="{ 'fa-chevron-left': pageMarginLeft() === SIDEBAR_WIDTH, 'fa-chevron-right': pageMarginLeft() === SIDEBAR_CLOSE_WIDTH || pageMarginLeft() === 0 }"
+        (click)="onToggleClick($event)"
+      >
+      </i>
     </div>
     <div class="top-bar--item-right" *ngIf="userInformations()">
-      <div class="relative w-full max-w-xs">
-        <input
-          type="text"
-          placeholder="Search..."
-          class="w-full pl-10 text-slate-400 text-sm pr-4 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        />
-        <i class="fas fa-search absolute left-3 top-1/4 transform -translate-y-1/2 text-gray-400"></i>
-      </div>
-      <i class="fa-regular fa-envelope text-slate-200 text-xl pl-2"></i>
-      <i class="fa-regular fa-bell text-slate-200 text-xl p-2"></i>
-      <div class="border border-solid border-slate-300 h-20"></div>
+      <ng-container *ngIf="!responsiveService.phone()">
+        <div class="relative w-full max-w-xs">
+          <input
+            type="text"
+            placeholder="Search..."
+            class="w-full pl-10 text-slate-400 text-sm pr-4 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+          <i class="fas fa-search absolute left-3 top-1/4 transform -translate-y-1/2 text-gray-400"></i>
+        </div>
+        <i class="fa-regular fa-envelope text-slate-200 text-xl pl-2"></i>
+        <i class="fa-regular fa-bell text-slate-200 text-xl p-2"></i>
+        <div class="border border-solid border-slate-300 h-20"></div>
+      </ng-container>
       <div class="relative inline-block dropdown">
         <div class="flex gap-2 cursor-pointer shrink-0 items-center border dropdown-trigger" tabindex="0">
-          <img [src]="getUserPictureProfile()" [alt]="getUserName()" class="rounded-full w-10 h-10 ml-2" />
+          <img [src]="getUserPictureProfile()" [alt]="getUserName()" class="rounded-full w-[48px] h-[48px] ml-2" />
           <div class="flex-col gap-1 align-content-center justify-content-center hidden lg:flex">
             <span class="item-right--name font-semibold">{{ userInformations()?.firstName }} {{ userInformations()?.lastName }}</span>
             <span class="text-xs font-light text-wrap">{{ userInformations()?.roleName }}</span>

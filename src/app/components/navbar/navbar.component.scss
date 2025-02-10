@@ -9,15 +9,35 @@
 .secure-invoices--topbar {
   position: fixed;
   top: 0;
-  left: 270px;
+  margin-left: 270px;
   height: 80px;
-  width: calc(100% - 270px);
-  z-index: 1006;
+  //width: calc(100% - 270px);
+  width: -moz-available; /* WebKit-based browsers will ignore this. */
+  width: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
+  width: fill-available;
   //background-color: #18191b;
   background-color: #191919;
   color: #ededed;
   align-content: center;
   color: $clr-primary--lightest;
+  transition: all 0.5s ease;
+  z-index: 1000;
+
+  .sidebar--toggle {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 30px;
+    width: 30px;
+    background-color: $clr-white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: #191919;
+    z-index: 1010;
+    font-size: 1.2rem;
+  }
 
   .container-xxl.topbar--content {
     display: flex;
