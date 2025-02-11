@@ -6,15 +6,25 @@ import { ResponsiveService } from 'src/app/services/responsive.service';
   providedIn: 'root',
 })
 export class SidebarService {
+  // desktop
   private isSidebarClose = new BehaviorSubject<boolean>(false);
   sidebarState$ = this.isSidebarClose.asObservable();
 
+  // phone/tablet
+
+  private isSidebarOpen = new BehaviorSubject<boolean>(false);
+  sidebarStatePhone$ = this.isSidebarOpen.asObservable();
+
   public toggleSidebar(): void {
+    if (this.responsiveService.phone() || this.responsiveService.tablet()) {
+      this.isSidebarOpen.next(!this.isSidebarOpen.value);
+      return;
+    }
     this.isSidebarClose.next(!this.isSidebarClose.value);
   }
 
   public getSidebarWidth(): number {
-    if (this.responsiveService.phone()) return 0;
+    if (this.responsiveService.phone() || this.responsiveService.tablet()) return 0;
     return this.isSidebarClose.value ? 88 : 270;
   }
 

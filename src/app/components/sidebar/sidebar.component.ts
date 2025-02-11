@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { SidebarService } from './sidebar.service';
 import { ResponsiveService } from 'src/app/services/responsive.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-sidebar',
@@ -8,14 +9,27 @@ import { ResponsiveService } from 'src/app/services/responsive.service';
   styleUrl: './sidebar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, OnDestroy {
   public close = signal(false);
-  private sidebarService = inject(SidebarService);
+  public sidebarService = inject(SidebarService);
   public responsiveService = inject(ResponsiveService);
+  public isOpen = signal(false);
+  private destroy: Subject<void> = new Subject<void>();
 
   ngOnInit() {
-    this.sidebarService.sidebarState$.subscribe((state) => {
+    // desktop sidebar handler
+    this.sidebarService.sidebarState$.pipe(takeUntil(this.destroy)).subscribe((state) => {
       this.close.set(state);
     });
+
+    // phone/tablet sidebar handler
+    this.sidebarService.sidebarStatePhone$.pipe(takeUntil(this.destroy)).subscribe((state) => {
+      this.isOpen.set(state);
+    });
+  }
+
+  public ngOnDestroy(): void {
+    this.destroy.next();
+    this.destroy.complete();
   }
 }

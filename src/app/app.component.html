@@ -1,8 +1,15 @@
-<app-sidebar></app-sidebar>
-<app-navbar></app-navbar>
-<div class="page-content" [ngStyle]="{ 'margin-left.px': responsiveService.phone() ? 0 : pageMarginLeft() }">
+<app-sidebar *ngIf="userService.isAuthenticated()"></app-sidebar>
+<app-navbar *ngIf="userService.isAuthenticated()"></app-navbar>
+
+<div
+  class="page-content"
+  [ngStyle]="{
+    'margin-left.px': userService.isAuthenticated() && !responsiveService.phone() && !responsiveService.tablet() ? pageMarginLeft() : 0
+  }"
+>
   <div class="max-w-screen-2xl mx-auto px-4">
     <router-outlet></router-outlet>
   </div>
 </div>
+
 <app-toaster-container></app-toaster-container>

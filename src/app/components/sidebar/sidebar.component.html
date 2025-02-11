@@ -1,4 +1,15 @@
-<aside class="secure-invoices--sidebar" [ngClass]="{ close: close(), hidden: responsiveService.phone(), block: !responsiveService.phone(), 'md:block': true }">
+<!-- Sidebar Backdrop -->
+<div *ngIf="isOpen() && (responsiveService.phone() || responsiveService.tablet())" class="sidebar-backdrop" (click)="sidebarService.toggleSidebar()"></div>
+
+<aside
+  #sidebar
+  class="secure-invoices--sidebar"
+  [ngClass]="{
+    close: close() && !responsiveService.phone() && !responsiveService.tablet(),
+    open: (responsiveService.phone() || responsiveService.tablet()) && isOpen(),
+    hide: (responsiveService.phone() || responsiveService.tablet()) && !isOpen()
+  }"
+>
   <header class="relative">
     <div class="flex justify-center items-center">
       <img class="w-24 h-24" src="../../../assets/images/logo.png" alt="secure-invoices-logo" />
@@ -34,3 +45,5 @@
     </div>
   </div>
 </aside>
+
+<!--block: !responsiveService.phone(), 'md:block': true -->

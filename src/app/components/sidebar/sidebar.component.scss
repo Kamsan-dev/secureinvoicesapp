@@ -13,7 +13,7 @@ $tran-5: all 0.5s ease;
   top: 0;
   left: 0;
   bottom: 0;
-  z-index: 1005;
+  z-index: 1200;
   padding: 10px 14px;
   transition: $tran-5;
 
@@ -30,6 +30,13 @@ $tran-5: all 0.5s ease;
         opacity: 0;
       }
     }
+  }
+  &.hide {
+    transform: translateX(-100%);
+  }
+
+  &.open {
+    transform: translateX(0);
   }
 
   .sidebar--toggle {
@@ -105,4 +112,21 @@ $tran-5: all 0.5s ease;
       }
     }
   }
+}
+
+.sidebar-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1100; // Just below the sidebar
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.hidden-backdrop {
+  opacity: 0;
+  pointer-events: none;
 }

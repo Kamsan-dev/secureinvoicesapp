@@ -3,6 +3,7 @@ import { PrimeNGConfig } from 'primeng/api';
 import { SidebarService } from './components/sidebar/sidebar.service';
 import { Subject, takeUntil } from 'rxjs';
 import { ResponsiveService } from './services/responsive.service';
+import { UserService } from './services/user.service';
 
 @Component({
   selector: 'app-root',
@@ -19,6 +20,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private primengConfig: PrimeNGConfig,
     private sidebarService: SidebarService,
     public responsiveService: ResponsiveService,
+    public userService: UserService,
   ) {}
 
   ngOnInit() {

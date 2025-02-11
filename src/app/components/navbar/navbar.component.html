@@ -1,12 +1,7 @@
-<nav class="secure-invoices--topbar" [ngStyle]="{ 'margin-left.px': pageMarginLeft() }">
+<nav class="secure-invoices--topbar" [ngStyle]="{ 'margin-left.px': responsiveService.phone() || responsiveService.tablet() ? 0 : pageMarginLeft() }">
   <div class="max-w-screen-2xl mx-auto px-4 flex justify-between items-center w-full gap-8">
     <div class="topbar--item-left">
-      <i
-        class="fa-solid sidebar--toggle"
-        [ngClass]="{ 'fa-chevron-left': pageMarginLeft() === SIDEBAR_WIDTH, 'fa-chevron-right': pageMarginLeft() === SIDEBAR_CLOSE_WIDTH || pageMarginLeft() === 0 }"
-        (click)="onToggleClick($event)"
-      >
-      </i>
+      <i class="fa-solid fa-bars cursor-pointer sidebar--toggle" (click)="onToggleClick($event)"></i>
     </div>
     <div class="top-bar--item-right" *ngIf="userInformations()">
       <ng-container *ngIf="!responsiveService.phone()">

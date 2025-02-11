@@ -43,6 +43,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.userInformations.set(user);
     });
 
+    /* Sidebar responsiveness */
     this.sidebarService.sidebarState$.pipe(takeUntil(this.destroy)).subscribe(() => {
       this.pageMarginLeft.set(this.sidebarService.getSidebarWidth());
     });
