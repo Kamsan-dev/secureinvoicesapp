@@ -75,14 +75,15 @@
           <i class="fa-solid fa-ellipsis-vertical"></i>
         </div>
       </div>
-      <div class="se-card-body">
-        <p-chart
+      <div class="se-card-body justify-center flex items-center w-full" style="position: relative; height: 40vh; width: 80vw">
+        <!-- <p-chart
           style="display: block"
           type="bar"
           [data]="monthlyinvoiceChart.data"
           [options]="monthlyinvoiceChart.options"
           (onDataSelect)="onMonthlyInvoicesChartClick($event)"
-        ></p-chart>
+        ></p-chart> -->
+        <canvas #chartCanvas></canvas>
       </div>
     </div>
     <div class="col-span-12 lg:col-span-6 xl:col-span-5 row-span-2 se-card">

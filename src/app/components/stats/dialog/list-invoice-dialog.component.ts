@@ -67,7 +67,6 @@ export class ListInvoiceDialogComponent implements OnInit {
             appData: response,
           });
           this.totalRecords.set(response.data?.page.totalElements || 0);
-          console.log(this.totalRecords());
         },
         error: (error: HttpErrorResponse) => {
           this.invoiceState.set({

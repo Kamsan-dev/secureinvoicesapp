@@ -3,3 +3,10 @@
   grid-template-columns: repeat(12, 1fr);
   gap: 30px;
 }
+
+.chart-container {
+  position: relative;
+  margin: auto;
+  height: 80vh;
+  width: 80vw;
+}
