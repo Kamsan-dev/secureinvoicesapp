@@ -11,11 +11,6 @@
   top: 0;
   margin-left: 270px;
   height: 80px;
-  //width: calc(100% - 270px);
-  width: -moz-available; /* WebKit-based browsers will ignore this. */
-  width: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
-  width: fill-available;
-  //background-color: #18191b;
   background-color: #191919;
   color: #ededed;
   align-content: center;
@@ -72,18 +67,10 @@
       background-color: #191919;
       border: 1px solid #ddd;
       border-radius: 10px;
-      opacity: 0;
-      visibility: hidden;
       transform: translateY(-5px);
       transition:
         opacity 0.3s ease,
         transform 0.3s ease;
-    }
-
-    .dropdown:focus-within .dropdown-content {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
     }
   }
 }

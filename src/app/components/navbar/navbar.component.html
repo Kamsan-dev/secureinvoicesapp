@@ -1,4 +1,10 @@
-<nav class="secure-invoices--topbar" [ngStyle]="{ 'margin-left.px': responsiveService.phone() || responsiveService.tablet() ? 0 : pageMarginLeft() }">
+<nav
+  class="secure-invoices--topbar"
+  [ngStyle]="{
+    'margin-left.px': responsiveService.phone() || responsiveService.tablet() ? 0 : pageMarginLeft(),
+    width: responsiveService.phone() || responsiveService.tablet() ? '100%' : 'calc(100% - ' + pageMarginLeft() + 'px)'
+  }"
+>
   <div class="max-w-screen-2xl mx-auto px-4 flex justify-between items-center w-full gap-8">
     <div class="topbar--item-left">
       <i class="fa-solid fa-bars cursor-pointer sidebar--toggle" (click)="onToggleClick($event)"></i>
@@ -18,14 +24,14 @@
         <div class="border border-solid border-slate-300 h-20"></div>
       </ng-container>
       <div class="relative inline-block dropdown">
-        <div class="flex gap-2 cursor-pointer shrink-0 items-center border dropdown-trigger" tabindex="0">
+        <div class="flex gap-2 cursor-pointer shrink-0 items-center border dropdown-trigger" (click)="toggleMainDropdown($event)" #dropdownElement tabindex="0">
           <img [src]="getUserPictureProfile()" [alt]="getUserName()" class="rounded-full w-[48px] h-[48px] ml-2" />
           <div class="flex-col gap-1 align-content-center justify-content-center hidden lg:flex">
             <span class="item-right--name font-semibold">{{ userInformations()?.firstName }} {{ userInformations()?.lastName }}</span>
             <span class="text-xs font-light text-wrap">{{ userInformations()?.roleName }}</span>
           </div>
         </div>
-        <div class="dropdown-content" tabindex="0">
+        <div class="dropdown-content" *ngIf="isDropdownOpen()" #dropdownElementMenu tabindex="0">
           <div class="flex gap-2 shrink-0 items-center border pl-1 pr-1 pt-2">
             <img [src]="getUserPictureProfile()" [alt]="getUserName()" class="rounded-full w-9 h-9 ml-2" />
             <div class="flex-col gap-1 align-content-center justify-content-center flex">

@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, Input, OnInit, signal, ViewChild } from '@angular/core';
-import { Chart } from 'chart.js';
+import { Chart, CategoryScale, LinearScale, BarController, BarElement } from 'chart.js';
 import { DialogService } from 'primeng/dynamicdialog';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { Statistics } from 'src/app/interfaces/appstate';
@@ -12,14 +12,49 @@ import { getStatusColor, MonthlyInvoiceStatistic } from './statistic';
   styleUrls: ['./stats.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class StatsComponent implements OnInit, AfterViewInit {
+export class StatsComponent implements AfterViewInit {
+  public readonly statsSig = signal<Statistics | undefined>(undefined);
+  @Input() public set stats(stats: Statistics | undefined) {
+    this.statsSig.set(stats);
+  }
+
+  public readonly dataStateSig = signal<DataState>(DataState.LOADED);
+  @Input() public set dataState(dataState: DataState) {
+    this.dataStateSig.set(dataState);
+  }
+
+  public readonly monthlystatsSig = signal<MonthlyInvoiceStatistic[] | undefined>(undefined);
+  @Input() public set monthlyStats(stats: MonthlyInvoiceStatistic[] | undefined) {
+    this.monthlystatsSig.set(stats);
+  }
+
   public monthlyinvoiceChart: any;
   @ViewChild('chartCanvas') chartCanvas: any;
 
-  constructor(private dialogService: DialogService) {}
+  constructor(private dialogService: DialogService) {
+    Chart.register(CategoryScale, LinearScale, BarController, BarElement);
+  }
 
-  public ngOnInit(): void {
-    // Create the chart
+  public ngAfterViewInit(): void {
+    this.initChartOptions();
+    this.createChart();
+  }
+
+  //#region Monthly Stats Statistics
+
+  private createChart(): void {
+    const { months, datasets } = this.transformData();
+    this.monthlyinvoiceChart = new Chart(this.chartCanvas.nativeElement, {
+      type: 'bar',
+      data: {
+        labels: months,
+        datasets: datasets,
+      },
+      options: this.monthlyinvoiceChart.options,
+    });
+  }
+
+  private initChartOptions(): void {
     this.monthlyinvoiceChart = {
       options: {
         responsive: true,
@@ -72,39 +107,6 @@ export class StatsComponent implements OnInit, AfterViewInit {
     };
   }
 
-  public ngAfterViewInit(): void {
-    this.createChart();
-  }
-
-  private createChart(): void {
-    const { months, datasets } = this.transformData();
-    this.monthlyinvoiceChart = new Chart(this.chartCanvas.nativeElement, {
-      type: 'bar',
-      data: {
-        labels: months,
-        datasets: datasets,
-      },
-      options: this.monthlyinvoiceChart.options,
-    });
-  }
-
-  public readonly statsSig = signal<Statistics | undefined>(undefined);
-  @Input() public set stats(stats: Statistics | undefined) {
-    this.statsSig.set(stats);
-  }
-
-  public readonly dataStateSig = signal<DataState>(DataState.LOADED);
-  @Input() public set dataState(dataState: DataState) {
-    this.dataStateSig.set(dataState);
-  }
-
-  public readonly monthlystatsSig = signal<MonthlyInvoiceStatistic[] | undefined>(undefined);
-  @Input() public set monthlyStats(stats: MonthlyInvoiceStatistic[] | undefined) {
-    this.monthlystatsSig.set(stats);
-  }
-
-  //#region Monthly Stats Statistics
-
   private transformData() {
     // Extract unique months and statuses
     const months = [...new Set(this.monthlystatsSig()?.map((item) => item.month))];
@@ -124,9 +126,6 @@ export class StatsComponent implements OnInit, AfterViewInit {
     });
     return { months, datasets };
   }
-
-  //#endregion
-
   public onMonthlyInvoicesChartClick(datasetIndex: any, dataIndex: any) {
     // Get dataset index and data index
     // const datasetIndex = event.element.datasetIndex;
