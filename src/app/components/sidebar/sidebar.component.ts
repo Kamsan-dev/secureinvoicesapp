@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, inject, OnDestroy, OnIn
 import { SidebarService } from './sidebar.service';
 import { ResponsiveService } from 'src/app/services/responsive.service';
 import { Subject, takeUntil } from 'rxjs';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -13,10 +14,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
   public close = signal(false);
   public sidebarService = inject(SidebarService);
   public responsiveService = inject(ResponsiveService);
+  public userService = inject(UserService);
   public isOpen = signal(false);
   private destroy: Subject<void> = new Subject<void>();
 
-  ngOnInit() {
+  public ngOnInit(): void {
     // desktop sidebar handler
     this.sidebarService.sidebarState$.pipe(takeUntil(this.destroy)).subscribe((state) => {
       this.close.set(state);
@@ -26,6 +28,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.sidebarService.sidebarStatePhone$.pipe(takeUntil(this.destroy)).subscribe((state) => {
       this.isOpen.set(state);
     });
+  }
+
+  public async logout(event: MouseEvent | TouchEvent): Promise<void> {
+    event.stopImmediatePropagation();
+    this.userService.logout();
   }
 
   public ngOnDestroy(): void {

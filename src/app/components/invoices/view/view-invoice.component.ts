@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { delay, lastValueFrom, Subject, takeUntil } from 'rxjs';
 import { DataState } from 'src/app/enums/datastate.enum';
@@ -31,6 +31,10 @@ export class ViewInvoiceComponent implements OnInit {
   public invoiceNumber = signal<string>('');
   private readonly INVOICE_ID = 'invoiceId';
   private readonly INVOICE_NUMBER = 'invoiceNumber';
+
+  // summary information
+  public tvaEnabled = signal<boolean>(true);
+  public tvaValue = signal<number>(20.0);
 
   constructor(
     private invoiceService: InvoiceService,
@@ -70,6 +74,23 @@ export class ViewInvoiceComponent implements OnInit {
       this.loading.set(false);
     }
   }
+
+  //#region forms
+
+  public tvaPrice = computed(() => {
+    return (this.tvaValue() * this.getSubTotal()) / 100;
+  });
+
+  public async onTVAToggleClick(event: MouseEvent | TouchEvent): Promise<void> {
+    this.tvaEnabled.set(!this.tvaEnabled());
+    if (!this.tvaEnabled()) {
+      this.tvaValue.set(0.0);
+    } else {
+      this.tvaValue.set(20.0);
+    }
+  }
+
+  //#endregion
 
   //#region customer
 

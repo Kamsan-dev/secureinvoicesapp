@@ -159,3 +159,9 @@
 .text-inverse {
   color: #333;
 }
+
+.grid-invoice {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 15px;
+}

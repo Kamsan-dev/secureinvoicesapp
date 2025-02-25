@@ -94,7 +94,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   @HostListener('document:click', ['$event'])
   private closeDropdown(event: Event) {
     if (this.dropdownElement && this.dropdownElementMenu && event.target instanceof Node) {
-      if (!this.dropdownElement.nativeElement.contains(event.target) && !this.dropdownElementMenu.nativeElement.contains(event.target)) {
+      if (!this.dropdownElementMenu.nativeElement.contains(event.target)) {
         this.isDropdownOpen.set(false);
       }
     }
