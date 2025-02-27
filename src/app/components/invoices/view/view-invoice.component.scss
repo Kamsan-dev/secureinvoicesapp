@@ -4,6 +4,9 @@
 .invoice {
   background: #fff;
   padding: 20px;
+  border-radius: 15px;
+  border-style: dotted;
+  border-color: #2d353c;
 }
 
 .invoice-company {
@@ -121,8 +124,8 @@
 }
 
 .table-invoice {
-  display: grid;
-  grid-template-columns: 10% auto 10% 20%; /* Column widths */
+  // display: grid;
+  // grid-template-columns: 10% auto 10% 20%; /* Column widths */
   border-collapse: collapse;
   width: 100%;
   margin: 1em 0;
@@ -164,4 +167,10 @@
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 15px;
+}
+
+#invoice,
+#invoice * {
+  opacity: 1 !important;
+  color: black;
 }

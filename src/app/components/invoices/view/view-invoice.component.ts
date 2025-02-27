@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime, delay, distinctUntilChanged, finalize, lastValueFrom, Subject, takeUntil } from 'rxjs';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
-import { Customer } from 'src/app/interfaces/customer.interface';
+import { Customer, ViewCustomer } from 'src/app/interfaces/customer.interface';
 import { Invoice, ViewInvoice } from 'src/app/interfaces/invoice.interface';
 import { State } from 'src/app/interfaces/state';
 import { InvoiceService } from 'src/app/services/invoice.service';
@@ -130,7 +130,7 @@ export class ViewInvoiceComponent implements OnInit {
     // Subscribe to 'vatRate' changes
     this.editInvoiceForm
       .get('vatRate')
-      ?.valueChanges.pipe(takeUntil(this.destroy))
+      ?.valueChanges.pipe(takeUntil(this.destroy), debounceTime(300), distinctUntilChanged())
       .subscribe((value) => {
         this.vatRate.set(value); // Sync with your vatRate model
         this.preTaxPrice.set(this.recalculateTotalPrice());
@@ -140,37 +140,6 @@ export class ViewInvoiceComponent implements OnInit {
     this.listenToInvoiceLinesChanges();
   }
 
-  private async loadInvoiceData() {
-    this.loading.set(true);
-    this.invoiceState().dataState = DataState.LOADING;
-
-    this.invoiceService
-      .getInvoice(this.invoiceId())
-      .pipe(
-        takeUntil(this.destroy),
-        finalize(() => {
-          this.loading.set(false);
-        }),
-      )
-      .subscribe({
-        next: (response: CustomHttpResponse<ViewInvoice>) => {
-          this.invoiceState.set({
-            ...this.invoiceState(),
-            dataState: DataState.LOADED,
-            appData: response,
-          });
-
-          this.populateEditInvoiceForm(this.invoice());
-        },
-        error: (error: HttpErrorResponse) => {
-          this.invoiceState.set({
-            ...this.invoiceState(),
-            dataState: DataState.ERROR,
-            error: error.error.reason,
-          });
-        },
-      });
-  }
   private populateEditInvoiceForm(invoice: Invoice | null) {
     if (invoice) {
       this.editInvoiceForm.setValue({
@@ -229,7 +198,7 @@ export class ViewInvoiceComponent implements OnInit {
   private listenToInvoiceLinesChanges(): void {
     const invoiceLinesFormArray = this.editInvoiceForm.get('invoiceLines') as FormArray;
 
-    invoiceLinesFormArray.valueChanges.pipe(takeUntil(this.destroy)).subscribe(() => {
+    invoiceLinesFormArray.valueChanges.pipe(takeUntil(this.destroy), debounceTime(300), distinctUntilChanged()).subscribe(() => {
       this.recalculateTotalPrice();
     });
   }
@@ -241,6 +210,7 @@ export class ViewInvoiceComponent implements OnInit {
       const type = line.get('type')?.value;
       const multiplier = type === 'PRODUCT' ? line.get('quantity')?.value : line.get('duration')?.value;
       const price = line.get('price')?.value;
+      line.get('totalPrice')?.setValue(price * multiplier, { emitEvent: false });
 
       return acc + (price ?? 0) * (multiplier ?? 0);
     }, 0);
@@ -284,6 +254,40 @@ export class ViewInvoiceComponent implements OnInit {
     }
 
     invoiceLinesFormArray.push(newLine);
+  }
+
+  //#endregion
+
+  //#region events
+
+  public onCustomerSelectionChange(event: any): void {
+    this.loading.set(true);
+    this.invoiceState().dataState = DataState.LOADING;
+
+    this.customerService
+      .getCustomer(event.customerId)
+      .pipe(
+        takeUntil(this.destroy),
+        finalize(() => {
+          this.loading.set(false);
+        }),
+      )
+      .subscribe({
+        next: (response: CustomHttpResponse<ViewCustomer>) => {
+          const state = this.invoiceState();
+          if (state.appData?.data?.customer) {
+            state.appData.data.customer = response.data?.customer as Customer;
+            this.invoiceState().dataState = DataState.LOADED;
+          }
+        },
+        error: (error: HttpErrorResponse) => {
+          this.invoiceState.set({
+            ...this.invoiceState(),
+            dataState: DataState.ERROR,
+            error: error.error.reason,
+          });
+        },
+      });
   }
 
   public onClear(event: any): void {
@@ -352,6 +356,7 @@ export class ViewInvoiceComponent implements OnInit {
   public getCustomer(): Customer | null {
     return this.invoiceState().appData?.data?.customer || null;
   }
+
   //#endregion
 
   //#region invoice
@@ -359,6 +364,38 @@ export class ViewInvoiceComponent implements OnInit {
   public invoice = computed((): Invoice | null => {
     return this.invoiceState().appData?.data?.invoice || null;
   });
+
+  private async loadInvoiceData() {
+    this.loading.set(true);
+    this.invoiceState().dataState = DataState.LOADING;
+
+    this.invoiceService
+      .getInvoice(this.invoiceId())
+      .pipe(
+        takeUntil(this.destroy),
+        finalize(() => {
+          this.loading.set(false);
+        }),
+      )
+      .subscribe({
+        next: (response: CustomHttpResponse<ViewInvoice>) => {
+          this.invoiceState.set({
+            ...this.invoiceState(),
+            dataState: DataState.LOADED,
+            appData: response,
+          });
+
+          this.populateEditInvoiceForm(this.invoice());
+        },
+        error: (error: HttpErrorResponse) => {
+          this.invoiceState.set({
+            ...this.invoiceState(),
+            dataState: DataState.ERROR,
+            error: error.error.reason,
+          });
+        },
+      });
+  }
 
   public getServices(): string[] {
     return (
