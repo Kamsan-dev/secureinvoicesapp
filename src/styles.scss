@@ -64,7 +64,7 @@ body {
 .se-card {
   border-radius: 10px;
   overflow: hidden;
-  color: $clr-white;
+  //color: $clr-white;
   background-color: #191919;
   &-header {
     padding: 25px 25px 0 25px;
@@ -79,4 +79,12 @@ body {
 .p-inputnumber-input {
   width: 80px !important;
   height: 28px;
+}
+
+.ng-select .ng-select-container .ng-value-container .ng-input > input {
+  color: black;
+}
+
+.p-calendar {
+  width: 100%;
 }

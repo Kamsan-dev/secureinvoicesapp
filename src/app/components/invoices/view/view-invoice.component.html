@@ -1,25 +1,145 @@
-<!-- <ng-container>
-  <ng-container>
-    <section>
-      <div class="invoice-container">
-        <nav aria-label="breadcrumb" style="margin-top: 8px">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
-            <li class="breadcrumb-item"><a [routerLink]="['/invoice']" [queryParams]="{ page: 0 }">Invoices</a></li>
-            <li class="breadcrumb-item active" aria-current="page">{{ invoiceNumber() }}</li>
-          </ol>
-        </nav>
-        <div class="row">
-          <div class="col-md-12">
+<ng-template #spinner>
+  <div class="d-flex align-items-center justify-content-center pt-1">
+    <se-progress-spinner [size]="'l'" mode="indeterminate"></se-progress-spinner>
+  </div>
+</ng-template>
+
+{{ editInvoiceForm.value | json }}
+<ng-container>
+  <form [formGroup]="editInvoiceForm" (ngSubmit)="(null)">
+    <div class="grid-invoice">
+      <div class="col-span-12 lg:col-span-4 xl:col-span-4 se-card">
+        <div class="se-card-header">
+          <div class="flex items-center">
+            <span>Summary</span>
+          </div>
+        </div>
+        <div class="se-card-body">
+          <div class="flex flex-col gap-4">
+            <div class="flex justify-between">
+              <span class="flex items-center gap-2">TVA (%) <p-inputSwitch formControlName="isVatEnabled" /></span>
+              <p-inputNumber
+                *ngIf="editInvoiceForm.get('isVatEnabled')?.value"
+                mode="decimal"
+                [minFractionDigits]="2"
+                [maxFractionDigits]="2"
+                formControlName="vatRate"
+              />
+            </div>
+            <div class="flex justify-between">
+              <span class="">Total w/o TVA</span>
+              <span>{{ preTaxPrice() | number: '.2-2' }} €</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="flex items-center gap-2">TVA ({{ vatRate() }}%)</span>
+              <span>{{ tvaPrice() | number: '.2-2' }} €</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="flex items-center gap-2 font-bold">Total TTC</span>
+              <span class="font-bold">{{ priceWithTax() }} €</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-span-12 lg:col-span-8 xl:col-span-8 se-card">
+        <div class="se-card-header">
+          <div class="flex justify-between items-center">
+            <span>Customers registered</span>
+            <div>
+              <p-button label="Add an invoice line" (onClick)="menu.toggle($event)" />
+              <p-tieredMenu #menu [model]="submenuItems()" [popup]="true" />
+            </div>
+          </div>
+        </div>
+        <div class="se-card-body">
+          <div class="flex items-center justify-center">
+            <div formArrayName="invoiceLines">
+              <p-table [value]="invoiceLines().controls" [tableStyle]="{ 'min-width': '50rem' }">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Quantity / duration</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                    <th>Price per unit / hour</th>
+                    <th>Total price</th>
+                    <th>Action</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-line let-i="rowIndex">
+                  <tr [formGroupName]="i">
+                    <td>
+                      <input class="w-[100px]" pInputText [formControlName]="line.value.type === 'PRODUCT' ? 'quantity' : 'duration'" />
+                    </td>
+                    <td>
+                      <input class="w-[200px]" pInputText formControlName="description" />
+                    </td>
+                    <td>{{ line.value.type }}</td>
+                    <td>
+                      <input class="w-[100px]" pInputText formControlName="price" />
+                    </td>
+                    <td>$ {{ line.value.totalPrice }}</td>
+                    <td>
+                      <p-button icon="fa-solid fa-trash" [rounded]="true" severity="warning" (click)="removeInvoiceLine(i)" />
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-span-12 lg:col-span-4 xl:col-span-4 se-card">
+        <div class="se-card-header">
+          <div class="flex justify-between items-center">
+            <span>Details of the invoice n° {{ invoice()?.invoiceNumber }}</span>
+          </div>
+        </div>
+        <div class="se-card-body">
+          <div class="flex justify-center flex-col gap-4">
+            <input pInputText type="text" placeholder="Description.." formControlName="services" />
+            <div class="block">
+              <label>Customer</label>
+              <ng-select
+                [items]="getCustomersPage()"
+                bindLabel="name"
+                bindValue="customerId"
+                formControlName="customerId"
+                placeholder="Select a customer"
+                [loading]="loading()"
+                (scrollToEnd)="loadCustomers()"
+                [virtualScroll]="true"
+                (search)="onSearch($event)"
+                (clear)="onClear($event)"
+              >
+              </ng-select>
+            </div>
+            <div>
+              <label
+                >Select the issue date<p-calendar appendTo="body" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" formControlName="issuedAt"
+              /></label>
+            </div>
+            <div>
+              <label>Select the due date <p-calendar appendTo="body" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" formControlName="dueAt" /> </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-span-12 lg:col-span-8 xl:col-span-8 se-card">
+        <div class="se-card-header">
+          <div class="flex justify-between items-center">
+            <div class="invoice-company text-inverse f-w-600">
+              <span>
+                <a (click)="exportAsPDF()" class="btn btn-sm btn-white m-b-10 p-l-5" style="font-weight: 500; background-color: #d6e0e5; color: #ea0c4b">
+                  <i class="bi bi-file-earmark-pdf-fill" style="color: #ea0c4b"></i>
+                  Export as PDF
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="se-card-body">
+          <div class="flex justify-between items-center">
             <div class="invoice" *ngIf="invoiceState().dataState !== 'LOADING_STATE'; else spinner">
-              <div class="invoice-company text-inverse f-w-600">
-                <span>
-                  <a (click)="exportAsPDF()" class="btn btn-sm btn-white m-b-10 p-l-5" style="font-weight: 500; background-color: #d6e0e5; color: #ea0c4b">
-                    <i class="bi bi-file-earmark-pdf-fill" style="color: #ea0c4b"></i>
-                    Export as PDF
-                  </a>
-                </span>
-              </div>
               <hr />
               <div id="invoice">
                 <div class="invoice-header">
@@ -42,14 +162,14 @@
                       Email: {{ getCustomer()?.email }}<br />
                       Phone: {{ getCustomer()?.phone }}<br />
                       Status:
-                      <span class="badge" [ngClass]="{ 'bg-success': getInvoice()?.status === 'Paid', 'bg-warning': getInvoice()?.status === 'Pending' }">
-                        {{ getInvoice()?.status }}
+                      <span class="badge" [ngClass]="{ 'bg-success': invoice()?.status === 'Paid', 'bg-warning': invoice()?.status === 'Pending' }">
+                        {{ invoice()?.status }}
                       </span>
                     </address>
                   </div>
                   <div class="invoice-date">
                     <small>Invoice Number: #{{ invoiceNumber() }}</small>
-                    <div class="date text-inverse m-t-5">Issue At: {{ getInvoice()?.issuedAt | date: 'mediumDate' }}</div>
+                    <div class="date text-inverse m-t-5">Issue At: {{ invoice()?.issuedAt | date: 'mediumDate' }}</div>
                     <div class="invoice-detail">Due Date: 30 Days from Invoice Date</div>
                   </div>
                 </div>
@@ -107,221 +227,8 @@
           </div>
         </div>
       </div>
-    </section>
-  </ng-container>
-</ng-container> -->
-
-<ng-template #spinner>
-  <div class="d-flex align-items-center justify-content-center pt-1">
-    <se-progress-spinner [size]="'l'" mode="indeterminate"></se-progress-spinner>
-  </div>
-</ng-template>
-
-<ng-container>
-  <div class="grid-invoice">
-    <div class="col-span-12 lg:col-span-4 xl:col-span-4 se-card">
-      <div class="se-card-header">
-        <div class="flex items-center">
-          <span>Summary</span>
-        </div>
-      </div>
-      <div class="se-card-body">
-        <div class="flex flex-col gap-4">
-          <div class="flex justify-between">
-            <span class="flex items-center gap-2">TVA (%) <p-inputSwitch [ngModel]="tvaEnabled()" (ngModelChange)="onTVAToggleClick($event)" /></span>
-            <p-inputNumber
-              *ngIf="tvaEnabled()"
-              mode="decimal"
-              [minFractionDigits]="2"
-              [maxFractionDigits]="2"
-              [ngModel]="tvaValue()"
-              (ngModelChange)="tvaValue.set($event)"
-            />
-          </div>
-          <div class="flex justify-between">
-            <span class="">Total w/o TVA</span>
-            <span>{{ getSubTotal() | number: '.2-2' }} €</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="flex items-center gap-2">TVA ({{ tvaValue() }}%)</span>
-            <span>{{ tvaPrice() | number: '.2-2' }} €</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="flex items-center gap-2 font-bold">Total TTC</span>
-            <span class="font-bold">{{ getSubTotal() + tvaPrice() }} €</span>
-          </div>
-        </div>
-      </div>
     </div>
-    <div class="col-span-12 lg:col-span-8 xl:col-span-8 se-card">
-      <div class="se-card-header">
-        <div class="flex justify-between items-center">
-          <span>Customers registered</span>
-          <i class="fa-solid fa-ellipsis-vertical"></i>
-        </div>
-      </div>
-      <div class="se-card-body">
-        <div class="flex justify-between items-center">
-          <div class="flex content-center items-center gap-4">
-            <i class="fa-solid fa-users text-4xl text-cyan-500 p-3 border border-cyan-500 rounded-lg"></i>
-            <div class="flex flex-col gap-2">
-              <span class="text-xl font-semibold">Toast 2</span>
-              <span class="text-xs text-gray-400">Last month : 27</span>
-            </div>
-          </div>
-          <div>
-            <span class="flex items-center justify-center bg-green-100 text-green-600 font-bold rounded-full px-3 py-1"> +12%</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-span-12 lg:col-span-4 xl:col-span-4 se-card">
-      <div class="se-card-header">
-        <div class="flex justify-between items-center">
-          <span>Customers registered</span>
-          <i class="fa-solid fa-ellipsis-vertical"></i>
-        </div>
-      </div>
-      <div class="se-card-body">
-        <div class="flex justify-between items-center">
-          <div class="flex content-center items-center gap-4">
-            <i class="fa-solid fa-users text-4xl text-cyan-500 p-3 border border-cyan-500 rounded-lg"></i>
-            <div class="flex flex-col gap-2">
-              <span class="text-xl font-semibold">Toast 3</span>
-              <span class="text-xs text-gray-400">Last month : 27</span>
-            </div>
-          </div>
-          <div>
-            <span class="flex items-center justify-center bg-green-100 text-green-600 font-bold rounded-full px-3 py-1"> +12%</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-span-12 lg:col-span-8 xl:col-span-8 se-card">
-      <div class="se-card-header">
-        <div class="flex justify-between items-center">
-          <div class="invoice-company text-inverse f-w-600">
-            <span>
-              <a (click)="exportAsPDF()" class="btn btn-sm btn-white m-b-10 p-l-5" style="font-weight: 500; background-color: #d6e0e5; color: #ea0c4b">
-                <i class="bi bi-file-earmark-pdf-fill" style="color: #ea0c4b"></i>
-                Export as PDF
-              </a>
-            </span>
-          </div>
-        </div>
-      </div>
-      <div class="se-card-body">
-        <div class="flex justify-between items-center">
-          <div class="invoice" *ngIf="invoiceState().dataState !== 'LOADING_STATE'; else spinner">
-            <hr />
-            <div id="invoice">
-              <div class="invoice-header">
-                <div class="invoice-from">
-                  <small>from</small>
-                  <address class="m-t-5 m-b-5">
-                    <strong class="text-inverse">SecureInvoices, Inc.</strong><br />
-                    123 Main Steet<br />
-                    Philadelphia, Pennsylvania 15886<br />
-                    Phone: (123) 456-7890<br />
-                    Fax: (123) 456-7890
-                  </address>
-                </div>
-                <div class="invoice-to">
-                  <small>to</small>
-                  <address class="m-t-5 m-b-5">
-                    <strong class="text-inverse">{{ getCustomer()?.name }}</strong
-                    ><br />
-                    Address: {{ getCustomer()?.address }}<br />
-                    Email: {{ getCustomer()?.email }}<br />
-                    Phone: {{ getCustomer()?.phone }}<br />
-                    Status:
-                    <span class="badge" [ngClass]="{ 'bg-success': getInvoice()?.status === 'Paid', 'bg-warning': getInvoice()?.status === 'Pending' }">
-                      {{ getInvoice()?.status }}
-                    </span>
-                  </address>
-                </div>
-                <div class="invoice-date">
-                  <small>Invoice Number: #{{ invoiceNumber() }}</small>
-                  <div class="date text-inverse m-t-5">Issue At: {{ getInvoice()?.issuedAt | date: 'mediumDate' }}</div>
-                  <div class="invoice-detail">Due Date: 30 Days from Invoice Date</div>
-                </div>
-              </div>
-              <div class="invoice-content">
-                <div class="table-responsive">
-                  <div class="table-invoice">
-                    <div class="table-row table-header">
-                      <div class="table-cell text-center" style="width: 10%">#</div>
-                      <div class="table-cell">Provided Services</div>
-                      <div class="table-cell" style="width: 10%">RATE</div>
-                      <div class="table-cell" style="width: 20%">TOTAL</div>
-                    </div>
-                    <div class="table-row" *ngFor="let service of getServices(); let index = index">
-                      <div class="table-cell">{{ index + 1 }}</div>
-                      <div class="table-cell">
-                        <span class="text-inverse">{{ getLabelOfService(service) }}</span
-                        ><br />
-                      </div>
-                      <div class="table-cell">1</div>
-                      <div class="table-cell">{{ getAmountOfService(service) }}</div>
-                    </div>
-                  </div>
-
-                  <!-- <table class="table table-invoice">
-                                <thead>
-                                   <tr>
-                                      <th class="text-center" width="10%">#</th>
-                                      <th>Provided Servives</th>
-                                      <th class="text-center" width="10%">RATE</th>
-                                      <th class="text-right" width="20%">TOTAL</th>
-                                   </tr>
-                                </thead>
-                                <tbody>
-                                   <tr *ngFor="let service of getServices(); let index = index;">
-                                      <td class="text-center">{{index +1}}</td>
-                                         <td>
-                                            <span class="text-inverse">{{getLabelOfService(service)}}</span><br>
-                                         </td>
-                                         <td class="text-center">1</td>
-                                         <td class="text-right">{{getAmountOfService(service)}}</td>
-                                   </tr>
-                                </tbody>
-                             </table> -->
-                </div>
-                <div class="invoice-price">
-                  <div class="invoice-price-left">
-                    <div class="invoice-price-row">
-                      <div class="sub-price">
-                        <small>SUBTOTAL</small>
-                        <span class="text-inverse">${{ getSubTotal() | number: '.2-2' }}</span>
-                      </div>
-                      <div class="sub-price">
-                        <i class="fa fa-plus text-muted"></i>
-                      </div>
-                      <div class="sub-price">
-                        <small>TAX (5.4%)</small>
-                        <span class="text-inverse">${{ getSubTotal() * 0.054 | number: '.2-2' }}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="invoice-price-right">
-                    <small>TOTAL</small> <span class="f-w-600">${{ getSubTotal() + getSubTotal() * 0.054 | number: '.2-2' }}</span>
-                  </div>
-                </div>
-              </div>
-              <div class="invoice-footer">
-                <p class="text-center m-b-5 f-w-600">THANK YOU FOR YOUR BUSINESS</p>
-                <p class="text-center">
-                  <span class="m-r-10"><i class="fa fa-fw fa-lg fa-globe"></i> secureinvoice.com</span> <br />
-                  <span class="m-r-10"><i class="fa fa-fw fa-lg fa-phone-volume"></i> Telephone:(123) 456-7890</span><br />
-                  <span class="m-r-10"><i class="fa fa-fw fa-lg fa-envelope"></i> Email: bicllling&#64;secureinvoice.com</span>
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  </form>
 </ng-container>
 
 <!-- <table class="table table-invoice">

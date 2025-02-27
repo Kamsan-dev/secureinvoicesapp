@@ -9,8 +9,24 @@ import { ViewInvoiceComponent } from './view/view-invoice.component';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { CalendarModule } from 'primeng/calendar';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { TieredMenuModule } from 'primeng/tieredmenu';
 @NgModule({
   declarations: [EditInvoiceComponent, ListInvoiceComponent, ViewInvoiceComponent],
-  imports: [InvoiceRoutingModule, SharedModule, NgSelectModule, SeProgressSpinnerModule, InputSwitchModule, InputTextModule, InputNumberModule],
+  imports: [
+    InvoiceRoutingModule,
+    SharedModule,
+    NgSelectModule,
+    TableModule,
+    SeProgressSpinnerModule,
+    CalendarModule,
+    InputSwitchModule,
+    InputTextModule,
+    InputNumberModule,
+    ButtonModule,
+    TieredMenuModule,
+  ],
 })
 export class InvoiceModule {}
