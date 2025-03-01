@@ -50,7 +50,7 @@ export class ListInvoiceDialogComponent implements OnInit {
   }
 
   public onCloseDialog(invoiceId: number, invoiceNumber: string): void {
-    this.router.navigate(['/invoice/view', invoiceId, invoiceNumber]).then(() => {
+    this.router.navigate(['/invoices/view', invoiceId, invoiceNumber]).then(() => {
       this.ref!.close();
     });
   }

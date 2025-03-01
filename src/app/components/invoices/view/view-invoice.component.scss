@@ -123,6 +123,22 @@
   border-color: #d9dfe3;
 }
 
+.table-cell:nth-child(1) {
+  width: 15%;
+} /* Quantity / Duration */
+.table-cell:nth-child(2) {
+  width: 40%;
+} /* Description */
+.table-cell:nth-child(3) {
+  width: 15%;
+} /* Type */
+.table-cell:nth-child(4) {
+  width: 15%;
+} /* Price */
+.table-cell:nth-child(5) {
+  width: 15%;
+} /* Total Price */
+
 .table-invoice {
   // display: grid;
   // grid-template-columns: 10% auto 10% 20%; /* Column widths */
@@ -130,6 +146,7 @@
   width: 100%;
   margin: 1em 0;
   border: 1px solid #ddd;
+  // table-layout: fixed;
 }
 
 .table-row {

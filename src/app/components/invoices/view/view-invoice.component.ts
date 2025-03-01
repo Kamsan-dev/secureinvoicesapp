@@ -12,6 +12,8 @@ import { jsPDF as pdf } from 'jspdf';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { CustomersPage } from 'src/app/interfaces/appstate';
 import { CustomerService } from 'src/app/services/customer.service';
+import { ResponsiveService } from 'src/app/services/responsive.service';
+import { BreadcrumbItem } from 'src/app/interfaces/common.interface';
 
 @Component({
   selector: 'app-view-invoice',
@@ -35,9 +37,15 @@ export class ViewInvoiceComponent implements OnInit {
   private readonly INVOICE_ID = 'invoiceId';
   private readonly INVOICE_NUMBER = 'invoiceNumber';
 
-  // summary information
+  // form
   public vatRate = signal<number>(20.0);
   public editInvoiceForm!: FormGroup;
+  private initialFormValue: any;
+  public isInvoiceModified = signal(false);
+
+  // flag
+
+  private isInitialized = false;
 
   // ng-select
   public customerFilterTerm = signal<string>('');
@@ -52,7 +60,6 @@ export class ViewInvoiceComponent implements OnInit {
   });
 
   // tieredMenu
-
   public submenuItems = signal([
     {
       label: 'Product',
@@ -66,11 +73,15 @@ export class ViewInvoiceComponent implements OnInit {
     },
   ]);
 
+  // breadcrumbs
+  public items: BreadcrumbItem[] = [{ label: '', route: '/home', icon: 'pi pi-home' }, { label: 'Invoices', route: '/invoices' }, { label: 'curren-invoice' }];
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private fb: FormBuilder,
     private customerService: CustomerService,
     private invoiceService: InvoiceService,
+    public responsiveService: ResponsiveService,
     private router: Router,
   ) {}
 
@@ -119,22 +130,29 @@ export class ViewInvoiceComponent implements OnInit {
       .get('isVatEnabled')
       ?.valueChanges.pipe(takeUntil(this.destroy))
       .subscribe((enabled) => {
-        const defaultVatRate = enabled ? 20.0 : 0.0;
+        // Once the invoice is loaded, we take the invoice vat rate as the default value.
+        let defaultValue = this.initialFormValue ? this.initialFormValue.vatRate : 20.0;
+
+        const defaultVatRate = enabled ? defaultValue : 0.0;
+
         this.editInvoiceForm.get('vatRate')?.setValue(defaultVatRate, { emitEvent: false });
+        // we set the vat rate so we can compute the new price with tax.
         this.vatRate.set(defaultVatRate);
+        // we can display the new price : no tax or with tax.
         const priceUpdated = enabled ? this.priceWithTax() : this.preTaxPrice();
-        console.log('price updated: ' + priceUpdated);
+        // we update our form with the new value
         this.editInvoiceForm.get('totalVat')?.setValue(priceUpdated, { emitEvent: false });
+        this.isFormModified();
       });
 
     // Subscribe to 'vatRate' changes
     this.editInvoiceForm
       .get('vatRate')
-      ?.valueChanges.pipe(takeUntil(this.destroy), debounceTime(300), distinctUntilChanged())
+      ?.valueChanges.pipe(takeUntil(this.destroy), debounceTime(300))
       .subscribe((value) => {
-        this.vatRate.set(value); // Sync with your vatRate model
-        this.preTaxPrice.set(this.recalculateTotalPrice());
+        this.vatRate.set(value);
         this.editInvoiceForm.get('totalVat')?.setValue(this.priceWithTax(), { emitEvent: false });
+        this.isFormModified();
       });
 
     this.listenToInvoiceLinesChanges();
@@ -142,20 +160,23 @@ export class ViewInvoiceComponent implements OnInit {
 
   private populateEditInvoiceForm(invoice: Invoice | null) {
     if (invoice) {
-      this.editInvoiceForm.setValue({
-        customerId: invoice.customerId,
-        invoiceId: invoice.invoiceId,
-        invoiceNumber: invoice.invoiceNumber,
-        services: invoice.services,
-        issuedAt: new Date(invoice.issuedAt),
-        dueAt: new Date(invoice.dueAt),
-        status: invoice.status,
-        total: invoice.total,
-        totalVat: invoice.totalVat,
-        isVatEnabled: invoice.isVatEnabled,
-        vatRate: invoice.vatRate,
-        invoiceLines: [],
-      });
+      this.editInvoiceForm.setValue(
+        {
+          customerId: invoice.customerId,
+          invoiceId: invoice.invoiceId,
+          invoiceNumber: invoice.invoiceNumber,
+          services: invoice.services,
+          issuedAt: new Date(invoice.issuedAt),
+          dueAt: new Date(invoice.dueAt),
+          status: invoice.status,
+          total: invoice.total,
+          totalVat: invoice.totalVat,
+          isVatEnabled: invoice.isVatEnabled,
+          vatRate: invoice.vatRate,
+          invoiceLines: [],
+        },
+        { emitEvent: false },
+      );
 
       if (invoice.invoiceLines?.length > 0) {
         const lineFG = invoice.invoiceLines.map((line) => {
@@ -171,15 +192,24 @@ export class ViewInvoiceComponent implements OnInit {
         });
         const invoiceLinesFormArray = this.editInvoiceForm.get('invoiceLines') as FormArray;
         lineFG.forEach((line) => invoiceLinesFormArray.push(line));
+        // Optionally: Set the value of the entire FormArray after adding FormGroups, preventing event emission
       }
 
-      this.preTaxPrice.update((value): number => {
-        return this.recalculateTotalPrice();
-      });
+      // Once we loaded the invoice data, we keep the origin copy as initialFormValue.
+      this.initialFormValue = this.editInvoiceForm.value;
+      // We update the vatrate & the pre-tax price
+      this.vatRate.set(invoice.isVatEnabled ? invoice.vatRate : 0);
+      this.preTaxPrice.set(invoice.total);
+      // We update the totalVat.
+      this.initialFormValue.totalVat = invoice.totalVat;
     }
   }
 
   //#region forms
+
+  public isFormModified(): void {
+    this.isInvoiceModified.set(JSON.stringify(this.initialFormValue) !== JSON.stringify(this.editInvoiceForm.value));
+  }
 
   public invoiceLines = computed(() => {
     return this.editInvoiceForm.get('invoiceLines') as FormArray;
@@ -199,10 +229,17 @@ export class ViewInvoiceComponent implements OnInit {
     const invoiceLinesFormArray = this.editInvoiceForm.get('invoiceLines') as FormArray;
 
     invoiceLinesFormArray.valueChanges.pipe(takeUntil(this.destroy), debounceTime(300), distinctUntilChanged()).subscribe(() => {
-      this.recalculateTotalPrice();
+      // using flag here because we dont need to calculate anything at the start of the life cycle of the component
+      if (this.isInitialized) {
+        this.recalculateTotalPrice();
+        this.isFormModified();
+      } else {
+        this.isInitialized = true;
+      }
     });
   }
 
+  // Calculate total price without tax then computed signals will update total price with tax.
   private recalculateTotalPrice(): number {
     const invoiceLinesFormArray = this.editInvoiceForm.get('invoiceLines') as FormArray;
 
@@ -230,6 +267,7 @@ export class ViewInvoiceComponent implements OnInit {
   public removeInvoiceLine(index: number) {
     const invoiceLinesFormArray = this.editInvoiceForm.get('invoiceLines') as FormArray;
     invoiceLinesFormArray.removeAt(index);
+    this.editInvoiceForm.markAsDirty();
   }
 
   public addInvoiceLine(value: 'PRODUCT' | 'SERVICE') {
@@ -254,6 +292,7 @@ export class ViewInvoiceComponent implements OnInit {
     }
 
     invoiceLinesFormArray.push(newLine);
+    this.editInvoiceForm.markAsDirty();
   }
 
   //#endregion
@@ -261,6 +300,7 @@ export class ViewInvoiceComponent implements OnInit {
   //#region events
 
   public onCustomerSelectionChange(event: any): void {
+    this.isFormModified();
     this.loading.set(true);
     this.invoiceState().dataState = DataState.LOADING;
 

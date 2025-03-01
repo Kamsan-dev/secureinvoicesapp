@@ -13,6 +13,8 @@ import { CalendarModule } from 'primeng/calendar';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TieredMenuModule } from 'primeng/tieredmenu';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+
 @NgModule({
   declarations: [EditInvoiceComponent, ListInvoiceComponent, ViewInvoiceComponent],
   imports: [
@@ -27,6 +29,7 @@ import { TieredMenuModule } from 'primeng/tieredmenu';
     InputNumberModule,
     ButtonModule,
     TieredMenuModule,
+    BreadcrumbModule,
   ],
 })
 export class InvoiceModule {}

@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './components/home/home/home.component';
 import { authenticationGuard } from './guard/authentication.guard';
 
@@ -10,12 +10,12 @@ const routes: Routes = [
     canMatch: [authenticationGuard],
   },
   {
-    path: 'customer',
+    path: 'customers',
     loadChildren: () => import('./components/customers/customer.module').then((m) => m.CustomerModule),
     canActivate: [authenticationGuard],
   },
   {
-    path: 'invoice',
+    path: 'invoices',
     loadChildren: () => import('./components/invoices/invoice.module').then((m) => m.InvoiceModule),
     canActivate: [authenticationGuard],
   },
