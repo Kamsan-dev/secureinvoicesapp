@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { InvoicesPage } from '../interfaces/appstate';
 import { CustomHttpResponse } from '../interfaces/custom-http-response';
-import { EditInvoiceRequest, InvoiceResponse, ViewInvoice } from '../interfaces/invoice.interface';
+import { EditInvoiceRequest, Invoice, InvoiceResponse, ViewInvoice } from '../interfaces/invoice.interface';
 import { PersistanceService } from './persistance.service';
 import { environment } from 'src/environments/environment';
 
@@ -31,5 +31,13 @@ export class InvoiceService {
 
   public getMonthlyStatusInvoices(request: { status: string; monthYear: string }, page: number = 0, size: number = 5): Observable<CustomHttpResponse<InvoicesPage>> {
     return this.http.post<CustomHttpResponse<InvoicesPage>>(`${this.server}invoice/list/monthly-status?page=${page}&size=${size}`, request);
+  }
+
+  public updateInvoice(invoiceId: number, invoice: Invoice): Observable<CustomHttpResponse<ViewInvoice>> {
+    return this.http.put<CustomHttpResponse<ViewInvoice>>(`${this.server}invoice/update/${invoiceId}`, invoice);
+  }
+
+  public deleteInvoice(invoiceId: number): Observable<CustomHttpResponse<void>> {
+    return this.http.delete<CustomHttpResponse<void>>(`${this.server}invoice/delete/${invoiceId}`);
   }
 }

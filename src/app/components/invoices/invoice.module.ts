@@ -14,7 +14,9 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TieredMenuModule } from 'primeng/tieredmenu';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
-
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
+import { DropdownModule } from 'primeng/dropdown';
 @NgModule({
   declarations: [EditInvoiceComponent, ListInvoiceComponent, ViewInvoiceComponent],
   imports: [
@@ -30,6 +32,9 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
     ButtonModule,
     TieredMenuModule,
     BreadcrumbModule,
+    ConfirmDialogModule,
+    DropdownModule,
   ],
+  providers: [ConfirmationService],
 })
 export class InvoiceModule {}

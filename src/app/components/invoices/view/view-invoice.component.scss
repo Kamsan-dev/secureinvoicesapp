@@ -124,18 +124,21 @@
 }
 
 .table-cell:nth-child(1) {
-  width: 15%;
+  width: 10%;
 } /* Quantity / Duration */
 .table-cell:nth-child(2) {
-  width: 40%;
-} /* Description */
-.table-cell:nth-child(3) {
   width: 15%;
-} /* Type */
+} /* Quantity / Duration */
+.table-cell:nth-child(3) {
+  width: 30%;
+} /* Description */
 .table-cell:nth-child(4) {
   width: 15%;
-} /* Price */
+} /* Type */
 .table-cell:nth-child(5) {
+  width: 15%;
+} /* Price */
+.table-cell:nth-child(6) {
   width: 15%;
 } /* Total Price */
 

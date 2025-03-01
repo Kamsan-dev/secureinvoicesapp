@@ -5,7 +5,7 @@ import { debounceTime, delay, distinctUntilChanged, finalize, lastValueFrom, Sub
 import { DataState } from 'src/app/enums/datastate.enum';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
 import { Customer, ViewCustomer } from 'src/app/interfaces/customer.interface';
-import { Invoice, ViewInvoice } from 'src/app/interfaces/invoice.interface';
+import { Invoice, InvoiceLine, InvoiceStatus, ViewInvoice } from 'src/app/interfaces/invoice.interface';
 import { State } from 'src/app/interfaces/state';
 import { InvoiceService } from 'src/app/services/invoice.service';
 import { jsPDF as pdf } from 'jspdf';
@@ -14,6 +14,8 @@ import { CustomersPage } from 'src/app/interfaces/appstate';
 import { CustomerService } from 'src/app/services/customer.service';
 import { ResponsiveService } from 'src/app/services/responsive.service';
 import { BreadcrumbItem } from 'src/app/interfaces/common.interface';
+import { ToasterService } from 'src/app/common/toaster/toaster.service';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-view-invoice',
@@ -73,6 +75,9 @@ export class ViewInvoiceComponent implements OnInit {
     },
   ]);
 
+  //dropdwon invoice status
+  public invoiceStatusItems = signal<InvoiceStatus[]>(['Pending', 'Paid', 'Overdue', 'Draft']);
+
   // breadcrumbs
   public items: BreadcrumbItem[] = [{ label: '', route: '/home', icon: 'pi pi-home' }, { label: 'Invoices', route: '/invoices' }, { label: 'curren-invoice' }];
 
@@ -83,6 +88,8 @@ export class ViewInvoiceComponent implements OnInit {
     private invoiceService: InvoiceService,
     public responsiveService: ResponsiveService,
     private router: Router,
+    private toasterService: ToasterService,
+    private confirmationService: ConfirmationService,
   ) {}
 
   public ngOnInit(): void {
@@ -143,6 +150,7 @@ export class ViewInvoiceComponent implements OnInit {
         // we update our form with the new value
         this.editInvoiceForm.get('totalVat')?.setValue(priceUpdated, { emitEvent: false });
         this.isFormModified();
+        console.log('isvatenabled listener');
       });
 
     // Subscribe to 'vatRate' changes
@@ -153,6 +161,7 @@ export class ViewInvoiceComponent implements OnInit {
         this.vatRate.set(value);
         this.editInvoiceForm.get('totalVat')?.setValue(this.priceWithTax(), { emitEvent: false });
         this.isFormModified();
+        console.log('vatRate listener');
       });
 
     this.listenToInvoiceLinesChanges();
@@ -202,6 +211,7 @@ export class ViewInvoiceComponent implements OnInit {
       this.preTaxPrice.set(invoice.total);
       // We update the totalVat.
       this.initialFormValue.totalVat = invoice.totalVat;
+      console.log(this.editInvoiceForm.value);
     }
   }
 
@@ -231,6 +241,7 @@ export class ViewInvoiceComponent implements OnInit {
     invoiceLinesFormArray.valueChanges.pipe(takeUntil(this.destroy), debounceTime(300), distinctUntilChanged()).subscribe(() => {
       // using flag here because we dont need to calculate anything at the start of the life cycle of the component
       if (this.isInitialized) {
+        console.log('invoiceLines');
         this.recalculateTotalPrice();
         this.isFormModified();
       } else {
@@ -260,6 +271,77 @@ export class ViewInvoiceComponent implements OnInit {
     // update in form price with tax
     this.editInvoiceForm.get('totalVat')?.setValue(this.priceWithTax(), { emitEvent: false });
     return total;
+  }
+
+  public onSaveInvoiceClick(event: MouseEvent | TouchEvent): void {
+    this.loading.set(true);
+    this.editInvoiceForm.disable({ emitEvent: false });
+    this.invoiceState().dataState = DataState.LOADING;
+    console.log(this.editInvoiceForm.getRawValue());
+    this.invoiceService
+      .updateInvoice(this.invoiceId(), this.editInvoiceForm.getRawValue())
+      .pipe(
+        takeUntil(this.destroy),
+        finalize(() => {
+          this.loading.set(false);
+          this.editInvoiceForm.enable({ emitEvent: false });
+          this.editInvoiceForm.markAsPristine();
+          this.initialFormValue = this.editInvoiceForm.getRawValue();
+          console.log(this.initialFormValue);
+          this.isFormModified();
+        }),
+      )
+      .subscribe({
+        next: (response: CustomHttpResponse<ViewInvoice>) => {
+          this.invoiceState().dataState = DataState.LOADED;
+          this.toasterService.show('success', `Success !`, 'Invoice has been saved');
+        },
+        error: (error: HttpErrorResponse) => {
+          this.invoiceState.set({
+            ...this.invoiceState(),
+            dataState: DataState.ERROR,
+            error: error.error.reason,
+          });
+          this.toasterService.show('error', 'Something went wrong !', 'An error occured when saving the invoice.');
+        },
+      });
+  }
+
+  public onResetFormValue(event: MouseEvent | TouchEvent): void {
+    event.stopImmediatePropagation();
+    this.editInvoiceForm.reset(this.initialFormValue, { emitEvent: false });
+    this.invoiceLines().clear();
+    this.initialFormValue.invoiceLines.forEach((line: InvoiceLine) => {
+      const newLine = this.fb.group({
+        invoiceLineId: [line.invoiceLineId],
+        description: [line.description],
+        type: [line.type],
+        duration: [line.duration],
+        quantity: [line.quantity],
+        price: [line.price],
+        totalPrice: [line.totalPrice],
+      });
+      this.invoiceLines().push(newLine);
+    });
+    this.isInvoiceModified.set(false);
+  }
+
+  public onDeleteInvoiceClick(event: MouseEvent | TouchEvent): void {
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: 'Do you want to delete this invoice?',
+      header: 'Delete Confirmation',
+      icon: 'pi pi-info-circle',
+      acceptButtonStyleClass: 'p-button-danger p-button-text',
+      rejectButtonStyleClass: 'p-button-text p-button-text',
+      acceptIcon: 'none',
+      rejectIcon: 'none',
+
+      accept: () => {
+        this.deleteInvoiceById();
+      },
+      reject: () => {},
+    });
   }
 
   // Button methods
@@ -437,33 +519,34 @@ export class ViewInvoiceComponent implements OnInit {
       });
   }
 
-  public getServices(): string[] {
-    return (
-      this.invoiceState()
-        .appData?.data?.invoice.services.split(',')
-        .map((service) => service.trim()) || []
-    );
+  private deleteInvoiceById(): void {
+    this.loading.set(true);
+    this.invoiceState().dataState = DataState.LOADING;
+
+    this.invoiceService
+      .deleteInvoice(this.invoiceId())
+      .pipe(
+        takeUntil(this.destroy),
+        finalize(() => {
+          this.loading.set(false);
+        }),
+      )
+      .subscribe({
+        next: (response: CustomHttpResponse<void>) => {
+          this.toasterService.show('success', `Success !`, 'Invoice has been deleted successfully');
+          this.router.navigate(['invoices']);
+        },
+        error: (error: HttpErrorResponse) => {
+          this.invoiceState.set({
+            ...this.invoiceState(),
+            dataState: DataState.ERROR,
+            error: error.error.reason,
+          });
+          this.toasterService.show('error', `Something went wrong !`, '');
+        },
+      });
   }
 
-  public getAmountOfService(service: string): string {
-    const tab = service.split(' ');
-    return tab[tab.length - 1];
-  }
-
-  public getLabelOfService(service: string): string {
-    const tab = service.split(' ');
-    return tab.slice(0, tab.length - 1).join(' '); // Join everything except the last part
-  }
-
-  public getSubTotal(): number {
-    const total = this.getServices()
-      .map((service) => {
-        const amount = this.getAmountOfService(service);
-        return parseFloat(amount.replace('$', '')); // Remove '$' and convert to a number
-      })
-      .reduce((sum, amount) => sum + amount, 0);
-    return total;
-  }
   //#endregion
 
   //region export

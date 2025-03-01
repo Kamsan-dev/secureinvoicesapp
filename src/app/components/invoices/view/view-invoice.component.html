@@ -3,11 +3,11 @@
     <se-progress-spinner [size]="'l'" mode="indeterminate"></se-progress-spinner>
   </div>
 </ng-template>
-
+<p-confirmDialog />
 <main>
-  <!-- {{ editInvoiceForm.value | json }} -->
-  <form [formGroup]="editInvoiceForm" (ngSubmit)="(null)">
-    <div class="flex justify-between">
+  {{ editInvoiceForm.value | json }}
+  <form [formGroup]="editInvoiceForm" (ngSubmit)="onSaveInvoiceClick($event)">
+    <div class="flex justify-between items-center flex-wrap">
       <p-breadcrumb class="max-w-full" [model]="items">
         <ng-template pTemplate="item" let-item>
           <ng-container *ngIf="item.route; else elseBlock">
@@ -21,9 +21,29 @@
           </ng-template>
         </ng-template>
       </p-breadcrumb>
-      <div class="flex gap-2">
-        <p-button label="Save" severity="success" icon="fa-solid fa-floppy-disk" [disabled]="!isInvoiceModified()" />
-        <p-button label="Delete" severity="danger" icon="fa-solid fa-trash" />
+      <div class="flex gap-2 pt-2">
+        <p-button
+          label="Save"
+          severity="success"
+          icon="fa-solid fa-floppy-disk"
+          [disabled]="!isInvoiceModified()"
+          type="submit"
+          [size]="!responsiveService.desktop() ? 'small' : 'large'"
+        />
+        <p-button
+          label="Reset"
+          severity="info"
+          icon="fa-solid fa-rotate-left"
+          (onClick)="onResetFormValue($event)"
+          [size]="!responsiveService.desktop() ? 'small' : 'large'"
+        ></p-button>
+        <p-button
+          label="Delete"
+          severity="danger"
+          icon="fa-solid fa-trash"
+          [size]="!responsiveService.desktop() ? 'small' : 'large'"
+          (onClick)="onDeleteInvoiceClick($event)"
+        />
       </div>
     </div>
 
@@ -64,7 +84,7 @@
       <div class="col-span-12 lg:col-span-8 xl:col-span-8 se-card max-h-[400px] overflow-y-auto">
         <div class="se-card-header">
           <div class="flex justify-between items-center">
-            <span>Customers registered</span>
+            <span>Products & services</span>
             <div>
               <p-button [label]="responsiveService.desktop() ? 'Add a new invoice line' : undefined" (onClick)="menu.toggle($event)">
                 <i *ngIf="!responsiveService.desktop()" class="fa-solid fa-plus"></i>
@@ -135,6 +155,9 @@
                 (change)="onCustomerSelectionChange($event)"
               >
               </ng-select>
+            </div>
+            <div>
+              <p-dropdown [options]="invoiceStatusItems()" formControlName="status" [disabled]="loading()" placeholder="Invoice status"> </p-dropdown>
             </div>
             <div>
               <label
@@ -212,6 +235,7 @@
       <div class="table-responsive">
         <div class="table-invoice">
           <div class="table-row table-header">
+            <div class="table-cell">#</div>
             <div class="table-cell">Quantity / Duration</div>
             <div class="table-cell">Description</div>
             <div class="table-cell">Type</div>
@@ -219,7 +243,8 @@
             <div class="table-cell">Total Price</div>
           </div>
 
-          <div class="table w-full" *ngFor="let line of invoiceLines().controls">
+          <div class="table w-full" *ngFor="let line of invoiceLines().controls; let i = index">
+            <div class="table-cell">{{ i + 1 }}</div>
             <div class="table-cell">
               {{ line.value.type === 'PRODUCT' ? line.value.quantity : line.value.duration }}
             </div>

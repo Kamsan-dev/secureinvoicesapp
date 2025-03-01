@@ -46,3 +46,5 @@ export interface ViewInvoice {
   user: User;
   customer: Customer;
 }
+
+export declare type InvoiceStatus = 'Pending' | 'Paid' | 'Overdue' | 'Draft';
