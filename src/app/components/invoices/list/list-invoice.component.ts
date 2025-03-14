@@ -1,17 +1,16 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, OnInit, signal } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { delay, lastValueFrom, Subject, takeUntil } from 'rxjs';
+import { finalize, lastValueFrom, Subject, takeUntil } from 'rxjs';
+import { ToasterService } from 'src/app/common/toaster/toaster.service';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { InvoicesPage } from 'src/app/interfaces/appstate';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
-import { Invoice } from 'src/app/interfaces/invoice.interface';
+import { Invoice, ViewInvoice } from 'src/app/interfaces/invoice.interface';
 import { State } from 'src/app/interfaces/state';
-import { User } from 'src/app/interfaces/user';
 import { InvoiceService } from 'src/app/services/invoice.service';
-
-declare type direction = 'forward' | 'previous';
+import { ResponsiveService } from 'src/app/services/responsive.service';
 
 @Component({
   selector: 'app-list-invoice',
@@ -26,44 +25,46 @@ export class ListInvoiceComponent implements OnInit {
     error: undefined,
   });
 
-  //filter
-  //public nameFilter = signal<string>('');
+  //pagination
   public currentPage = signal<number>(0);
-  //public searchCustomerByNameSubject = new Subject<string>();
+  public totalRecords = signal(0);
+  public pageSize = signal(5);
+  public first = signal(0);
+
+  //dialog
+  public isNewInvoiceDialogVisible = signal(false);
+  public newInvoiceDescription = '';
+
+  public loading = signal(false);
+  private destroy: Subject<void> = new Subject<void>();
+
+  public readonly DataState = DataState;
 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
     private invoiceService: InvoiceService,
+    public responsiveService: ResponsiveService,
+    private toasterService: ToasterService,
   ) {}
   public ngOnInit(): void {
     const page = this.route.snapshot.queryParamMap.get('page');
     this.currentPage.set(page ? parseInt(page, 10) : 0);
-    //this.loadInvoices(this.currentPage());
+    this.first.set(this.currentPage() * this.pageSize());
 
     // Listen for query parameter changes
     this.route.queryParams.pipe(takeUntil(this.destroy)).subscribe((params) => {
       const newPage = Number(params['page']) || 0;
-      if (this.currentPage() === newPage) {
-        this.currentPage.set(newPage);
-        this.loadInvoices(newPage);
-      }
+      this.loadInvoices(newPage);
     });
   }
-
-  public loading = signal(false);
-  private destroy: Subject<void> = new Subject<void>();
 
   private async loadInvoices(page: number = 0): Promise<void> {
     this.invoiceState().dataState = DataState.LOADING;
     this.loading.set(true);
     try {
-      const response = await lastValueFrom(
-        this.invoiceService.getInvoices(page, 5).pipe(
-          delay(800), // Delay by 1000ms (1 second)
-        ),
-      );
+      const response = await lastValueFrom(this.invoiceService.getInvoices(page, 5));
       this.invoiceState.set({
         ...this.invoiceState(),
         dataState: DataState.LOADED,
@@ -71,6 +72,7 @@ export class ListInvoiceComponent implements OnInit {
       });
       const content = response?.data?.page?.content || [];
       const totalElements = response.data?.page?.totalElements || 0;
+      this.totalRecords.set(response.data?.page.totalElements || 0);
       // If no customers are found on the given page and there are customers to display,
       // we load the last valid page of data
       if (content.length === 0 && totalElements > 0) {
@@ -95,51 +97,63 @@ export class ListInvoiceComponent implements OnInit {
     }
   }
 
-  //#region UserInformations
-  public getUserName(): string {
-    return this.invoiceState().appData?.data?.user?.firstName + ' ' + this.invoiceState().appData?.data?.user?.lastName;
+  //#region events
+
+  public onSaveNewInvoiceClick(event: MouseEvent | TouchEvent): void {
+    event.stopImmediatePropagation();
+    this.loading.set(true);
+    this.invoiceState().dataState = DataState.LOADING;
+
+    this.invoiceService
+      .createInvoice(this.newInvoiceDescription)
+      .pipe(
+        takeUntil(this.destroy),
+        finalize(() => {
+          this.loading.set(false);
+          this.isNewInvoiceDialogVisible.set(false);
+        }),
+      )
+      .subscribe({
+        next: (response: CustomHttpResponse<ViewInvoice>) => {
+          this.invoiceState.set({
+            ...this.invoiceState(),
+            dataState: DataState.LOADED,
+          });
+          this.invoiceState().appData?.data?.page.content.unshift(response.data?.invoice as Invoice);
+          this.toasterService.show('success', `Success !`, 'Invoice has been created successfully');
+        },
+        error: (error: HttpErrorResponse) => {
+          this.invoiceState.set({
+            ...this.invoiceState(),
+            dataState: DataState.ERROR,
+            error: error.error.reason,
+          });
+          this.toasterService.show('error', `Something went wrong !`, '');
+        },
+      });
   }
 
-  public getUserPictureProfile(): string {
-    return this.invoiceState().appData?.data?.user?.imageUrl || 'https://img.freepik.com/free-icon/user_318-159711.jpg';
+  public onRedirectToInvoice(invoiceId: number, invoiceNumber: string): void {
+    this.router.navigate(['/invoices/view', invoiceId, invoiceNumber]);
   }
 
-  public getUserInformations(): User | null {
-    return this.invoiceState().appData?.data?.user || null;
-  }
+  //#endregion
 
-  public getInvoicesPage(): Invoice[] {
+  //#region invoices
+
+  public invoicesPage = computed(() => {
     return (this.invoiceState().appData?.data?.page.content as Invoice[]) || [];
-  }
-
-  public printInvoice(arg0: number): void {
-    throw new Error('Method not implemented.');
-  }
+  });
 
   //#region pagination
 
-  public onPageChange(direction: direction): void {
-    direction === 'forward' ? this.currentPage.set(this.currentPage() + 1) : this.currentPage.set(this.currentPage() - 1);
+  public onPageChange(event: any): void {
+    this.currentPage.set(event.page);
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { page: this.currentPage() },
       queryParamsHandling: 'merge',
     });
   }
-
-  public goToPage(page: number): void {
-    this.currentPage.set(page);
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { page: this.currentPage() },
-      queryParamsHandling: 'merge',
-    });
-  }
-
-  public getLastPageNumber(): number {
-    const totalPages = this.invoiceState().appData?.data?.page?.totalPages || 0;
-    return totalPages > 0 ? totalPages - 1 : 0;
-  }
-
   //#endregion
 }

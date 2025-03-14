@@ -34,7 +34,7 @@
           label="Reset"
           severity="info"
           icon="fa-solid fa-rotate-left"
-          (onClick)="onResetFormValue($event)"
+          (onClick)="onResetInvoiceClick($event)"
           [size]="!responsiveService.desktop() ? 'small' : 'large'"
         ></p-button>
         <p-button
@@ -157,7 +157,7 @@
               </ng-select>
             </div>
             <div>
-              <p-dropdown [options]="invoiceStatusItems()" formControlName="status" [disabled]="loading()" placeholder="Invoice status"> </p-dropdown>
+              <p-dropdown [options]="invoiceStatusItems()" formControlName="status" placeholder="Invoice status"> </p-dropdown>
             </div>
             <div>
               <label

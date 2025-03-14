@@ -17,6 +17,10 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { DropdownModule } from 'primeng/dropdown';
+import { ChipModule } from 'primeng/chip';
+import { PaginatorModule } from 'primeng/paginator';
+import { TooltipModule } from 'primeng/tooltip';
+import { DialogModule } from 'primeng/dialog';
 @NgModule({
   declarations: [EditInvoiceComponent, ListInvoiceComponent, ViewInvoiceComponent],
   imports: [
@@ -34,6 +38,10 @@ import { DropdownModule } from 'primeng/dropdown';
     BreadcrumbModule,
     ConfirmDialogModule,
     DropdownModule,
+    ChipModule,
+    PaginatorModule,
+    TooltipModule,
+    DialogModule,
   ],
   providers: [ConfirmationService],
 })

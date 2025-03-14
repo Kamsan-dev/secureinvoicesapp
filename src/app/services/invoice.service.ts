@@ -40,4 +40,8 @@ export class InvoiceService {
   public deleteInvoice(invoiceId: number): Observable<CustomHttpResponse<void>> {
     return this.http.delete<CustomHttpResponse<void>>(`${this.server}invoice/delete/${invoiceId}`);
   }
+
+  public createInvoice(description: string): Observable<CustomHttpResponse<ViewInvoice>> {
+    return this.http.post<CustomHttpResponse<ViewInvoice>>(`${this.server}invoice/create`, description);
+  }
 }

@@ -25,6 +25,7 @@ export class StatsComponent implements AfterViewInit {
 
   public readonly monthlystatsSig = signal<MonthlyInvoiceStatistic[] | undefined>(undefined);
   @Input() public set monthlyStats(stats: MonthlyInvoiceStatistic[] | undefined) {
+    console.log(stats);
     this.monthlystatsSig.set(stats);
   }
 

@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { debounceTime, delay, distinctUntilChanged, finalize, lastValueFrom, Subject, takeUntil } from 'rxjs';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { debounceTime, delay, distinctUntilChanged, filter, finalize, lastValueFrom, Subject, takeUntil } from 'rxjs';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
 import { Customer, ViewCustomer } from 'src/app/interfaces/customer.interface';
@@ -16,6 +16,7 @@ import { ResponsiveService } from 'src/app/services/responsive.service';
 import { BreadcrumbItem } from 'src/app/interfaces/common.interface';
 import { ToasterService } from 'src/app/common/toaster/toaster.service';
 import { ConfirmationService } from 'primeng/api';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-view-invoice',
@@ -93,6 +94,7 @@ export class ViewInvoiceComponent implements OnInit {
   ) {}
 
   public ngOnInit(): void {
+    console.log('InvoiceViewComponent initialized');
     //ng-select
     this.searchSubject.pipe(debounceTime(500), takeUntil(this.destroy), distinctUntilChanged()).subscribe((searchTerm) => {
       this.searchTerm.set(searchTerm);
@@ -111,6 +113,7 @@ export class ViewInvoiceComponent implements OnInit {
     // Get the id from the route
     this.activatedRoute.paramMap.pipe(takeUntil(this.destroy)).subscribe((params) => {
       const id = Number(params.get(this.INVOICE_ID));
+      console.log('Received route ID:', id); // Debugging line
       const invoiceNumber = params.get(this.INVOICE_NUMBER);
       this.invoiceId.set(id);
       this.invoiceNumber.set(invoiceNumber || '');
@@ -165,6 +168,26 @@ export class ViewInvoiceComponent implements OnInit {
       });
 
     this.listenToInvoiceLinesChanges();
+
+    this.editInvoiceForm.valueChanges.pipe(takeUntil(this.destroy), debounceTime(200)).subscribe((value) => {
+      if (this.isInitialized) {
+        console.log(value);
+        const state = this.invoiceState();
+        if (state.appData?.data?.invoice) {
+          this.editInvoiceForm.get('issuedAt')?.setValue(value.issuedAt, { emitEvent: false });
+          this.editInvoiceForm.get('dueAt')?.setValue(value.dueAt, { emitEvent: false });
+          this.editInvoiceForm.get('status')?.setValue(value.status, { emitEvent: false });
+          this.editInvoiceForm.get('services')?.setValue(value.services, { emitEvent: false });
+
+          // Update invoice signals for the PDF preview.
+          state.appData.data.invoice.issuedAt = value.issuedAt as Date;
+          state.appData.data.invoice.dueAt = value.dueAt as Date;
+          state.appData.data.invoice.status = value.status;
+          this.isFormModified();
+          console.log('updated form');
+        }
+      }
+    });
   }
 
   private populateEditInvoiceForm(invoice: Invoice | null) {
@@ -243,6 +266,8 @@ export class ViewInvoiceComponent implements OnInit {
       if (this.isInitialized) {
         console.log('invoiceLines');
         this.recalculateTotalPrice();
+        console.log(this.editInvoiceForm.value);
+        console.log(this.initialFormValue);
         this.isFormModified();
       } else {
         this.isInitialized = true;
@@ -258,9 +283,10 @@ export class ViewInvoiceComponent implements OnInit {
       const type = line.get('type')?.value;
       const multiplier = type === 'PRODUCT' ? line.get('quantity')?.value : line.get('duration')?.value;
       const price = line.get('price')?.value;
-      line.get('totalPrice')?.setValue(price * multiplier, { emitEvent: false });
+      const totalPrice = price * multiplier;
+      line.get('totalPrice')?.setValue(totalPrice, { emitEvent: false });
 
-      return acc + (price ?? 0) * (multiplier ?? 0);
+      return acc + totalPrice;
     }, 0);
 
     console.log('Updated total:', total);
@@ -274,9 +300,11 @@ export class ViewInvoiceComponent implements OnInit {
   }
 
   public onSaveInvoiceClick(event: MouseEvent | TouchEvent): void {
+    event.stopImmediatePropagation();
     this.loading.set(true);
     this.editInvoiceForm.disable({ emitEvent: false });
     this.invoiceState().dataState = DataState.LOADING;
+    this.editInvoiceForm.get('status')?.patchValue(this.editInvoiceForm.get('status')?.value?.toUpperCase(), { emitEvent: false });
     console.log(this.editInvoiceForm.getRawValue());
     this.invoiceService
       .updateInvoice(this.invoiceId(), this.editInvoiceForm.getRawValue())
@@ -287,7 +315,6 @@ export class ViewInvoiceComponent implements OnInit {
           this.editInvoiceForm.enable({ emitEvent: false });
           this.editInvoiceForm.markAsPristine();
           this.initialFormValue = this.editInvoiceForm.getRawValue();
-          console.log(this.initialFormValue);
           this.isFormModified();
         }),
       )
@@ -307,7 +334,7 @@ export class ViewInvoiceComponent implements OnInit {
       });
   }
 
-  public onResetFormValue(event: MouseEvent | TouchEvent): void {
+  public onResetInvoiceClick(event: MouseEvent | TouchEvent): void {
     event.stopImmediatePropagation();
     this.editInvoiceForm.reset(this.initialFormValue, { emitEvent: false });
     this.invoiceLines().clear();

@@ -16,11 +16,11 @@
       <td>
         <p-chip
           [styleClass]="
-            invoices.status === 'Paid'
+            invoices.status === 'PAID'
               ? 'bg-green-300 text-green-700 p-2'
-              : invoices.status === 'Pending'
+              : invoices.status === 'PENDING'
                 ? 'bg-orange-300 text-black p-2'
-                : invoices.status === 'Overdue'
+                : invoices.status === 'OVERDUE'
                   ? 'bg-red-300 text-red-700 p-2'
                   : ''
           "
