@@ -45,12 +45,12 @@
       <p-table [value]="invoicesPage()" [tableStyle]="{ 'min-width': '60rem' }" [loading]="invoiceState().dataState === DataState.LOADING">
         <ng-template pTemplate="header">
           <tr>
-            <th style="width: 20%">Invoice number</th>
+            <th style="width: 10%">Invoice number</th>
             <th style="width: 30%">Description</th>
             <th pSortableColumn="status" style="width: 10%">Status <p-sortIcon field="status" /></th>
             <th style="width: 20%">Issued at</th>
             <th pSortableColumn="total" style="width: 20%">Total price <p-sortIcon field="quantity" /></th>
-            <th style="width: 10%">Action</th>
+            <th style="width: 20%">Action</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-invoice>
@@ -75,7 +75,7 @@
               </p-chip>
             </td>
             <td>{{ invoice.issuedAt | date: 'mediumDate' }}</td>
-            <td>{{ invoice.totalVat }}</td>
+            <td>${{ invoice.totalVat }}</td>
             <td><p-button label="See more" severity="info" [size]="'small'" (onClick)="onRedirectToInvoice(invoice.invoiceId, invoice.invoiceNumber)" /></td>
           </tr>
         </ng-template>
@@ -90,4 +90,3 @@
     </div>
   </div>
 </main>
-<p-confirmDialog />

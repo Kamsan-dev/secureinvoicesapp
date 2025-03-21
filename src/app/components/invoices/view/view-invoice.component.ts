@@ -1,22 +1,21 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { debounceTime, delay, distinctUntilChanged, filter, finalize, lastValueFrom, Subject, takeUntil } from 'rxjs';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { jsPDF as pdf } from 'jspdf';
+import { ConfirmationService } from 'primeng/api';
+import { debounceTime, distinctUntilChanged, finalize, lastValueFrom, Subject, takeUntil } from 'rxjs';
+import { ToasterService } from 'src/app/common/toaster/toaster.service';
 import { DataState } from 'src/app/enums/datastate.enum';
+import { CustomersPage } from 'src/app/interfaces/appstate';
+import { BreadcrumbItem } from 'src/app/interfaces/common.interface';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
 import { Customer, ViewCustomer } from 'src/app/interfaces/customer.interface';
 import { Invoice, InvoiceLine, InvoiceStatus, ViewInvoice } from 'src/app/interfaces/invoice.interface';
 import { State } from 'src/app/interfaces/state';
-import { InvoiceService } from 'src/app/services/invoice.service';
-import { jsPDF as pdf } from 'jspdf';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
-import { CustomersPage } from 'src/app/interfaces/appstate';
 import { CustomerService } from 'src/app/services/customer.service';
+import { InvoiceService } from 'src/app/services/invoice.service';
 import { ResponsiveService } from 'src/app/services/responsive.service';
-import { BreadcrumbItem } from 'src/app/interfaces/common.interface';
-import { ToasterService } from 'src/app/common/toaster/toaster.service';
-import { ConfirmationService } from 'primeng/api';
-import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-view-invoice',
@@ -39,6 +38,7 @@ export class ViewInvoiceComponent implements OnInit {
   public invoiceNumber = signal<string>('');
   private readonly INVOICE_ID = 'invoiceId';
   private readonly INVOICE_NUMBER = 'invoiceNumber';
+  public invoice = signal<Invoice | undefined>(undefined);
 
   // form
   public vatRate = signal<number>(20.0);
@@ -94,32 +94,7 @@ export class ViewInvoiceComponent implements OnInit {
   ) {}
 
   public ngOnInit(): void {
-    console.log('InvoiceViewComponent initialized');
-    //ng-select
-    this.searchSubject.pipe(debounceTime(500), takeUntil(this.destroy), distinctUntilChanged()).subscribe((searchTerm) => {
-      this.searchTerm.set(searchTerm);
-      if (searchTerm !== '') {
-        this.currentPage.set(0);
-        this.loadCustomers();
-      } else {
-        this.currentPage.set(0);
-        this.loadCustomers();
-      }
-    });
-
-    // loading customers
-    this.loadCustomers();
-
-    // Get the id from the route
-    this.activatedRoute.paramMap.pipe(takeUntil(this.destroy)).subscribe((params) => {
-      const id = Number(params.get(this.INVOICE_ID));
-      console.log('Received route ID:', id); // Debugging line
-      const invoiceNumber = params.get(this.INVOICE_NUMBER);
-      this.invoiceId.set(id);
-      this.invoiceNumber.set(invoiceNumber || '');
-      this.loadInvoiceData();
-    });
-
+    // Init invoice Form
     this.editInvoiceForm = this.fb.group({
       invoiceId: [''],
       invoiceNumber: [''],
@@ -135,6 +110,32 @@ export class ViewInvoiceComponent implements OnInit {
       invoiceLines: this.fb.array([]),
     });
 
+    //ng-select
+    this.searchSubject.pipe(debounceTime(500), takeUntil(this.destroy), distinctUntilChanged()).subscribe((searchTerm) => {
+      this.searchTerm.set(searchTerm);
+      if (searchTerm !== '') {
+        this.currentPage.set(0);
+        this.loadCustomers();
+      } else {
+        this.currentPage.set(0);
+        this.loadCustomers();
+      }
+    });
+
+    // Loading customer pages.
+    this.loadCustomers();
+
+    // Get the invoice id from the route variable.
+    this.activatedRoute.paramMap.pipe(takeUntil(this.destroy)).subscribe((params) => {
+      const id = Number(params.get(this.INVOICE_ID));
+      //console.log('Received route ID:', id); // Debugging line
+      const invoiceNumber = params.get(this.INVOICE_NUMBER);
+      this.invoiceId.set(id);
+      this.invoiceNumber.set(invoiceNumber || '');
+      this.loadInvoiceData();
+    });
+
+    // FORMS LISTENERS
     // Subscribe to changes of 'isVatEnabled'
     this.editInvoiceForm
       .get('isVatEnabled')
@@ -153,7 +154,6 @@ export class ViewInvoiceComponent implements OnInit {
         // we update our form with the new value
         this.editInvoiceForm.get('totalVat')?.setValue(priceUpdated, { emitEvent: false });
         this.isFormModified();
-        console.log('isvatenabled listener');
       });
 
     // Subscribe to 'vatRate' changes
@@ -164,33 +164,28 @@ export class ViewInvoiceComponent implements OnInit {
         this.vatRate.set(value);
         this.editInvoiceForm.get('totalVat')?.setValue(this.priceWithTax(), { emitEvent: false });
         this.isFormModified();
-        console.log('vatRate listener');
       });
 
     this.listenToInvoiceLinesChanges();
 
     this.editInvoiceForm.valueChanges.pipe(takeUntil(this.destroy), debounceTime(200)).subscribe((value) => {
-      if (this.isInitialized) {
-        console.log(value);
-        const state = this.invoiceState();
-        if (state.appData?.data?.invoice) {
-          this.editInvoiceForm.get('issuedAt')?.setValue(value.issuedAt, { emitEvent: false });
-          this.editInvoiceForm.get('dueAt')?.setValue(value.dueAt, { emitEvent: false });
-          this.editInvoiceForm.get('status')?.setValue(value.status, { emitEvent: false });
-          this.editInvoiceForm.get('services')?.setValue(value.services, { emitEvent: false });
+      this.editInvoiceForm.get('issuedAt')?.setValue(value.issuedAt, { emitEvent: false });
+      this.editInvoiceForm.get('dueAt')?.setValue(value.dueAt, { emitEvent: false });
+      this.editInvoiceForm.get('status')?.setValue(value.status, { emitEvent: false });
+      this.editInvoiceForm.get('services')?.setValue(value.services, { emitEvent: false });
 
-          // Update invoice signals for the PDF preview.
-          state.appData.data.invoice.issuedAt = value.issuedAt as Date;
-          state.appData.data.invoice.dueAt = value.dueAt as Date;
-          state.appData.data.invoice.status = value.status;
-          this.isFormModified();
-          console.log('updated form');
-        }
-      }
+      // @ts-expect-error
+      this.invoice.set({
+        ...this.invoice(),
+        issuedAt: value.issuedAt as Date,
+        dueAt: value.dueAt as Date,
+        status: value.status,
+      });
+      this.isFormModified();
     });
   }
 
-  private populateEditInvoiceForm(invoice: Invoice | null) {
+  private populateEditInvoiceForm(invoice: Invoice | undefined) {
     if (invoice) {
       this.editInvoiceForm.setValue(
         {
@@ -234,7 +229,6 @@ export class ViewInvoiceComponent implements OnInit {
       this.preTaxPrice.set(invoice.total);
       // We update the totalVat.
       this.initialFormValue.totalVat = invoice.totalVat;
-      console.log(this.editInvoiceForm.value);
     }
   }
 
@@ -510,10 +504,6 @@ export class ViewInvoiceComponent implements OnInit {
 
   //#region invoice
 
-  public invoice = computed((): Invoice | null => {
-    return this.invoiceState().appData?.data?.invoice || null;
-  });
-
   private async loadInvoiceData() {
     this.loading.set(true);
     this.invoiceState().dataState = DataState.LOADING;
@@ -533,6 +523,8 @@ export class ViewInvoiceComponent implements OnInit {
             dataState: DataState.LOADED,
             appData: response,
           });
+
+          this.invoice.set(response.data?.invoice);
 
           this.populateEditInvoiceForm(this.invoice());
         },
