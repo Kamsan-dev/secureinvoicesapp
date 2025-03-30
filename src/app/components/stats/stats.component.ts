@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, Input, OnInit, signal, ViewChild } from '@angular/core';
-import { Chart, CategoryScale, LinearScale, BarController, BarElement } from 'chart.js';
+import { Chart, CategoryScale, LinearScale, BarController, BarElement, Legend } from 'chart.js';
 import { DialogService } from 'primeng/dynamicdialog';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { Statistics } from 'src/app/interfaces/appstate';
@@ -33,7 +33,7 @@ export class StatsComponent implements AfterViewInit {
   @ViewChild('chartCanvas') chartCanvas: any;
 
   constructor(private dialogService: DialogService) {
-    Chart.register(CategoryScale, LinearScale, BarController, BarElement);
+    Chart.register(CategoryScale, LinearScale, BarController, BarElement, Legend);
   }
 
   public ngAfterViewInit(): void {
@@ -64,6 +64,7 @@ export class StatsComponent implements AfterViewInit {
         plugins: {
           legend: {
             position: 'top',
+            display: true,
             labels: {
               color: 'lightgray', // Custom label color
               font: {
