@@ -1,129 +1,108 @@
-<ng-container>
-  <ng-container>
-    <div>
-      <section>
-        <div class="container bg-white shadow rounded-lg d-block" style="border-radius: 8px">
-          <div class="row mt-3">
-            <!-- <div class="progress">
-                <div class="progress-bar bg-success" role="progressbar" aria-valuenow="" aria-valuemin="0" aria-valuemax="100">5%</div>
-              </div> -->
-            <div class="col">
-              <h4 class="fw-bold text-start">Customers</h4>
-            </div>
-            <div class="col">
-              <h4 class="fw-bold text-end"><i style="cursor: pointer; color: green; font-size: 30px" class="bi bi-file-earmark-excel"></i></h4>
-            </div>
-            <div class="col-xm-12">
-              <div class="row g-3 float-end">
-                <div class="col-auto">
-                  <label for="name" class="visually-hidden"></label>
-                  <input
-                    type="text"
-                    name="name"
-                    #input_search
-                    class="form-control"
-                    [ngModel]="nameFilter()"
-                    placeholder="Customer name"
-                    (input)="onSearchChange(input_search.value)"
-                  />
-                </div>
-              </div>
-            </div>
-            <div class="col-xm-12">
-              <table class="table table-hover">
-                <thead>
-                  <tr>
-                    <th class="text-center" scope="col">ID</th>
-                    <th scope="col">Photo</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Phone</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Type</th>
-                    <th scope="col">Action</th>
-                  </tr>
-                </thead>
-                <tbody class="table-body" *ngIf="customerState().dataState === 'LOADING_STATE'; else contentOrEmpty">
-                  <tr>
-                    <td colspan="8" class="text-center">
-                      <div class="d-flex align-items-center justify-content-center">
-                        <se-progress-spinner mode="indeterminate"></se-progress-spinner>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-                <ng-template #contentOrEmpty>
-                  <tbody *ngIf="getCustomersPage().length > 0; else emptyResult">
-                    <tr class="cell-1" *ngFor="let customer of getCustomersPage()">
-                      <th class="text-center">{{ customer.customerId }}</th>
-                      <td><img [src]="customer.imageUrl" width="42" height="42" class="rounded-circle" alt="Avatar" /></td>
-                      <td>{{ customer.name }}</td>
-                      <td>{{ customer.email }}</td>
-                      <td>{{ customer.phone }}</td>
-                      <td>
-                        <span
-                          class="badge"
-                          [ngClass]="{
-                            'bg-info': customer.status.toUpperCase() === 'INACTIVE',
-                            'bg-danger': customer.status.toUpperCase() === 'BANNED',
-                            'bg-primary': customer.status.toUpperCase() === 'PENDING',
-                            'bg-success': customer.status.toUpperCase() === 'ACTIVE'
-                          }"
-                          >{{ customer.status }}
-                        </span>
-                      </td>
-                      <td>{{ customer.type }}</td>
-                      <td>
-                        <button type="button" class="btn btn-info" (click)="selectCustomer(customer.customerId)">View</button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </ng-template>
-              </table>
-
-              <nav aria-label="Page navigation example" *ngIf="getCustomersPage().length > 0">
-                <ul class="pagination justify-content-end">
-                  <li class="page-item pointer" [ngClass]="{ disabled: currentPage() === 0 }">
-                    <a class="page-link" (click)="goToPage(0)" aria-label="Previous">
-                      <i class="fas fa-chevron-left"></i>
-                      <span class="sr-only">First page</span>
-                    </a>
-                  </li>
-                  <li class="page-item" [ngClass]="{ disabled: currentPage() === 0 }">
-                    <a class="page-link" (click)="onPageChange('previous')" aria-label="Previous">
-                      <span aria-hidden="true">&laquo;</span>
-                      <span class="sr-only">Previous</span>
-                    </a>
-                  </li>
-                  <li class="page-item active">
-                    <a class="page-link">{{ currentPage() + 1 }} <span class="sr-only"></span></a>
-                  </li>
-                  <li class="page-item" [ngClass]="{ disabled: currentPage() === getLastPageNumber() }">
-                    <a class="page-link" (click)="onPageChange('forward')" aria-label="Next">
-                      <span aria-hidden="true">&raquo;</span>
-                      <span class="sr-only">Next</span>
-                    </a>
-                  </li>
-                  <li class="page-item pointer" [ngClass]="{ disabled: currentPage() === getLastPageNumber() }">
-                    <a class="page-link" (click)="goToPage(getLastPageNumber())" aria-label="Next">
-                      <i class="fas fa-chevron-right"></i>
-                      <span class="sr-only">Last page</span>
-                    </a>
-                  </li>
-                </ul>
-              </nav>
-            </div>
-          </div>
-        </div>
-      </section>
+<main>
+  <div class="flex justify-between items-center flex-wrap">
+    <p-breadcrumb class="max-w-full" [model]="items">
+      <ng-template pTemplate="item" let-item>
+        <ng-container *ngIf="item.route; else elseBlock">
+          <a [routerLink]="item.route" class="p-menuitem-link">
+            <span [ngClass]="[item.icon ? item.icon : '', 'text-white mr-1']"></span>
+            <span class="text-white font-semibold">{{ item.label }}</span>
+          </a>
+        </ng-container>
+        <ng-template #elseBlock>
+          <span class="text-slate-200">{{ customerState().dataState !== 'LOADING_STATE' ? item.label : 'Loading...' }}</span>
+        </ng-template>
+      </ng-template>
+    </p-breadcrumb>
+    <div class="flex gap-2 pt-2">
+      <p-button
+        label="Register a new customer"
+        severity="success"
+        icon="fa-solid fa-floppy-disk"
+        type="submit"
+        [size]="!responsiveService.desktop() ? 'small' : 'large'"
+      />
+      <p-button label="Delete customer(s)" severity="danger" icon="fa-solid fa-trash" [size]="!responsiveService.desktop() ? 'small' : 'large'" />
     </div>
-  </ng-container>
-</ng-container>
+  </div>
+  <div class="se-card mt-4">
+    <div class="se-card-header">
+      <div class="flex justify-between">
+        <span>CUSTOMERS</span>
+        <!-- <div>
+          <p-button
+            [label]="responsiveService.desktop() ? 'Add a new invoice' : undefined"
+            (onClick)="isNewInvoiceDialogVisible.set(true)"
+            pTooltip="Add a new invoice"
+            tooltipPosition="left"
+          >
+            <i *ngIf="!responsiveService.desktop()" class="fa-solid fa-plus"></i>
+          </p-button>
+          <p-dialog
+            header="New Invoice"
+            [modal]="true"
+            [visible]="isNewInvoiceDialogVisible()"
+            [style]="{ width: '50rem' }"
+            [draggable]="false"
+            (visibleChange)="isNewInvoiceDialogVisible.set(false)"
+          >
+            <div class="flex items-center gap-3">
+              <label for="description" class="font-semibold w-6rem">Description</label>
+              <input pInputText id="description" class="flex-auto" [(ngModel)]="newInvoiceDescription" />
+            </div>
 
-<ng-template #emptyResult>
-  <tbody>
-    <tr>
-      <td colspan="8" class="text-center">No customers found.</td>
-    </tr>
-  </tbody>
-</ng-template>
+            <div class="flex justify-end gap-2 mt-3">
+              <p-button label="Cancel" severity="secondary" (onClick)="isNewInvoiceDialogVisible.set(false)" />
+              <p-button label="Save" (onClick)="onSaveNewInvoiceClick($event)" />
+            </div>
+          </p-dialog>
+        </div> -->
+      </div>
+    </div>
+    <div class="se-card-body">
+      <p-table [value]="customersPage()" [tableStyle]="{ 'min-width': '60rem' }" [loading]="customerState().dataState === DataState.LOADING">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Id</th>
+            <th>Photo</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th>Type</th>
+            <th>Action</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-customer>
+          <tr>
+            <td>{{ customer.customerId }}</td>
+            <td><img [src]="customer.imageUrl" width="42" height="42" class="rounded-circle" alt="Avatar" /></td>
+            <td>{{ customer.name }}</td>
+            <td>{{ customer.email }}</td>
+            <td>{{ customer.phone }}</td>
+            <td>
+              <span
+                class="badge"
+                [ngClass]="{
+                  'bg-info': customer.status.toUpperCase() === 'INACTIVE',
+                  'bg-danger': customer.status.toUpperCase() === 'BANNED',
+                  'bg-primary': customer.status.toUpperCase() === 'PENDING',
+                  'bg-success': customer.status.toUpperCase() === 'ACTIVE'
+                }"
+                >{{ customer.status }}
+              </span>
+            </td>
+            <td>{{ customer.type }}</td>
+            <td><p-button label="See more" severity="info" [size]="'small'" (onClick)="selectCustomer(customer.customerId)" /></td>
+          </tr>
+        </ng-template>
+        <!-- Show when there are no customers -->
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="5" class="text-center p-4">No invoices found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+      <p-paginator (onPageChange)="onPageChange($event)" [rows]="pageSize()" [totalRecords]="totalRecords()" [first]="first()" />
+    </div>
+  </div>
+</main>

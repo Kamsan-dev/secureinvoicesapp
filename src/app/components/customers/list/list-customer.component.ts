@@ -5,11 +5,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime, delay, distinctUntilChanged, lastValueFrom, Subject, takeUntil } from 'rxjs';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { CustomersPage } from 'src/app/interfaces/appstate';
+import { BreadcrumbItem } from 'src/app/interfaces/common.interface';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
 import { Customer } from 'src/app/interfaces/customer.interface';
 import { State } from 'src/app/interfaces/state';
 import { User } from 'src/app/interfaces/user';
 import { CustomerService } from 'src/app/services/customer.service';
+import { ResponsiveService } from 'src/app/services/responsive.service';
 
 declare type direction = 'forward' | 'previous';
 
@@ -26,25 +28,37 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
     error: undefined,
   });
 
+  public customersPage = signal<Customer[]>([]);
+  public readonly DataState = DataState;
   public loading = signal(false);
   private destroy: Subject<void> = new Subject<void>();
 
   //filter
   public nameFilter = signal<string>('');
-  public currentPage = signal<number>(0);
   public searchCustomerByNameSubject = new Subject<string>();
+
+  //pagination
+  public currentPage = signal<number>(0);
+  public totalRecords = signal(0);
+  public pageSize = signal(5);
+  public first = signal(0);
+
+  // breadcrumbs
+  public items: BreadcrumbItem[] = [{ label: '', route: '/home', icon: 'pi pi-home' }, { label: 'Customers' }];
 
   constructor(
     private customerService: CustomerService,
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
+    public responsiveService: ResponsiveService,
   ) {}
   public ngOnInit(): void {
     // Read query params immediately on initialization
     this.nameFilter.set(this.route.snapshot.queryParamMap.get('name') || '');
     const page = this.route.snapshot.queryParamMap.get('page');
     this.currentPage.set(page ? parseInt(page, 10) : 0);
+    this.first.set(this.currentPage() * this.pageSize());
 
     // Observable to handle the search debounce
     this.searchCustomerByNameSubject.pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy)).subscribe((filter: string) => {
@@ -79,26 +93,10 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
 
   //#endregion
 
-  //#region UserInformations
-  public getUserName(): string {
-    return this.customerState().appData?.data?.user?.firstName + ' ' + this.customerState().appData?.data?.user?.lastName;
-  }
-
-  public getUserPictureProfile(): string {
-    return this.customerState().appData?.data?.user?.imageUrl || 'https://img.freepik.com/free-icon/user_318-159711.jpg';
-  }
-
-  public getUserInformations(): User | null {
-    return this.customerState().appData?.data?.user || null;
-  }
   //#region Customers
 
   public selectCustomer(id: number): void {
-    this.router.navigate(['/customer/view/' + id]);
-  }
-
-  public getCustomersPage(): Customer[] {
-    return (this.customerState().appData?.data?.page.content as Customer[]) || [];
+    this.router.navigate(['/customers/view/' + id]);
   }
 
   private async loadCustomersWithFilterSearch(page: number = 0): Promise<void> {
@@ -115,11 +113,11 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
         dataState: DataState.LOADED,
         appData: response,
       });
-      const content = response?.data?.page?.content || [];
-      const totalElements = response.data?.page?.totalElements || 0;
+      this.customersPage.set(response?.data?.page?.content || []);
+      this.totalRecords.set(response.data?.page?.totalElements || 0);
       // If no customers are found on the given page and there are customers to display,
       // we load the last valid page of data
-      if (content.length === 0 && totalElements > 0) {
+      if (this.customersPage().length === 0 && this.totalRecords() > 0) {
         const lastPage = response.data?.page?.totalPages ? response.data.page.totalPages - 1 : 0;
         this.currentPage.set(lastPage);
         this.router.navigate([], {
@@ -153,27 +151,13 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
 
   //#region pagination
 
-  public onPageChange(direction: direction): void {
-    direction === 'forward' ? this.currentPage.set(this.currentPage() + 1) : this.currentPage.set(this.currentPage() - 1);
+  public onPageChange(event: any): void {
+    this.currentPage.set(event.page);
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { name: this.nameFilter() || null, page: this.currentPage() },
+      queryParams: { page: this.currentPage() },
       queryParamsHandling: 'merge',
     });
-  }
-
-  public goToPage(page: number): void {
-    this.currentPage.set(page);
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { name: this.nameFilter() || null, page: this.currentPage() },
-      queryParamsHandling: 'merge',
-    });
-  }
-
-  public getLastPageNumber(): number {
-    const totalPages = this.customerState().appData?.data?.page?.totalPages || 0;
-    return totalPages > 0 ? totalPages - 1 : 0;
   }
 
   //#endregion
