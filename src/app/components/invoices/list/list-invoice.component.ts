@@ -6,6 +6,7 @@ import { finalize, lastValueFrom, Subject, takeUntil } from 'rxjs';
 import { ToasterService } from 'src/app/common/toaster/toaster.service';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { InvoicesPage } from 'src/app/interfaces/appstate';
+import { BreadcrumbItem } from 'src/app/interfaces/common.interface';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
 import { Invoice, ViewInvoice } from 'src/app/interfaces/invoice.interface';
 import { State } from 'src/app/interfaces/state';
@@ -37,6 +38,9 @@ export class ListInvoiceComponent implements OnInit {
 
   public loading = signal(false);
   private destroy: Subject<void> = new Subject<void>();
+
+  // breadcrumbs
+  public items: BreadcrumbItem[] = [{ label: '', route: '/home', icon: 'pi pi-home' }, { label: 'Invoices' }];
 
   public readonly DataState = DataState;
 

@@ -13,6 +13,7 @@ import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
 @NgModule({
   declarations: [EditCustomerComponent, ListCustomerComponent, ViewCustomerComponent],
   imports: [
@@ -27,6 +28,8 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
     InputTextModule,
     ButtonModule,
     BreadcrumbModule,
+    DynamicDialogModule,
   ],
+  providers: [DialogService],
 })
 export class CustomerModule {}

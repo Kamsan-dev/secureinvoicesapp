@@ -19,6 +19,7 @@
         severity="success"
         icon="fa-solid fa-floppy-disk"
         type="submit"
+        (onClick)="onRegisterNewCustomerClick()"
         [size]="!responsiveService.desktop() ? 'small' : 'large'"
       />
       <p-button label="Delete customer(s)" severity="danger" icon="fa-solid fa-trash" [size]="!responsiveService.desktop() ? 'small' : 'large'" />
@@ -28,34 +29,10 @@
     <div class="se-card-header">
       <div class="flex justify-between">
         <span>CUSTOMERS</span>
-        <!-- <div>
-          <p-button
-            [label]="responsiveService.desktop() ? 'Add a new invoice' : undefined"
-            (onClick)="isNewInvoiceDialogVisible.set(true)"
-            pTooltip="Add a new invoice"
-            tooltipPosition="left"
-          >
-            <i *ngIf="!responsiveService.desktop()" class="fa-solid fa-plus"></i>
-          </p-button>
-          <p-dialog
-            header="New Invoice"
-            [modal]="true"
-            [visible]="isNewInvoiceDialogVisible()"
-            [style]="{ width: '50rem' }"
-            [draggable]="false"
-            (visibleChange)="isNewInvoiceDialogVisible.set(false)"
-          >
-            <div class="flex items-center gap-3">
-              <label for="description" class="font-semibold w-6rem">Description</label>
-              <input pInputText id="description" class="flex-auto" [(ngModel)]="newInvoiceDescription" />
-            </div>
-
-            <div class="flex justify-end gap-2 mt-3">
-              <p-button label="Cancel" severity="secondary" (onClick)="isNewInvoiceDialogVisible.set(false)" />
-              <p-button label="Save" (onClick)="onSaveNewInvoiceClick($event)" />
-            </div>
-          </p-dialog>
-        </div> -->
+        <div class="form-row">
+          <label class="form-label">Search by customer name</label>
+          <input #input_search pInputText type="text" name="firstName" class="form-input" [ngModel]="nameFilter()" (input)="onSearchChange(input_search.value)" />
+        </div>
       </div>
     </div>
     <div class="se-card-body">
@@ -98,7 +75,7 @@
         <!-- Show when there are no customers -->
         <ng-template pTemplate="emptymessage">
           <tr>
-            <td colspan="5" class="text-center p-4">No invoices found.</td>
+            <td colspan="100%" class="text-center p-4">No customers found.</td>
           </tr>
         </ng-template>
       </p-table>

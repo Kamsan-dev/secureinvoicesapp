@@ -2,16 +2,17 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { debounceTime, delay, distinctUntilChanged, lastValueFrom, Subject, takeUntil } from 'rxjs';
+import { DialogService } from 'primeng/dynamicdialog';
+import { debounceTime, distinctUntilChanged, finalize, Subject, takeUntil } from 'rxjs';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { CustomersPage } from 'src/app/interfaces/appstate';
 import { BreadcrumbItem } from 'src/app/interfaces/common.interface';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
 import { Customer } from 'src/app/interfaces/customer.interface';
 import { State } from 'src/app/interfaces/state';
-import { User } from 'src/app/interfaces/user';
 import { CustomerService } from 'src/app/services/customer.service';
 import { ResponsiveService } from 'src/app/services/responsive.service';
+import { EditCustomerDialogComponent } from '../dialog/edit-customer-dialog/edit-customer-dialog.component';
 
 declare type direction = 'forward' | 'previous';
 
@@ -40,7 +41,7 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
   //pagination
   public currentPage = signal<number>(0);
   public totalRecords = signal(0);
-  public pageSize = signal(5);
+  public pageSize = signal(10);
   public first = signal(0);
 
   // breadcrumbs
@@ -52,6 +53,7 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     public responsiveService: ResponsiveService,
+    private dialogService: DialogService,
   ) {}
   public ngOnInit(): void {
     // Read query params immediately on initialization
@@ -99,44 +101,46 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
     this.router.navigate(['/customers/view/' + id]);
   }
 
-  private async loadCustomersWithFilterSearch(page: number = 0): Promise<void> {
+  private loadCustomersWithFilterSearch(page: number = 0): void {
     this.customerState().dataState = DataState.LOADING;
     this.loading.set(true);
-    try {
-      const response = await lastValueFrom(
-        this.customerService.searchCustomer(this.nameFilter(), page).pipe(
-          delay(800), // Delay by 1000ms (1 second)
-        ),
-      );
-      this.customerState.set({
-        ...this.customerState(),
-        dataState: DataState.LOADED,
-        appData: response,
+    this.customerService
+      .searchCustomer(this.nameFilter(), page, this.pageSize())
+      .pipe(
+        takeUntil(this.destroy),
+        finalize(() => {
+          this.loading.set(false);
+        }),
+      )
+      .subscribe({
+        next: (response: CustomHttpResponse<CustomersPage>) => {
+          this.customerState.set({
+            ...this.customerState(),
+            dataState: DataState.LOADED,
+            appData: response,
+          });
+          this.customersPage.set(response?.data?.page?.content || []);
+          this.totalRecords.set(response.data?.page?.totalElements || 0);
+          // If no customers are found on the given page and there are customers to display,
+          // we load the last valid page of data
+          if (this.customersPage().length === 0 && this.totalRecords() > 0) {
+            const lastPage = response.data?.page?.totalPages ? response.data.page.totalPages - 1 : 0;
+            this.currentPage.set(lastPage);
+            this.router.navigate([], {
+              relativeTo: this.route,
+              queryParams: { name: this.nameFilter() || null, page: lastPage },
+              queryParamsHandling: 'merge',
+            });
+          }
+        },
+        error: (error: HttpErrorResponse) => {
+          this.customerState.set({
+            ...this.customerState(),
+            dataState: DataState.ERROR,
+            error: error.error.reason,
+          });
+        },
       });
-      this.customersPage.set(response?.data?.page?.content || []);
-      this.totalRecords.set(response.data?.page?.totalElements || 0);
-      // If no customers are found on the given page and there are customers to display,
-      // we load the last valid page of data
-      if (this.customersPage().length === 0 && this.totalRecords() > 0) {
-        const lastPage = response.data?.page?.totalPages ? response.data.page.totalPages - 1 : 0;
-        this.currentPage.set(lastPage);
-        this.router.navigate([], {
-          relativeTo: this.route,
-          queryParams: { name: this.nameFilter() || null, page: lastPage },
-          queryParamsHandling: 'merge',
-        });
-      }
-    } catch (error) {
-      if (error instanceof HttpErrorResponse) {
-        this.customerState.set({
-          ...this.customerState(),
-          dataState: DataState.ERROR,
-          error: error.error.reason,
-        });
-      }
-    } finally {
-      this.loading.set(false);
-    }
   }
 
   //#endregion
@@ -157,6 +161,21 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
       relativeTo: this.route,
       queryParams: { page: this.currentPage() },
       queryParamsHandling: 'merge',
+    });
+  }
+  //#endregion
+
+  //#region dialog
+
+  public onRegisterNewCustomerClick(): void {
+    this.dialogService.open(EditCustomerDialogComponent, {
+      header: `Register a new customer`,
+      width: '35vw',
+      modal: true,
+      breakpoints: {
+        '960px': '75vw',
+        '640px': '90vw',
+      },
     });
   }
 

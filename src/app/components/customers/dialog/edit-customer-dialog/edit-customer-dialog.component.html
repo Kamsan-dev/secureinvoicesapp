@@ -1,0 +1,38 @@
+<form [formGroup]="editCustomerForm" (ngSubmit)="onEditCustomerSubmit()" class="w-full flex flex-col items-center gap-4">
+  <div class="w-full max-w-[90%]">
+    <div class="form-row">
+      <label class="form-label">Name</label>
+      <input pInputText type="text" name="firstName" class="form-input" formControlName="name" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Email</label>
+      <input pInputText type="text" name="lastName" class="form-input" formControlName="email" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Address</label>
+      <input pInputText type="text" name="email" class="form-input" formControlName="address" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Phone</label>
+      <input pInputText type="text" name="phone" class="form-input" formControlName="phone" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Type</label>
+      <p-dropdown [options]="customerTypeItems()" formControlName="type" placeholder="Invoice status" appendTo="body"> </p-dropdown>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Status</label>
+      <p-dropdown [options]="customerStatusItems()" formControlName="status" placeholder="Invoice status" appendTo="body"> </p-dropdown>
+    </div>
+    <div class="flex justify-end gap-1">
+      <p-button label="Cancel" severity="secondary" (onClick)="this.ref.close()" />
+      <p-button
+        severity="success"
+        [loading]="loading()"
+        [label]="loading() ? 'Saving...' : 'Register'"
+        [disabled]="loading() || editCustomerForm.pristine"
+        type="submit"
+      ></p-button>
+    </div>
+  </div>
+</form>

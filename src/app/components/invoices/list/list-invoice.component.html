@@ -1,25 +1,35 @@
-<ng-template #emptyResult>
-  <tbody>
-    <tr>
-      <td colspan="8" class="text-center">No invoices found.</td>
-    </tr>
-  </tbody>
-</ng-template>
+<div class="flex justify-between items-center flex-wrap">
+  <p-breadcrumb class="max-w-full" [model]="items">
+    <ng-template pTemplate="item" let-item>
+      <ng-container *ngIf="item.route; else elseBlock">
+        <a [routerLink]="item.route" class="p-menuitem-link">
+          <span [ngClass]="[item.icon ? item.icon : '', 'text-white mr-1']"></span>
+          <span class="text-white font-semibold">{{ item.label }}</span>
+        </a>
+      </ng-container>
+      <ng-template #elseBlock>
+        <span class="text-slate-200">{{ invoiceState().dataState !== 'LOADING_STATE' ? item.label : 'Loading...' }}</span>
+      </ng-template>
+    </ng-template>
+  </p-breadcrumb>
+  <div class="flex gap-2 pt-2">
+    <p-button
+      [label]="responsiveService.desktop() ? 'Add a new invoice' : undefined"
+      (onClick)="isNewInvoiceDialogVisible.set(true)"
+      pTooltip="Add a new invoice"
+      tooltipPosition="left"
+    >
+      <i *ngIf="!responsiveService.desktop()" class="fa-solid fa-plus"></i>
+    </p-button>
+  </div>
+</div>
 
 <main>
-  <div class="se-card">
+  <div class="se-card mt-3">
     <div class="se-card-header">
       <div class="flex justify-between">
         <span>INVOICES</span>
         <div>
-          <p-button
-            [label]="responsiveService.desktop() ? 'Add a new invoice' : undefined"
-            (onClick)="isNewInvoiceDialogVisible.set(true)"
-            pTooltip="Add a new invoice"
-            tooltipPosition="left"
-          >
-            <i *ngIf="!responsiveService.desktop()" class="fa-solid fa-plus"></i>
-          </p-button>
           <p-dialog
             header="New Invoice"
             [modal]="true"
@@ -30,12 +40,12 @@
           >
             <div class="flex items-center gap-3">
               <label for="description" class="font-semibold w-6rem">Description</label>
-              <input pInputText id="description" class="flex-auto" [(ngModel)]="newInvoiceDescription" />
+              <input pInputText id="description" class="flex-auto" [(ngModel)]="newInvoiceDescription" required [minlength]="5" />
             </div>
 
             <div class="flex justify-end gap-2 mt-3">
               <p-button label="Cancel" severity="secondary" (onClick)="isNewInvoiceDialogVisible.set(false)" />
-              <p-button label="Save" (onClick)="onSaveNewInvoiceClick($event)" />
+              <p-button label="Save" (onClick)="onSaveNewInvoiceClick($event)" [disabled]="newInvoiceDescription.length < 1" />
             </div>
           </p-dialog>
         </div>
