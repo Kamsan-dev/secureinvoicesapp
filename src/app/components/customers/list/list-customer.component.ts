@@ -6,15 +6,13 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { debounceTime, distinctUntilChanged, finalize, Subject, takeUntil } from 'rxjs';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { CustomersPage } from 'src/app/interfaces/appstate';
-import { BreadcrumbItem } from 'src/app/interfaces/common.interface';
+import { BreadcrumbItem, DisplayModeType } from 'src/app/interfaces/common.interface';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
 import { Customer } from 'src/app/interfaces/customer.interface';
 import { State } from 'src/app/interfaces/state';
 import { CustomerService } from 'src/app/services/customer.service';
 import { ResponsiveService } from 'src/app/services/responsive.service';
 import { EditCustomerDialogComponent } from '../dialog/edit-customer-dialog/edit-customer-dialog.component';
-
-declare type direction = 'forward' | 'previous';
 
 @Component({
   selector: 'app-list-customer',
@@ -45,7 +43,15 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
   public first = signal(0);
 
   // breadcrumbs
-  public items: BreadcrumbItem[] = [{ label: '', route: '/home', icon: 'pi pi-home' }, { label: 'Customers' }];
+  public breadcrumbsItems = signal<BreadcrumbItem[]>([{ label: '', route: '/home', icon: 'pi pi-home' }, { label: 'Customers' }]);
+
+  // selectButton
+  public displayModeOptions = signal([
+    { icon: 'fa-solid fa-table', value: 'table' },
+    { icon: 'fa-solid fa-grip', value: 'card' },
+  ]);
+
+  public displayMode = signal<'table' | 'card'>('table');
 
   constructor(
     private customerService: CustomerService,

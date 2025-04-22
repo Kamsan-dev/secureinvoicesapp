@@ -17,3 +17,23 @@
   flex: 0 0 150px;
   max-width: 150px;
 }
+
+.grid-customers {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 30px;
+}
+
+.card-animation {
+  transition: 0.4s ease-in-out;
+
+  &:hover {
+    cursor: pointer;
+    transform: translateY(-10px);
+    background-color: rgba(60, 59, 61, 0.137); // darker on hover
+
+    &:before {
+      opacity: 1;
+    }
+  }
+}

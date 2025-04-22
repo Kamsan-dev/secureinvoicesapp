@@ -1,6 +1,6 @@
 <main>
   <div class="flex justify-between items-center flex-wrap">
-    <p-breadcrumb class="max-w-full" [model]="items">
+    <p-breadcrumb class="max-w-full" [model]="breadcrumbsItems()">
       <ng-template pTemplate="item" let-item>
         <ng-container *ngIf="item.route; else elseBlock">
           <a [routerLink]="item.route" class="p-menuitem-link">
@@ -13,26 +13,59 @@
         </ng-template>
       </ng-template>
     </p-breadcrumb>
-    <div class="flex gap-2 pt-2">
-      <p-button
-        label="Register a new customer"
-        severity="success"
-        icon="fa-solid fa-floppy-disk"
-        type="submit"
-        (onClick)="onRegisterNewCustomerClick()"
-        [size]="!responsiveService.desktop() ? 'small' : 'large'"
-      />
-      <p-button label="Delete customer(s)" severity="danger" icon="fa-solid fa-trash" [size]="!responsiveService.desktop() ? 'small' : 'large'" />
+    <div class="flex-col gap-2">
+      <div class="flex gap-2 mb-4">
+        <p-button
+          label="Register a new customer"
+          severity="success"
+          icon="fa-solid fa-floppy-disk"
+          type="submit"
+          (onClick)="onRegisterNewCustomerClick()"
+          [size]="!responsiveService.desktop() ? 'small' : 'large'"
+        />
+        <p-button label="Delete customer(s)" severity="danger" icon="fa-solid fa-trash" [size]="!responsiveService.desktop() ? 'small' : 'large'" />
+      </div>
+      <div class="flex justify-end items-center">
+        <div>
+          <p-selectButton
+            [options]="displayModeOptions()"
+            [optionValue]="'value'"
+            [optionLabel]="'icon'"
+            [ngModel]="displayMode()"
+            (ngModelChange)="displayMode.set($event)"
+          >
+            <ng-template let-item pTemplate>
+              <i [class]="item.icon"></i>
+            </ng-template>
+          </p-selectButton>
+        </div>
+      </div>
     </div>
   </div>
+  <div class="flex justify-end mt-4">
+    <div class="form-row">
+      <input
+        #input_search
+        pInputText
+        type="text"
+        name="firstName"
+        class="form-input"
+        [ngModel]="nameFilter()"
+        (input)="onSearchChange(input_search.value)"
+        placeholder="Search by name.."
+      />
+    </div>
+  </div>
+  <main>
+    <div *ngTemplateOutlet="displayMode() === 'table' ? viewTable : viewCard"></div>
+  </main>
+</main>
+
+<ng-template #viewTable>
   <div class="se-card mt-4">
     <div class="se-card-header">
       <div class="flex justify-between">
         <span>CUSTOMERS</span>
-        <div class="form-row">
-          <label class="form-label">Search by customer name</label>
-          <input #input_search pInputText type="text" name="firstName" class="form-input" [ngModel]="nameFilter()" (input)="onSearchChange(input_search.value)" />
-        </div>
       </div>
     </div>
     <div class="se-card-body">
@@ -80,6 +113,67 @@
         </ng-template>
       </p-table>
       <p-paginator (onPageChange)="onPageChange($event)" [rows]="pageSize()" [totalRecords]="totalRecords()" [first]="first()" />
-    </div>
+    </div></div
+></ng-template>
+
+<ng-template #viewCard>
+  <!-- customers card -->
+
+  <div class="grid-customers">
+    <ng-container *ngIf="customersPage().length > 0; else noCustomers">
+      <ng-container *ngFor="let customer of customersPage()">
+        <div class="col-span-12 lg:col-span-6 xl:col-span-4 se-card card-animation" [routerLink]="['view/', customer.customerId]">
+          <div class="flex h-full">
+            <!-- Customer Image -->
+            <div class="w-24 h-full">
+              <img [src]="customer.imageUrl" alt="{{ customer.name }}" class="object-cover w-full h-full rounded-l-md" />
+            </div>
+
+            <!-- Right side content -->
+            <div class="flex flex-col justify-between flex-1">
+              <!-- Card Header -->
+              <div class="se-card-header px-4 pt-4 pb-2">
+                <div class="flex justify-between items-start">
+                  <div class="flex flex-col gap-1">
+                    <span class="font-semibold text-white">{{ customer.name }}</span>
+                    <span class="text-sm text-gray-400">{{ customer.type }}</span>
+                  </div>
+                  <i class="fa-solid fa-ellipsis-vertical text-white"></i>
+                </div>
+              </div>
+
+              <!-- Card Body -->
+              <div class="se-card-body px-4 pb-4">
+                <span>Joinded since {{ customer.createdAt | date: 'mediumDate' }} </span>
+                <div class="flex justify-between items-center mt-2">
+                  <div class="flex items-center gap-4">
+                    <p-chip
+                      [styleClass]="
+                        customer.status.toLowerCase() === 'active'
+                          ? 'bg-green-300 text-green-700 p-2'
+                          : customer.status.toLowerCase() === 'pending'
+                            ? 'bg-orange-300 text-black p-2'
+                            : customer.status.toLowerCase() === 'banned'
+                              ? 'bg-red-300 text-red-700 p-2'
+                              : customer.status.toLowerCase() === 'inactive'
+                                ? 'p-2'
+                                : ''
+                      "
+                    >
+                      <span>{{ customer.status }}</span>
+                    </p-chip>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
   </div>
-</main>
+  <p-paginator (onPageChange)="onPageChange($event)" [rows]="pageSize()" [totalRecords]="totalRecords()" [first]="first()" />
+</ng-template>
+
+<ng-template #noCustomers>
+  <div class="col-span-12 flex justify-center w-full text-center">No customers found.</div>
+</ng-template>

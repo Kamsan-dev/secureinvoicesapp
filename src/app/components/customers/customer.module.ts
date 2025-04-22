@@ -14,6 +14,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { ChipModule } from 'primeng/chip';
 @NgModule({
   declarations: [EditCustomerComponent, ListCustomerComponent, ViewCustomerComponent],
   imports: [
@@ -29,6 +31,8 @@ import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
     ButtonModule,
     BreadcrumbModule,
     DynamicDialogModule,
+    SelectButtonModule,
+    ChipModule,
   ],
   providers: [DialogService],
 })

@@ -18,11 +18,11 @@
     </div>
     <div class="form-row">
       <label class="form-label">Type</label>
-      <p-dropdown [options]="customerTypeItems()" formControlName="type" placeholder="Invoice status" appendTo="body"> </p-dropdown>
+      <p-dropdown [options]="customerTypeItems()" formControlName="type" placeholder="Customer type" appendTo="body"> </p-dropdown>
     </div>
     <div class="form-row">
       <label class="form-label">Status</label>
-      <p-dropdown [options]="customerStatusItems()" formControlName="status" placeholder="Invoice status" appendTo="body"> </p-dropdown>
+      <p-dropdown [options]="customerStatusItems()" formControlName="status" placeholder="Customer status" appendTo="body"> </p-dropdown>
     </div>
     <div class="flex justify-end gap-1">
       <p-button label="Cancel" severity="secondary" (onClick)="this.ref.close()" />

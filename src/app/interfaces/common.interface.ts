@@ -3,3 +3,5 @@ export interface BreadcrumbItem {
   route?: string;
   icon?: string;
 }
+
+export type DisplayModeType = 'table' | 'card';
