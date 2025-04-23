@@ -9,6 +9,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { delay, finalize, Subject, takeUntil } from 'rxjs';
 import { ToasterService } from 'src/app/common/toaster/toaster.service';
+import { CUSTOMER_STATUS_ITEMS, CUSTOMER_TYPE_ITEMS } from 'src/app/enums/customer.enum';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
 import { EditCustomer } from 'src/app/interfaces/customer.interface';
@@ -33,10 +34,9 @@ export class EditCustomerDialogComponent implements OnInit {
   public editCustomerForm!: FormGroup;
 
   //dropdown customer type
-  public customerTypeItems = signal<String[]>(['Individual', 'Institution']);
-
+  public customerTypeItems = CUSTOMER_TYPE_ITEMS;
   //dropdwon customer type
-  public customerStatusItems = signal<String[]>(['Active', 'Inactive', 'Pending', 'Banned']);
+  public customerStatusItems = CUSTOMER_STATUS_ITEMS;
 
   constructor(
     private fb: FormBuilder,

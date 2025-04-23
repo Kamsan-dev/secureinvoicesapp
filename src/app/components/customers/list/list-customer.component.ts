@@ -4,9 +4,10 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DialogService } from 'primeng/dynamicdialog';
 import { debounceTime, distinctUntilChanged, finalize, Subject, takeUntil } from 'rxjs';
+import { CUSTOMER_STATUS_ITEMS_FILTERS, CUSTOMER_TYPE_ITEMS_FILTERS } from 'src/app/enums/customer.enum';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { CustomersPage } from 'src/app/interfaces/appstate';
-import { BreadcrumbItem, DisplayModeType } from 'src/app/interfaces/common.interface';
+import { BreadcrumbItem } from 'src/app/interfaces/common.interface';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
 import { Customer } from 'src/app/interfaces/customer.interface';
 import { State } from 'src/app/interfaces/state';
@@ -33,8 +34,16 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
   private destroy: Subject<void> = new Subject<void>();
 
   //filter
-  public nameFilter = signal<string>('');
+  //public nameFilter = signal<string>('');
   public searchCustomerByNameSubject = new Subject<string>();
+  public customerTypeItems = CUSTOMER_TYPE_ITEMS_FILTERS;
+  public customerStatusItems = CUSTOMER_STATUS_ITEMS_FILTERS;
+
+  public customersFilters = {
+    customerType: signal(this.customerTypeItems().at(0)?.value),
+    customerStatus: signal(this.customerStatusItems().at(0)?.value),
+    name: signal(''),
+  };
 
   //pagination
   public currentPage = signal<number>(0);
@@ -53,6 +62,8 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
 
   public displayMode = signal<'table' | 'card'>('table');
 
+  private isInitialLoad = true;
+
   constructor(
     private customerService: CustomerService,
     private fb: FormBuilder,
@@ -63,9 +74,9 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
   ) {}
   public ngOnInit(): void {
     // Read query params immediately on initialization
-    this.nameFilter.set(this.route.snapshot.queryParamMap.get('name') || '');
-    const page = this.route.snapshot.queryParamMap.get('page');
-    this.currentPage.set(page ? parseInt(page, 10) : 0);
+    this.customersFilters.name.set(this.route.snapshot.queryParamMap.get('name') || '');
+    let pageSnapshot = this.route.snapshot.queryParamMap.get('page');
+    this.currentPage.set(pageSnapshot ? parseInt(pageSnapshot, 10) : 0);
     this.first.set(this.currentPage() * this.pageSize());
 
     // Observable to handle the search debounce
@@ -80,16 +91,38 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
 
     // Listen for query parameter changes
     this.route.queryParams.pipe(takeUntil(this.destroy)).subscribe((params) => {
-      const newNameFilter = params['name'] || '';
+      const newName = params['name'] || '';
       const newPage = Number(params['page']) || 0;
+      const newType = params['type'] || this.customerTypeItems().at(0)?.value;
+      const newStatus = params['status'] || this.customerStatusItems().at(0)?.value;
 
-      if (this.nameFilter() !== newNameFilter) {
-        this.nameFilter.set(newNameFilter);
+      const nameChanged = newName !== this.customersFilters.name();
+      const typeChanged = newType !== this.customersFilters.customerType();
+      const statusChanged = newStatus !== this.customersFilters.customerStatus();
+      // const pageChanged = newPage !== this.currentPage();
+
+      if (nameChanged) {
+        this.customersFilters.name.set(newName);
+      }
+      if (typeChanged) {
+        this.customersFilters.customerType.set(newType);
+      }
+      if (statusChanged) {
+        this.customersFilters.customerStatus.set(newStatus);
+      }
+
+      if (this.isInitialLoad) {
+        this.isInitialLoad = false;
+        this.loadCustomersWithFilterSearch();
+        return;
+      }
+
+      if (nameChanged || typeChanged || statusChanged) {
         this.currentPage.set(0);
-        this.loadCustomersWithFilterSearch(newPage);
-      } else if (this.currentPage() === newPage) {
+        this.loadCustomersWithFilterSearch();
+      } else if (this.currentPage() !== newPage) {
         this.currentPage.set(newPage);
-        this.loadCustomersWithFilterSearch(newPage);
+        this.loadCustomersWithFilterSearch();
       }
     });
   }
@@ -107,11 +140,11 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
     this.router.navigate(['/customers/view/' + id]);
   }
 
-  private loadCustomersWithFilterSearch(page: number = 0): void {
+  private loadCustomersWithFilterSearch(): void {
     this.customerState().dataState = DataState.LOADING;
     this.loading.set(true);
     this.customerService
-      .searchCustomer(this.nameFilter(), page, this.pageSize())
+      .searchCustomer(this.customersFilters.name(), this.customersFilters.customerType(), this.customersFilters.customerStatus(), this.currentPage(), this.pageSize())
       .pipe(
         takeUntil(this.destroy),
         finalize(() => {
@@ -131,13 +164,14 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
           // we load the last valid page of data
           if (this.customersPage().length === 0 && this.totalRecords() > 0) {
             const lastPage = response.data?.page?.totalPages ? response.data.page.totalPages - 1 : 0;
-            this.currentPage.set(lastPage);
             this.router.navigate([], {
               relativeTo: this.route,
-              queryParams: { name: this.nameFilter() || null, page: lastPage },
+              queryParams: { name: this.customersFilters.name() || null, page: lastPage },
               queryParamsHandling: 'merge',
             });
           }
+          // we compile first to get a consistent pagination
+          this.first.set(this.currentPage() * this.pageSize());
         },
         error: (error: HttpErrorResponse) => {
           this.customerState.set({
@@ -153,8 +187,24 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
 
   //#region events
 
-  public onSearchChange(searchTerm: string) {
+  public onNameFilterChange(searchTerm: string) {
     this.searchCustomerByNameSubject.next(searchTerm);
+  }
+
+  public onTypeFilterChange(event: any) {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { type: event.value, page: 0 },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  public onStatusFilterChange(event: any) {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { status: event.value, page: 0 },
+      queryParamsHandling: 'merge',
+    });
   }
 
   //#endregion
@@ -162,10 +212,9 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
   //#region pagination
 
   public onPageChange(event: any): void {
-    this.currentPage.set(event.page);
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { page: this.currentPage() },
+      queryParams: { page: event.page },
       queryParamsHandling: 'merge',
     });
   }

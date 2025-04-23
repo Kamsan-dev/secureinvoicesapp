@@ -455,7 +455,7 @@ export class ViewInvoiceComponent implements OnInit {
     if (this.currentPage() <= this.lastCustomersPage()) {
       this.loading.set(true);
       try {
-        const response = await lastValueFrom(this.customerService.searchCustomer(this.searchTerm(), this.currentPage(), 10));
+        const response = await lastValueFrom(this.customerService.searchCustomer(this.searchTerm(), 'all', 'all', this.currentPage(), 10));
         this.lastCustomersPage.set(response.data?.page.totalPages ? response.data.page.totalPages - 1 : 0);
         // on new search term registered and first page, we clear the customer list
         if (this.currentPage() === 0 && this.searchTerm() !== '') {

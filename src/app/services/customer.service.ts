@@ -25,8 +25,8 @@ export class CustomerService {
     return this.http.post<CustomHttpResponse<EditCustomer>>(`${this.server}customer/create`, form);
   }
 
-  public searchCustomer(keyword: string, page: number = 0, size: number = 5): Observable<CustomHttpResponse<CustomersPage>> {
-    return this.http.get<CustomHttpResponse<CustomersPage>>(`${this.server}customer/search?keyword=${keyword}&page=${page}&size=${size}`);
+  public searchCustomer(name: string, type: string = 'all', status: string = 'all', page: number = 0, size: number = 5): Observable<CustomHttpResponse<CustomersPage>> {
+    return this.http.get<CustomHttpResponse<CustomersPage>>(`${this.server}customer/search?name=${name}&type=${type}&status=${status}&page=${page}&size=${size}`);
   }
 
   public getCustomer(id: number): Observable<CustomHttpResponse<ViewCustomer>> {

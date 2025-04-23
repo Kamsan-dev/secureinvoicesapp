@@ -42,7 +42,7 @@
       </div>
     </div>
   </div>
-  <div class="flex justify-end mt-4">
+  <div class="flex gap-3 justify-end mt-4">
     <div class="form-row">
       <input
         #input_search
@@ -50,11 +50,31 @@
         type="text"
         name="firstName"
         class="form-input"
-        [ngModel]="nameFilter()"
-        (input)="onSearchChange(input_search.value)"
+        [ngModel]="customersFilters.name()"
+        (input)="onNameFilterChange(input_search.value)"
         placeholder="Search by name.."
       />
     </div>
+    <p-dropdown
+      [options]="customerStatusItems()"
+      placeholder="Customer status"
+      appendTo="body"
+      optionLabel="label"
+      optionValue="value"
+      [style]="{ width: '150px' }"
+      [ngModel]="customersFilters.customerStatus()"
+      (onChange)="onStatusFilterChange($event)"
+    ></p-dropdown>
+    <p-dropdown
+      [options]="customerTypeItems()"
+      placeholder="Customer type"
+      appendTo="body"
+      optionLabel="label"
+      optionValue="value"
+      [style]="{ width: '150px' }"
+      [ngModel]="customersFilters.customerType()"
+      (onChange)="onTypeFilterChange($event)"
+    ></p-dropdown>
   </div>
   <main>
     <div *ngTemplateOutlet="displayMode() === 'table' ? viewTable : viewCard"></div>
@@ -69,7 +89,12 @@
       </div>
     </div>
     <div class="se-card-body">
-      <p-table [value]="customersPage()" [tableStyle]="{ 'min-width': '60rem' }" [loading]="customerState().dataState === DataState.LOADING">
+      <p-table
+        [value]="customersPage()"
+        [tableStyle]="{ 'min-width': '60rem' }"
+        [loading]="customerState().dataState === DataState.LOADING"
+        styleClass="p-datatable-gridlines"
+      >
         <ng-template pTemplate="header">
           <tr>
             <th>Id</th>
@@ -90,16 +115,21 @@
             <td>{{ customer.email }}</td>
             <td>{{ customer.phone }}</td>
             <td>
-              <span
-                class="badge"
-                [ngClass]="{
-                  'bg-info': customer.status.toUpperCase() === 'INACTIVE',
-                  'bg-danger': customer.status.toUpperCase() === 'BANNED',
-                  'bg-primary': customer.status.toUpperCase() === 'PENDING',
-                  'bg-success': customer.status.toUpperCase() === 'ACTIVE'
-                }"
-                >{{ customer.status }}
-              </span>
+              <p-chip
+                [styleClass]="
+                  customer.status.toLowerCase() === 'active'
+                    ? 'bg-green-300 text-green-700 p-2'
+                    : customer.status.toLowerCase() === 'pending'
+                      ? 'bg-orange-300 text-black p-2'
+                      : customer.status.toLowerCase() === 'banned'
+                        ? 'bg-red-300 text-red-700 p-2'
+                        : customer.status.toLowerCase() === 'inactive'
+                          ? 'p-2'
+                          : ''
+                "
+              >
+                <span>{{ customer.status }}</span>
+              </p-chip>
             </td>
             <td>{{ customer.type }}</td>
             <td><p-button label="See more" severity="info" [size]="'small'" (onClick)="selectCustomer(customer.customerId)" /></td>
