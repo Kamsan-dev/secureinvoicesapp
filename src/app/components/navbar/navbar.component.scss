@@ -12,7 +12,8 @@
   margin-left: 270px;
   height: 80px;
   //background-color: #191919;
-  background-color: #1e1e1e;
+  //background-color: #1e1e1e;
+  background-color: #17171d;
   color: #ededed;
   align-content: center;
   color: $clr-primary--lightest;
@@ -23,7 +24,6 @@
   .sidebar--toggle {
     height: 40px;
     width: 40px;
-    background-color: #f1f1f1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -63,7 +63,7 @@
       top: 75px;
       right: 0;
       width: 200px;
-      background-color: #1e1e1e;
+      background-color: #17171d;
       border: 1px solid #2c2c2c;
       transform: translateY(-5px);
       transition:

@@ -9,11 +9,8 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  font-size: 14px;
-}
-
 :root {
+  font-size: 14px;
   --font-primary: 'Space Grotesk', sans-serif;
 
   /* Font Sizes */
@@ -70,7 +67,8 @@ body {
   margin: 0;
   padding: 0;
   //background-color: rgb(9, 9, 11);
-  background-color: #121212;
+  //background-color: #121212;
+  background-color: #0a0a0c;
   display: flex;
   flex-direction: column;
 
@@ -95,6 +93,10 @@ body {
 //   outline: none !important;
 //   box-shadow: none !important;
 // }
+
+button {
+  background-color: transparent;
+}
 
 /* ---------------------------- */
 
@@ -138,11 +140,12 @@ body {
   border-radius: 15px;
   overflow: hidden;
   // background-color: #191919;
-  background-color: #1e1e1e;
+  //background-color: #1e1e1e;
+  background-color: #17171d;
   border: solid 1px #2c2c2c;
   box-shadow: 0 2px 10px rgba(255, 255, 255, 0.03);
   &-header {
-    padding: 25px 15px 25px 15px;
+    padding: 20px 15px 20px 15px;
     font-weight: 700;
     font-size: 1.25rem;
     border-bottom: solid 1px #2c2c2c;
@@ -168,4 +171,16 @@ body {
 .p-paginator {
   border: none;
   background: none;
+}
+
+.p-dialog .p-dialog-header {
+  background-color: #2c2c2c;
+}
+
+.p-dialog .p-dialog-content {
+  background-color: #2c2c2c;
+}
+
+.p-dialog .p-dialog-footer {
+  background-color: #2c2c2c;
 }

@@ -10,7 +10,8 @@ $tran-5: all 0.5s ease;
   position: fixed;
   width: 270px;
   //background-color: #191919;
-  background-color: #1e1e1e;
+  //background-color: #1e1e1e;
+  background-color: #17171d;
   top: 0;
   left: 0;
   bottom: 0;
@@ -18,6 +19,7 @@ $tran-5: all 0.5s ease;
   padding: 10px 14px;
   transition: $tran-5;
   border-right: 1px solid #2c2c2c;
+  font-size: var(--text-xl);
 
   &.close {
     width: 88px;
@@ -39,22 +41,6 @@ $tran-5: all 0.5s ease;
 
   &.open {
     transform: translateX(0);
-  }
-
-  .sidebar--toggle {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 30px;
-    width: 30px;
-    background-color: $clr-white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    color: #191919;
-    z-index: 1010;
-    font-size: 1.2rem;
   }
 
   .menu-bar {
@@ -95,10 +81,11 @@ $tran-5: all 0.5s ease;
       display: flex;
       align-items: center;
       justify-content: center;
+      color: #9ca3af;
     }
 
     .text {
-      color: $clr-white;
+      color: #9ca3af;
     }
 
     a {
@@ -109,8 +96,17 @@ $tran-5: all 0.5s ease;
       align-items: center;
       border-radius: 6px;
       transition: $tran-4;
-      &:hover {
-        background-color: $clr-primary--dark;
+
+      &.activated {
+        background-color: rgba(59, 130, 246, 0.1);
+        .icon,
+        .text {
+          color: #3b82f6;
+        }
+      }
+
+      &:not(.activated):hover {
+        background-color: #2d2d34;
       }
     }
   }

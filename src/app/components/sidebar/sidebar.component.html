@@ -24,23 +24,18 @@
         <input type="text" placeholder="Search..." class="" />
       </li>
       <ul class="menu-links">
-        <li class="nav-link">
-          <a><i class="fa-solid fa-house icon"></i><span class="text nav-text">Home</span> </a>
-        </li>
-        <li class="nav-link">
-          <a> <i class="fa-solid fa-chart-simple icon"></i><span class="text nav-text">Dashboard</span> </a>
-        </li>
-        <li class="nav-link">
-          <a [routerLink]="['/customers']"> <i class="fa-solid fa-users icon"></i><span class="text nav-text">Customers</span> </a>
-        </li>
-        <li class="nav-link">
-          <a [routerLink]="['/invoices']"> <i class="fa-solid fa-file-invoice icon"></i><span class="text nav-text">Invoices</span> </a>
+        <li *ngFor="let item of listLink()" class="nav-link">
+          <a [routerLink]="item.route" [ngClass]="{ activated: isActivated(item.route) }" class="transition-colors"
+            ><i class="icon" [ngClass]="item.icon"></i><span class="text">{{ item.label }}</span>
+          </a>
         </li>
       </ul>
     </div>
     <div class="bottom-content">
       <li class="nav-link">
-        <a (click)="logout($event)"> <i class="fa-solid fa-power-off icon"></i><span class="text nav-text">Log out</span> </a>
+        <a (click)="logout($event)" class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-[#EF4444] hover:bg-opacity-10 transition-colors">
+          <i class="fa-solid fa-power-off icon text-[#EF4444]"></i><span class="text text-[#EF4444]">Log out</span>
+        </a>
       </li>
     </div>
   </div>
