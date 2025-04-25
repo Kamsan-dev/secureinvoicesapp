@@ -5,57 +5,66 @@
     width: responsiveService.phone() || responsiveService.tablet() ? '100%' : 'calc(100% - ' + pageMarginLeft() + 'px)'
   }"
 >
-  <div class="max-w-screen-2xl mx-auto px-4 flex justify-between items-center w-full gap-8">
-    <div class="topbar--item-left">
-      <i class="fa-solid fa-bars cursor-pointer sidebar--toggle" (click)="onToggleClick($event)"></i>
+  <div class="max-w-screen-2xl mx-auto px-4 flex items-center w-full gap-8">
+    <div class="topbar--item-left w-[35%] flex gap-4">
+      <i class="fa-solid fa-bars cursor-pointer sidebar--toggle shrink-0" (click)="onToggleClick($event)"></i>
+      <span class="hidden lg:block text-nowrap h2 overflow-hidden text-ellipsis">Good Morning, {{ userInformations()?.firstName }} !</span>
     </div>
-    <div class="top-bar--item-right" *ngIf="userInformations()">
-      <ng-container *ngIf="!responsiveService.phone()">
-        <div class="relative w-full max-w-xs">
+    <div class="top-bar--item-right w-[75%] flex items-center justify-end gap-4" *ngIf="userInformations()">
+      <ng-container *ngIf="!responsiveService.phone() || !responsiveService.tablet()">
+        <!-- Search bar -->
+        <div class="relative hidden lg:block">
           <input
             type="text"
             placeholder="Search..."
-            class="w-full pl-10 text-slate-400 text-sm pr-4 py-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            class="w-[300px] h-[40px] pl-10 pr-4 rounded-xl font-input-text border-none border border-[#2c2c2c] focus:border-[#4A90E2]"
           />
-          <i class="fas fa-search absolute left-3 top-1/4 transform -translate-y-1/2 text-gray-400"></i>
+          <i class="fas fa-search absolute left-3 top-[30%] transform -translate-y-1/2"></i>
         </div>
-        <i class="fa-regular fa-envelope text-slate-200 text-xl pl-2"></i>
-        <i class="fa-regular fa-bell text-slate-200 text-xl p-2"></i>
-        <div class="border border-solid border-slate-300 h-20"></div>
+
+        <!-- Icons -->
+        <div class="flex items-center gap-4">
+          <i class="fa-solid fa-envelope text-xl cursor-pointer"></i>
+          <i class="fa-solid fa-bell text-xl cursor-pointer"></i>
+        </div>
       </ng-container>
-      <div class="relative inline-block dropdown">
+      <div class="relative inline-block dropdown p-2 bg-[#121212] rounded-xl">
         <div class="flex gap-2 cursor-pointer shrink-0 items-center border dropdown-trigger" (click)="toggleMainDropdown($event)" #dropdownElement tabindex="0">
-          <img [src]="getUserPictureProfile()" [alt]="getUserName()" class="rounded-full w-[48px] h-[48px] ml-2" />
+          <img [src]="getUserPictureProfile()" [alt]="getUserName()" class="rounded-full w-[36px] h-[36px]" />
           <div class="flex-col gap-1 align-content-center justify-content-center hidden lg:flex">
-            <span class="item-right--name font-semibold">{{ userInformations()?.firstName }} {{ userInformations()?.lastName }}</span>
+            <span class="item-right--name font-semibold text-green-600">{{ userInformations()?.firstName }} {{ userInformations()?.lastName }}</span>
             <span class="text-xs font-light text-wrap">{{ userInformations()?.roleName }}</span>
           </div>
         </div>
-        <div class="dropdown-content" *ngIf="isDropdownOpen()" #dropdownElementMenu tabindex="0">
-          <div class="flex gap-2 shrink-0 items-center border pl-1 pr-1 pt-2">
+        <div class="dropdown-content rounded-xl" *ngIf="isDropdownOpen()" #dropdownElementMenu tabindex="0">
+          <div class="flex gap-2 shrink-0 items-center pl-1 pr-1 pt-2 pb-2 bg-slate-700 rounded-t-xl">
             <img [src]="getUserPictureProfile()" [alt]="getUserName()" class="rounded-full w-9 h-9 ml-2" />
             <div class="flex-col gap-1 align-content-center justify-content-center flex">
               <span class="item-right--name font-semibold">{{ userInformations()?.firstName }} {{ userInformations()?.lastName }}</span>
               <span class="text-xs font-light text-wrap">{{ userInformations()?.title }}</span>
             </div>
           </div>
-          <hr class="border-t border-gray-300" />
-          <div class="pl-4 pr-4 mb-2">
-            <span class="font-extralight text-slate-400 text-sm">Account</span>
-            <div class="flex flex-col gap-2 ml-3 mt-1">
-              <span class="text-sm text-slate-300 cursor-pointer hover:text-gray-100" [routerLink]="['profile']"><i class="fa-solid fa-user mr-2"></i>Profile</span>
-              <span class="text-sm text-slate-300 cursor-pointer hover:text-gray-100"><i class="fa-solid fa-message mr-2"></i>Message</span>
-            </div>
+
+          <div class="mb-2 flex flex-col gap-2 mt-2">
+            <span class="font-extralight text-slate-400 text-sm pr-4 pl-4">Account</span>
+            <a class="hover:bg-slate-700 w-full">
+              <span class="text-sm cursor-pointer hover:text-gray-100 se-item-link" [routerLink]="['profile']"><i class="fa-solid fa-user mr-2"></i>Profile</span>
+            </a>
+            <a class="hover:bg-slate-700 w-full">
+              <span class="text-sm cursor-pointer hover:text-gray-100 se-item-link"><i class="fa-solid fa-message mr-2"></i>Message</span>
+            </a>
           </div>
-          <div class="pl-4 pr-4 mb-2">
-            <span class="font-extralight text-slate-400 text-sm">Settings</span>
-            <div class="flex flex-col gap-2 ml-3 mt-1">
-              <span class="text-sm text-slate-300 cursor-pointer hover:text-gray-100"><i class="fa-solid fa-shield-halved mr-2"></i>Security</span>
-              <span class="text-sm text-slate-300 cursor-pointer hover:text-gray-100"><i class="fa-solid fa-circle-info mr-2"></i>Help</span>
-            </div>
+          <div class="mb-2 flex flex-col gap-2">
+            <span class="font-extralight text-slate-400 text-sm pr4 pl-4">Settings</span>
+            <a class="hover:bg-slate-700 w-full">
+              <span class="text-sm cursor-pointer hover:text-gray-100 se-item-link"><i class="fa-solid fa-shield-halved mr-2"></i>Security</span>
+            </a>
+            <a class="hover:bg-slate-700 w-full">
+              <span class="text-sm cursor-pointer hover:text-gray-100 se-item-link"><i class="fa-solid fa-circle-info mr-2"></i>Help</span>
+            </a>
           </div>
-          <hr class="border-t border-gray-300" />
-          <div class="pl-4 pt-1 pr-3 pb-3">
+
+          <div class="pl-4 pt-2 pr-4 pb-2 se-border-top">
             <span class="text-sm text-red-600 cursor-pointer" (click)="logout($event)"><i class="fa-solid fa-power-off mr-2"></i>Logout</span>
           </div>
         </div>

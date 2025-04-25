@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, Inject, Input, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, ElementRef, HostListener, Inject, Input, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { User } from 'src/app/interfaces/user';
 import { UserService } from 'src/app/services/user.service';
@@ -75,12 +75,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   //#region UserInformations
-  public getUserName(): string {
+  public getUserName = computed(() => {
     return this.userInformations()?.firstName + ' ' + this.userInformations()?.lastName;
-  }
-  public getUserPictureProfile(): string {
+  });
+  public getUserPictureProfile = computed(() => {
     return this.userInformations()?.imageUrl || 'https://img.freepik.com/free-icon/user_318-159711.jpg';
-  }
+  });
 
   //#endregion UserInformations
 

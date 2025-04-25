@@ -9,13 +9,15 @@ $tran-5: all 0.5s ease;
 .secure-invoices--sidebar {
   position: fixed;
   width: 270px;
-  background-color: #191919;
+  //background-color: #191919;
+  background-color: #1e1e1e;
   top: 0;
   left: 0;
   bottom: 0;
   z-index: 1200;
   padding: 10px 14px;
   transition: $tran-5;
+  border-right: 1px solid #2c2c2c;
 
   &.close {
     width: 88px;

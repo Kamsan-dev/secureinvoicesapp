@@ -1,8 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
-// @import url('https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');
-// @import url('https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i');
 @import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.2/font/bootstrap-icons.css');
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="styleshee');
+// @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="styleshee');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
 @import './assets/styles/theme.scss';
 @import './assets/styles/_variables.scss';
 @import '~primeicons/primeicons.css';
@@ -14,18 +13,92 @@
   font-size: 14px;
 }
 
+:root {
+  --font-primary: 'Space Grotesk', sans-serif;
+
+  /* Font Sizes */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+
+  /* Font Weights */
+  --font-light: 300;
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  box-sizing: 0 !important;
+}
+
+/* Headings */
+.h1 {
+  font-family: var(--font-primary);
+  font-size: var(--text-4xl);
+  font-weight: var(--font-bold);
+  line-height: 1.2;
+}
+
+.h2 {
+  font-family: var(--font-primary);
+  font-size: var(--text-3xl);
+  font-weight: var(--font-semibold);
+  line-height: 1.3;
+}
+
+.h3 {
+  font-family: var(--font-primary);
+  font-size: var(--text-2xl);
+  font-weight: var(--font-medium);
+  line-height: 1.4;
+}
+
+.h-title-card {
+  font-family: var(--font-primary);
+  font-size: var(--text-lg);
+  font-weight: var(--font-medium);
+  line-height: 1.4;
+}
+
 body {
   height: 100%;
   margin: 0;
   padding: 0;
-  // background-color: #22252a;
-  background-color: rgb(9, 9, 11);
+  //background-color: rgb(9, 9, 11);
+  background-color: #121212;
   display: flex;
   flex-direction: column;
-  font-family: 'Inter', sans-serif !important;
-  font-weight: 400;
-  font-size: 14px !important;
+
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-regular);
+  line-height: 1.6;
+  color: #f1f1f1;
 }
+
+.font-input-text {
+  font-family: var(--font-primary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  letter-spacing: 0.05em;
+  color: #f1f1f1;
+}
+
+// input,
+// textarea {
+//   appearance: none !important;
+//   outline: none !important;
+//   box-shadow: none !important;
+// }
+
+/* ---------------------------- */
+
+/* COMPONENTS */
 
 .p-panel {
   &-header {
@@ -62,16 +135,20 @@ body {
 }
 
 .se-card {
-  border-radius: 10px;
+  border-radius: 15px;
   overflow: hidden;
-  background-color: #191919;
+  // background-color: #191919;
+  background-color: #1e1e1e;
+  border: solid 1px #2c2c2c;
+  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.03);
   &-header {
-    padding: 25px 25px 0 25px;
+    padding: 25px 15px 25px 15px;
     font-weight: 700;
     font-size: 1.25rem;
+    border-bottom: solid 1px #2c2c2c;
   }
   &-body {
-    padding: 25px;
+    padding: 20px 15px 20px 15px;
   }
 }
 
