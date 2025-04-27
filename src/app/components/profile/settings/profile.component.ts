@@ -43,6 +43,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   public items: BreadcrumbItem[] = [{ label: '', route: '/home', icon: 'pi pi-home' }, { label: 'Users', route: '/' }, { label: 'current-user' }];
 
+  // user
+
+  public user = signal<User | null>(null);
+
   constructor(
     private userService: UserService,
     private fb: FormBuilder,
@@ -91,6 +95,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
           });
           // Populate the form with the loaded data
           this.populateForms();
+          this.user.set(response.data?.user || null);
         },
         error: (error: HttpErrorResponse) => {
           this.profileState.set({

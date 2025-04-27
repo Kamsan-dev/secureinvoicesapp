@@ -26,7 +26,9 @@
         </div>
         <div class="flex flex-col gap-2 justify-center content-center">
           <span class="font-bold text-2xl">{{ getUserName() }}</span>
+          <span class="italic text-sm text-slate-400">{{ user()?.roleName }}</span>
           <span class="italic text-sm text-slate-400">Joinded since {{ getUserJoinDate() | date: 'MMM d, y' }}</span>
+          <p-chip [styleClass]="user()?.enabled ? 'ACTIVE' : 'BANNED'">{{ user()?.enabled ? 'Account enabled' : 'Account disabled' }}</p-chip>
         </div>
       </div>
     </div>
@@ -133,17 +135,12 @@
             </div>
           </p-tabPanel>
           <p-tabPanel header="Account history">
-            <div class="se-card">
-              <div class="se-card-header">Account history</div>
-              <div class="se-card-body">
-                <se-profile-events-history
-                  *ngIf="showProfileEvents"
-                  [dataState]="profileState().dataState"
-                  [loading]="loading()"
-                  [userEvents]="getUserEvents()"
-                ></se-profile-events-history>
-              </div>
-            </div>
+            <se-profile-events-history
+              *ngIf="showProfileEvents"
+              [dataState]="profileState().dataState"
+              [loading]="loading()"
+              [userEvents]="getUserEvents()"
+            ></se-profile-events-history>
           </p-tabPanel>
         </p-tabView>
       </div>

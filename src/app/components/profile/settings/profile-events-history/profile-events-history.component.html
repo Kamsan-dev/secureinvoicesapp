@@ -3,8 +3,6 @@
     <se-progress-spinner mode="indeterminate"></se-progress-spinner>
   </div>
 </ng-template>
-
-<p>Latest activities on your account.</p>
 <p-table [value]="userEventsSig()" [tableStyle]="{ 'min-width': '50rem' }">
   <ng-template pTemplate="header">
     <tr>
@@ -25,13 +23,13 @@
         <p-chip
           [styleClass]="
             event.type.endsWith('SUCCESS')
-              ? 'bg-green-300 text-green-700 p-2'
+              ? 'ACTIVE'
               : event.type.endsWith('ATTEMPT')
-                ? 'bg-orange-300 text-black p-2'
+                ? 'PENDING'
                 : event.type.endsWith('FAILURE')
-                  ? 'bg-red-300 text-red-700 p-2'
+                  ? 'BANNED'
                   : event.type.endsWith('UPDATE')
-                    ? 'bg-blue-300 text-blue-700 p-2'
+                    ? 'INFO'
                     : ''
           "
         >
@@ -40,7 +38,7 @@
       </td>
       <td>{{ event.description }}</td>
       <td>
-        <p-button severity="warning" size="small" label="Report"></p-button>
+        <p-button severity="danger" size="small" label="Report"></p-button>
       </td>
     </tr>
   </ng-template>

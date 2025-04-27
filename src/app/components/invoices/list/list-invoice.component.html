@@ -40,8 +40,8 @@
     </div>
 
     <div class="flex justify-end gap-2 mt-3">
-      <p-button label="Cancel" severity="secondary" (onClick)="isNewInvoiceDialogVisible.set(false)" />
-      <p-button label="Save" (onClick)="onSaveNewInvoiceClick($event)" [disabled]="newInvoiceDescription.length < 1" />
+      <p-button label="Cancel" severity="info" (onClick)="isNewInvoiceDialogVisible.set(false)" />
+      <p-button label="Save" severity="success" (onClick)="onSaveNewInvoiceClick($event)" [disabled]="newInvoiceDescription.length < 1" />
     </div>
   </p-dialog>
 

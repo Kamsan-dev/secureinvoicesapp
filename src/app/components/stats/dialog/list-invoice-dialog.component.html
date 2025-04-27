@@ -8,30 +8,32 @@
       <th>Action</th>
     </tr>
   </ng-template>
-  <ng-template pTemplate="body" let-invoices>
+  <ng-template pTemplate="body" let-invoice>
     <tr>
       <td>
-        <span class="font-bold">{{ invoices.invoiceNumber }}</span>
+        <span class="font-bold">{{ invoice.invoiceNumber }}</span>
       </td>
       <td>
         <p-chip
           [styleClass]="
-            invoices.status === 'PAID'
-              ? 'bg-green-300 text-green-700 p-2'
-              : invoices.status === 'PENDING'
-                ? 'bg-orange-300 text-black p-2'
-                : invoices.status === 'OVERDUE'
-                  ? 'bg-red-300 text-red-700 p-2'
-                  : ''
+            invoice.status === 'Paid'
+              ? 'ACTIVE'
+              : invoice.status === 'Pending'
+                ? 'PENDING'
+                : invoice.status === 'Overdue'
+                  ? 'BANNED'
+                  : invoice.status === 'Draft'
+                    ? 'INACTIVE'
+                    : ''
           "
         >
-          <span>{{ invoices.status }}</span>
+          <span>{{ invoice.status }}</span>
         </p-chip>
       </td>
-      <td>{{ invoices.issuedAt | date: 'mediumDate' }}</td>
-      <td>${{ invoices.total }}</td>
+      <td>{{ invoice.issuedAt | date: 'mediumDate' }}</td>
+      <td>${{ invoice.total }}</td>
       <td>
-        <p-button label="See more" severity="info" [size]="'small'" (onClick)="onCloseDialog(invoices.invoiceId, invoices.invoiceNumber)" />
+        <p-button label="See more" severity="info" [size]="'small'" (onClick)="onCloseDialog(invoice.invoiceId, invoice.invoiceNumber)" />
       </td>
     </tr>
   </ng-template>

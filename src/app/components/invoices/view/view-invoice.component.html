@@ -22,33 +22,14 @@
         </ng-template>
       </p-breadcrumb>
       <div class="flex gap-2 pt-2">
-        <p-button
-          label="Save"
-          severity="success"
-          icon="fa-solid fa-floppy-disk"
-          [disabled]="!isInvoiceModified()"
-          type="submit"
-          [size]="!responsiveService.desktop() ? 'small' : 'large'"
-        />
-        <p-button
-          label="Reset"
-          severity="info"
-          icon="fa-solid fa-rotate-left"
-          (onClick)="onResetInvoiceClick($event)"
-          [size]="!responsiveService.desktop() ? 'small' : 'large'"
-        ></p-button>
-        <p-button
-          label="Delete"
-          severity="danger"
-          icon="fa-solid fa-trash"
-          [size]="!responsiveService.desktop() ? 'small' : 'large'"
-          (onClick)="onDeleteInvoiceClick($event)"
-        />
+        <p-button label="Save" severity="success" [disabled]="!isInvoiceModified()" type="submit" [size]="!responsiveService.desktop() ? 'small' : 'large'" />
+        <p-button label="Reset" severity="info" (onClick)="onResetInvoiceClick($event)" [size]="!responsiveService.desktop() ? 'small' : 'large'"></p-button>
+        <p-button label="Delete" severity="danger" [size]="!responsiveService.desktop() ? 'small' : 'large'" (onClick)="onDeleteInvoiceClick($event)" />
       </div>
     </div>
 
     <div class="grid-invoice mt-4">
-      <div class="col-span-12 lg:col-span-4 xl:col-span-4 se-card">
+      <div class="col-span-12 lg:col-span-4 xl:col-span-4 se-card self-start">
         <div class="se-card-header">
           <div class="flex items-center">
             <span>Summary</span>
@@ -86,7 +67,7 @@
           <div class="flex justify-between items-center">
             <span>Products & services</span>
             <div>
-              <p-button [label]="responsiveService.desktop() ? 'Add a new invoice line' : undefined" (onClick)="menu.toggle($event)">
+              <p-button [label]="responsiveService.desktop() ? 'Add a new invoice line' : undefined" (onClick)="menu.toggle($event)" severity="success">
                 <i *ngIf="!responsiveService.desktop()" class="fa-solid fa-plus"></i>
               </p-button>
               <p-tieredMenu #menu [model]="submenuItems()" [popup]="true" />
@@ -135,7 +116,7 @@
           </div>
         </div>
       </div>
-      <div class="col-span-12 lg:col-span-4 xl:col-span-4 se-card">
+      <div class="col-span-12 lg:col-span-4 xl:col-span-4 se-card self-start">
         <div class="se-card-header">
           <div class="flex justify-between items-center">
             <span>Details of the invoice n° {{ invoice()?.invoiceNumber }}</span>
@@ -143,7 +124,10 @@
         </div>
         <div class="se-card-body">
           <div class="flex justify-center flex-col gap-4">
-            <input pInputText type="text" placeholder="Description.." formControlName="services" />
+            <div class="block">
+              <label class="">Description</label>
+              <input pInputText type="text" placeholder="Description.." formControlName="services" class="w-full" />
+            </div>
             <div class="block">
               <label>Customer</label>
               <ng-select
@@ -161,8 +145,10 @@
               >
               </ng-select>
             </div>
-            <div>
-              <p-dropdown [options]="invoiceStatusItems()" formControlName="status" placeholder="Invoice status"> </p-dropdown>
+            <div class="flex flex-col">
+              <label>Status</label>
+              <p-dropdown [options]="invoiceStatusItems()" formControlName="status" placeholder="Invoice status" [style]="{ width: '300px' }" [appendTo]="'body'">
+              </p-dropdown>
             </div>
             <div>
               <label
@@ -175,20 +161,16 @@
           </div>
         </div>
       </div>
-      <div class="col-span-12 lg:col-span-8 xl:col-span-8 se-card">
-        <div class="se-card-header">
-          <div class="flex justify-between items-center">
-            <div class="invoice-company text-inverse f-w-600">
-              <p-button label="Export as PDF" severity="danger" icon="fa-solid fa-file-pdf" (click)="exportAsPDF()" />
-            </div>
+      <div class="col-span-12 lg:col-span-8 xl:col-span-8">
+        <div class="flex justify-end items-center">
+          <div class="invoice-company text-inverse f-w-600">
+            <p-button label="Export as PDF" severity="danger" icon="fa-solid fa-file-pdf" (click)="exportAsPDF()" />
           </div>
         </div>
-        <div class="se-card-body">
-          <div class="flex justify-between items-center">
-            <div class="invoice w-full overflow-x-auto" *ngIf="invoiceState().dataState !== 'LOADING_STATE'; else spinner">
-              <div [ngClass]="{ 'w-[800px]': !responsiveService.desktop() }">
-                <div *ngTemplateOutlet="previewInvoice"></div>
-              </div>
+        <div class="flex justify-between items-center mt-4">
+          <div class="invoice w-full overflow-x-auto" *ngIf="invoiceState().dataState !== 'LOADING_STATE'; else spinner">
+            <div [ngClass]="{ 'w-[800px]': !responsiveService.desktop() }">
+              <div *ngTemplateOutlet="previewInvoice"></div>
             </div>
           </div>
         </div>

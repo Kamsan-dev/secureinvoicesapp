@@ -354,7 +354,7 @@ export class ViewInvoiceComponent implements OnInit {
       header: 'Delete Confirmation',
       icon: 'pi pi-info-circle',
       acceptButtonStyleClass: 'p-button-danger p-button-text',
-      rejectButtonStyleClass: 'p-button-text p-button-text',
+      rejectButtonStyleClass: 'p-button-info p-button-text',
       acceptIcon: 'none',
       rejectIcon: 'none',
 
