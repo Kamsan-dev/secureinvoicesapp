@@ -24,7 +24,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.primengConfig.ripple = true;
+    this.primengConfig.ripple = false;
     this.sidebarService.sidebarState$.pipe(takeUntil(this.destroy)).subscribe(() => {
       this.pageMarginLeft.set(this.sidebarService.getSidebarWidth());
     });

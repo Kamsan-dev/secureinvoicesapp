@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, OnDestroy, OnInit, signal, ViewEncapsulation } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DialogService } from 'primeng/dynamicdialog';
@@ -34,7 +34,6 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
   private destroy: Subject<void> = new Subject<void>();
 
   //filter
-  //public nameFilter = signal<string>('');
   public searchCustomerByNameSubject = new Subject<string>();
   public customerTypeItems = CUSTOMER_TYPE_ITEMS_FILTERS;
   public customerStatusItems = CUSTOMER_STATUS_ITEMS_FILTERS;
@@ -218,6 +217,13 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
       queryParamsHandling: 'merge',
     });
   }
+
+  public getShowingRange = computed(() => {
+    let start = this.currentPage() * this.pageSize() + 1;
+    let end = start + this.pageSize() - 1;
+
+    return `Showing ${start} to ${end} of ${this.totalRecords()} results`;
+  });
   //#endregion
 
   //#region dialog

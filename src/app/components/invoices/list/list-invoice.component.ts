@@ -29,7 +29,7 @@ export class ListInvoiceComponent implements OnInit {
   //pagination
   public currentPage = signal<number>(0);
   public totalRecords = signal(0);
-  public pageSize = signal(5);
+  public pageSize = signal(10);
   public first = signal(0);
 
   //dialog
@@ -60,15 +60,16 @@ export class ListInvoiceComponent implements OnInit {
     // Listen for query parameter changes
     this.route.queryParams.pipe(takeUntil(this.destroy)).subscribe((params) => {
       const newPage = Number(params['page']) || 0;
-      this.loadInvoices(newPage);
+      this.currentPage.set(newPage);
+      this.loadInvoices();
     });
   }
 
-  private async loadInvoices(page: number = 0): Promise<void> {
+  private async loadInvoices(): Promise<void> {
     this.invoiceState().dataState = DataState.LOADING;
     this.loading.set(true);
     try {
-      const response = await lastValueFrom(this.invoiceService.getInvoices(page, 5));
+      const response = await lastValueFrom(this.invoiceService.getInvoices(this.currentPage(), this.pageSize()));
       this.invoiceState.set({
         ...this.invoiceState(),
         dataState: DataState.LOADED,
@@ -159,5 +160,12 @@ export class ListInvoiceComponent implements OnInit {
       queryParamsHandling: 'merge',
     });
   }
+
+  public getShowingRange = computed(() => {
+    let start = this.currentPage() * this.pageSize() + 1;
+    let end = start + this.pageSize() - 1;
+
+    return `Showing ${start} to ${end} of ${this.totalRecords()} results`;
+  });
   //#endregion
 }

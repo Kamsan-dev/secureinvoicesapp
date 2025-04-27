@@ -11,8 +11,9 @@
 
 :root {
   font-size: 14px;
-  --font-primary: 'Space Grotesk', sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
 
+  --font-primary: 'Space Grotesk', sans-serif;
   /* Font Sizes */
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
@@ -29,6 +30,11 @@
   --font-medium: 500;
   --font-semibold: 600;
   --font-bold: 700;
+
+  --btn-padding: 0.75rem 1.5rem;
+  --btn-radius: 0.5rem;
+  --btn-font-weight: 500;
+  --btn-gap: 0.5rem;
 
   box-sizing: 0 !important;
 }
@@ -129,13 +135,6 @@ button {
   background: unset;
 }
 
-.p-datatable .p-datatable-tbody > tr {
-  background-color: unset;
-}
-.p-datatable .p-datatable-thead > tr > th {
-  background-color: unset;
-}
-
 .se-card {
   border-radius: 15px;
   overflow: hidden;
@@ -153,6 +152,12 @@ button {
   &-body {
     padding: 20px 15px 20px 15px;
   }
+}
+
+// PRIME-NG CUSTOM STYLE
+
+.p-component {
+  font-family: 'Grotesk', sans-serif;
 }
 
 .p-inputnumber-input {
@@ -174,13 +179,300 @@ button {
 }
 
 .p-dialog .p-dialog-header {
-  background-color: #2c2c2c;
+  background-color: #17171d;
 }
 
 .p-dialog .p-dialog-content {
-  background-color: #2c2c2c;
+  background-color: #17171d;
 }
 
 .p-dialog .p-dialog-footer {
-  background-color: #2c2c2c;
+  background-color: #17171d;
+}
+
+// Custom PrimeNG Button Styles
+
+// BUTTONS
+
+.p-button {
+  padding: var(--btn-padding);
+  border-radius: var(--btn-radius);
+  font-weight: var(--btn-font-weight);
+  font-size: var(--text-base);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--btn-gap);
+  background-color: #2a2a2a; // default dark background
+  color: #ffffff;
+  border: none;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  i {
+    font-size: 1.2rem;
+  }
+}
+
+// Specific color variants
+.p-button-success {
+  background-color: rgb(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.p-button-info {
+  background-color: rgb(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+.p-button-danger {
+  background-color: rgb(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+// CHIP
+
+/* Make general chips darker and subtler */
+.p-chip {
+  background-color: #1d1f23; /* dark background */
+  color: #ffffff; /* default text color */
+  border-radius: 1rem; /* pill shape */
+  //font-weight: bold;
+  padding: 0.25rem 0.75rem;
+  font-size: var(--text-base);
+}
+
+/* Specific status colors */
+.p-chip.ACTIVE {
+  background-color: rgb(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.p-chip.INACTIVE {
+  background-color: #2a2d32; /* dark grey background */
+  color: #94a3b8; /* light grey text */
+}
+
+.p-chip.BANNED {
+  background-color: rgb(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.p-chip.PENDING {
+  background-color: rgba(255, 159, 10, 0.15);
+  color: #f59e0b;
+}
+
+// paginator
+/* Global paginator container */
+.p-paginator {
+  background-color: transparent;
+  padding: 0.5rem 0;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+/* Style each paginator button */
+.p-paginator .p-paginator-page,
+.p-paginator .p-paginator-first,
+.p-paginator .p-paginator-prev,
+.p-paginator .p-paginator-next,
+.p-paginator .p-paginator-last {
+  background-color: #1a1a1f;
+  color: #f1f1f1;
+  border: 1px solid #2d2d34;
+  border-radius: 0.5rem;
+  margin: 0 0.25rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  line-height: 2.5rem;
+  text-align: center;
+  transition: background-color 0.3s;
+}
+
+/* Hover effect */
+.p-paginator .p-paginator-page:hover,
+.p-paginator .p-paginator-first:hover,
+.p-paginator .p-paginator-prev:hover,
+.p-paginator .p-paginator-next:hover,
+.p-paginator .p-paginator-last:hover {
+  background-color: #2d2d34;
+}
+
+/* Active page style */
+.p-paginator .p-paginator-page.p-highlight {
+  background-color: #3b82f6;
+  color: #ffffff; /* active page text is pure white */
+  border-color: #3b82f6;
+}
+
+/* table */
+.p-datatable {
+  border-radius: 0.5rem; /* rounded table */
+  overflow: hidden;
+  background-color: #17171d;
+  //background-color: #2e2e33;
+}
+
+/* Header */
+.p-datatable thead th {
+  background-color: #1e1e24;
+  font-weight: 400;
+  border: none;
+  padding: 1rem;
+  color: #9ca3af;
+}
+
+/* Body */
+.p-datatable tbody td {
+  border: none;
+  padding: 1rem;
+  border-bottom: 1px solid #2d2d34;
+  color: #afb5bf;
+}
+
+/* Row hover */
+.p-datatable tbody tr:hover {
+  background-color: #1e1e24;
+}
+
+.p-datatable .p-datatable-tbody > tr {
+  background-color: transparent;
+}
+
+/* Input text */
+.p-inputtext {
+  color: #f1f1f1;
+  border: 1px solid #2d2d34;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  transition: all 0.2s ease;
+  height: 38px;
+  font-family: var(--font-primary);
+  //background-color: #121212;
+  background-color: #2e2e33;
+
+  &.lightbg {
+    background-color: #1a1a1f;
+  }
+}
+
+/* Focused state */
+.p-inputtext:focus {
+  border-color: #3b82f6; /* nice blue border on focus */
+  box-shadow: 0 0 0 1px #3b82f6; /* optional light glow effect */
+  background-color: #1a1a1f; /* stay same background when focused */
+  outline: none; /* remove ugly browser default */
+}
+
+/* Placeholder color */
+.p-inputtext::placeholder {
+  color: #6b7280;
+  opacity: 1; /* make sure it's not semi-transparent */
+}
+
+/* Optional: hover */
+.p-inputtext:hover {
+  border-color: #3b82f6; /* subtle blue even on hover if you want */
+}
+
+/* Dropdown */
+
+/* Remove border inside dropdown */
+
+.p-dropdown .p-inputtext {
+  border: none !important;
+  box-shadow: none !important; /* important to kill focus glow */
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+  height: 36px;
+}
+
+// for input outside of card
+.lightbg.p-inputwrapper {
+  .p-inputtext {
+    background-color: transparent;
+  }
+}
+/* Also make sure on hover */
+.p-dropdown .p-inputtext:hover {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Also make sure on focus */
+.p-dropdown .p-inputtext:focus {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.p-dropdown .p-dropdown-trigger {
+  background-color: #1a1a1f;
+}
+.p-dropdown-panel {
+  background-color: #1a1a1f;
+}
+
+.p-dropdown:not(.p-disabled).p-focus {
+  box-shadow: none;
+  border-color: #3b82f6;
+}
+
+.p-dropdown {
+  height: 38px;
+  min-height: 38px;
+  line-height: 38px;
+  background-color: #1a1a1f;
+  border: 1px solid #2d2d34;
+  border-radius: 0.5rem;
+  color: #f1f1f1;
+}
+
+.p-dropdown-label {
+  line-height: 36px;
+  padding: 0 1rem;
+}
+
+.p-dropdown-trigger {
+  height: 36px;
+}
+
+/* The whole selectButton container */
+.p-selectbutton {
+  background-color: #1a1a1f; /* same dark bg */
+  border: 1px solid #2d2d34; /* border around all buttons */
+  border-radius: 0.5rem; /* little rounding */
+  gap: 0.5rem; /* nice gap between options (optional) */
+}
+
+/* Each individual button inside */
+.p-selectbutton .p-button {
+  background-color: #1a1a1f;
+  color: #f1f1f1;
+  border: 1px solid #2d2d34;
+  border-radius: 0.5rem;
+  height: 38px; /* matching your input/dropdown height */
+  padding: 0 1rem;
+  transition: all 0.2s ease;
+}
+
+/* Hover effect */
+.p-selectbutton .p-button:hover {
+  background-color: #2d2d34;
+  border-color: #2d2d34;
+  color: #f1f1f1;
+}
+
+/* Focused button (keyboard navigation) */
+.p-selectbutton .p-button:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+
+/* Selected (active) button */
+.p-selectbutton .p-button.p-highlight {
+  background-color: #3b82f6; /* nice blue active */
+  color: #ffffff; /* white text when active */
+  border-color: #3b82f6;
 }

@@ -41,9 +41,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
     });
 
     // get current url route
-    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
-      this.activatedLink.set(this.router.url);
-    });
+    this.router.events
+      .pipe(
+        takeUntil(this.destroy),
+        filter((event) => event instanceof NavigationEnd),
+      )
+      .subscribe(() => {
+        this.activatedLink.set(this.router.url);
+      });
   }
 
   public isActivated(route: string) {

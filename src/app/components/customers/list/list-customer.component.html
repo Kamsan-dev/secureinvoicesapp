@@ -15,136 +15,120 @@
     </p-breadcrumb>
     <div class="flex-col gap-2">
       <div class="flex gap-2 mb-4">
-        <p-button
-          label="Register a new customer"
-          severity="success"
-          icon="fa-solid fa-floppy-disk"
-          type="submit"
-          (onClick)="onRegisterNewCustomerClick()"
-          [size]="!responsiveService.desktop() ? 'small' : 'large'"
+        <p-button label="Register a new customer" severity="success" type="submit" [size]="'small'" (onClick)="onRegisterNewCustomerClick()" />
+        <p-button label="Delete customer(s)" severity="danger" [size]="'small'" />
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-between items-center align-middle mt-4">
+    <div>
+      <div class="relative">
+        <input
+          #input_search
+          pInputText
+          type="text"
+          name="firstName"
+          class="form-input pl-10 w-[300px] lightbg"
+          [ngModel]="customersFilters.name()"
+          (input)="onNameFilterChange(input_search.value)"
+          placeholder="Search by name.."
         />
-        <p-button label="Delete customer(s)" severity="danger" icon="fa-solid fa-trash" [size]="!responsiveService.desktop() ? 'small' : 'large'" />
-      </div>
-      <div class="flex justify-end items-center">
-        <div>
-          <p-selectButton
-            [options]="displayModeOptions()"
-            [optionValue]="'value'"
-            [optionLabel]="'icon'"
-            [ngModel]="displayMode()"
-            (ngModelChange)="displayMode.set($event)"
-          >
-            <ng-template let-item pTemplate>
-              <i [class]="item.icon"></i>
-            </ng-template>
-          </p-selectButton>
-        </div>
+        <i class="fas fa-search absolute left-3 top-[30%] transform -translate-y-1/2 text-[#9CA3AF]"></i>
       </div>
     </div>
-  </div>
-  <div class="flex gap-3 justify-end mt-4">
-    <div class="form-row">
-      <input
-        #input_search
-        pInputText
-        type="text"
-        name="firstName"
-        class="form-input"
-        [ngModel]="customersFilters.name()"
-        (input)="onNameFilterChange(input_search.value)"
-        placeholder="Search by name.."
-      />
+    <div class="flex gap-3">
+      <p-dropdown
+        [options]="customerStatusItems()"
+        class="lightbg"
+        placeholder="Customer status"
+        appendTo="body"
+        optionLabel="label"
+        optionValue="value"
+        [style]="{ width: '150px' }"
+        [ngModel]="customersFilters.customerStatus()"
+        (onChange)="onStatusFilterChange($event)"
+      ></p-dropdown>
+      <p-dropdown
+        [options]="customerTypeItems()"
+        class="lightbg"
+        placeholder="Customer type"
+        appendTo="body"
+        optionLabel="label"
+        optionValue="value"
+        [style]="{ width: '150px' }"
+        [ngModel]="customersFilters.customerType()"
+        (onChange)="onTypeFilterChange($event)"
+      ></p-dropdown>
+      <p-selectButton [options]="displayModeOptions()" [optionValue]="'value'" [optionLabel]="'icon'" [ngModel]="displayMode()" (ngModelChange)="displayMode.set($event)">
+        <ng-template let-item pTemplate>
+          <i [class]="item.icon"></i>
+        </ng-template>
+      </p-selectButton>
     </div>
-    <p-dropdown
-      [options]="customerStatusItems()"
-      placeholder="Customer status"
-      appendTo="body"
-      optionLabel="label"
-      optionValue="value"
-      [style]="{ width: '150px' }"
-      [ngModel]="customersFilters.customerStatus()"
-      (onChange)="onStatusFilterChange($event)"
-    ></p-dropdown>
-    <p-dropdown
-      [options]="customerTypeItems()"
-      placeholder="Customer type"
-      appendTo="body"
-      optionLabel="label"
-      optionValue="value"
-      [style]="{ width: '150px' }"
-      [ngModel]="customersFilters.customerType()"
-      (onChange)="onTypeFilterChange($event)"
-    ></p-dropdown>
   </div>
-  <main>
+  <main class="mt-6">
     <div *ngTemplateOutlet="displayMode() === 'table' ? viewTable : viewCard"></div>
+    <div class="flex justify-between items-center">
+      <div>
+        <span>{{ getShowingRange() }}</span>
+      </div>
+      <div>
+        <p-paginator (onPageChange)="onPageChange($event)" [rows]="pageSize()" [totalRecords]="totalRecords()" [first]="first()" />
+      </div>
+    </div>
   </main>
 </main>
 
 <ng-template #viewTable>
-  <div class="se-card mt-4">
-    <div class="se-card-header">
-      <div class="flex justify-between">
-        <span>CUSTOMERS</span>
-      </div>
-    </div>
-    <div class="se-card-body">
-      <p-table
-        [value]="customersPage()"
-        [tableStyle]="{ 'min-width': '60rem' }"
-        [loading]="customerState().dataState === DataState.LOADING"
-        styleClass="p-datatable-gridlines"
-      >
-        <ng-template pTemplate="header">
-          <tr>
-            <th>Id</th>
-            <th>Photo</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Status</th>
-            <th>Type</th>
-            <th>Action</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-customer>
-          <tr>
-            <td>{{ customer.customerId }}</td>
-            <td><img [src]="customer.imageUrl" width="42" height="42" class="rounded-circle" alt="Avatar" /></td>
-            <td>{{ customer.name }}</td>
-            <td>{{ customer.email }}</td>
-            <td>{{ customer.phone }}</td>
-            <td>
-              <p-chip
-                [styleClass]="
-                  customer.status.toLowerCase() === 'active'
-                    ? 'bg-green-300 text-green-700 p-2'
-                    : customer.status.toLowerCase() === 'pending'
-                      ? 'bg-orange-300 text-black p-2'
-                      : customer.status.toLowerCase() === 'banned'
-                        ? 'bg-red-300 text-red-700 p-2'
-                        : customer.status.toLowerCase() === 'inactive'
-                          ? 'p-2'
-                          : ''
-                "
-              >
-                <span>{{ customer.status }}</span>
-              </p-chip>
-            </td>
-            <td>{{ customer.type }}</td>
-            <td><p-button label="See more" severity="info" [size]="'small'" (onClick)="selectCustomer(customer.customerId)" /></td>
-          </tr>
-        </ng-template>
-        <!-- Show when there are no customers -->
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="100%" class="text-center p-4">No customers found.</td>
-          </tr>
-        </ng-template>
-      </p-table>
-      <p-paginator (onPageChange)="onPageChange($event)" [rows]="pageSize()" [totalRecords]="totalRecords()" [first]="first()" />
-    </div></div
-></ng-template>
+  <p-table [value]="customersPage()" [tableStyle]="{ 'min-width': '60rem' }" [loading]="customerState().dataState === DataState.LOADING">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Id</th>
+        <th>Photo</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Status</th>
+        <th>Type</th>
+        <th>Action</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-customer>
+      <tr>
+        <td>{{ customer.customerId }}</td>
+        <td><img [src]="customer.imageUrl" width="42" height="42" class="rounded-circle" alt="Avatar" /></td>
+        <td>{{ customer.name }}</td>
+        <td>{{ customer.email }}</td>
+        <td>{{ customer.phone }}</td>
+        <td>
+          <p-chip
+            [styleClass]="
+              customer.status.toLowerCase() === 'active'
+                ? 'ACTIVE'
+                : customer.status.toLowerCase() === 'pending'
+                  ? 'PENDING'
+                  : customer.status.toLowerCase() === 'banned'
+                    ? 'BANNED'
+                    : customer.status.toLowerCase() === 'inactive'
+                      ? 'INACTIVE'
+                      : ''
+            "
+          >
+            <span>{{ customer.status }}</span>
+          </p-chip>
+        </td>
+        <td>{{ customer.type }}</td>
+        <td><p-button label="See more" severity="info" [size]="'small'" (onClick)="selectCustomer(customer.customerId)" /></td>
+      </tr>
+    </ng-template>
+    <!-- Show when there are no customers -->
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="100%" class="text-center p-4">No customers found.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</ng-template>
 
 <ng-template #viewCard>
   <!-- customers card -->
@@ -152,7 +136,7 @@
   <div class="grid-customers">
     <ng-container *ngIf="customersPage().length > 0; else noCustomers">
       <ng-container *ngFor="let customer of customersPage()">
-        <div class="col-span-12 lg:col-span-6 xl:col-span-4 se-card card-animation" [routerLink]="['view/', customer.customerId]">
+        <div class="col-span-12 lg:col-span-6 xl:col-span-3 se-card card-animation" [routerLink]="['view/', customer.customerId]">
           <div class="flex h-full">
             <!-- Customer Image -->
             <div class="w-24 h-full">
@@ -174,19 +158,19 @@
 
               <!-- Card Body -->
               <div class="se-card-body px-4 pb-4">
-                <span>Joinded since {{ customer.createdAt | date: 'mediumDate' }} </span>
+                <span class="text-sm">Joinded since {{ customer.createdAt | date: 'mediumDate' }} </span>
                 <div class="flex justify-between items-center mt-2">
                   <div class="flex items-center gap-4">
                     <p-chip
                       [styleClass]="
                         customer.status.toLowerCase() === 'active'
-                          ? 'bg-green-300 text-green-700 p-2'
+                          ? 'ACTIVE'
                           : customer.status.toLowerCase() === 'pending'
-                            ? 'bg-orange-300 text-black p-2'
+                            ? 'PENDING'
                             : customer.status.toLowerCase() === 'banned'
-                              ? 'bg-red-300 text-red-700 p-2'
+                              ? 'BANNED'
                               : customer.status.toLowerCase() === 'inactive'
-                                ? 'p-2'
+                                ? 'INACTIVE'
                                 : ''
                       "
                     >
@@ -201,7 +185,6 @@
       </ng-container>
     </ng-container>
   </div>
-  <p-paginator (onPageChange)="onPageChange($event)" [rows]="pageSize()" [totalRecords]="totalRecords()" [first]="first()" />
 </ng-template>
 
 <ng-template #noCustomers>

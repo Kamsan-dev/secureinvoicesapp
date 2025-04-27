@@ -12,90 +12,88 @@
       </ng-template>
     </ng-template>
   </p-breadcrumb>
-  <div class="flex gap-2 pt-2">
+  <div class="flex gap-2 pt-2 items-center">
     <p-button
       [label]="responsiveService.desktop() ? 'Add a new invoice' : undefined"
       (onClick)="isNewInvoiceDialogVisible.set(true)"
       pTooltip="Add a new invoice"
       tooltipPosition="left"
+      severity="success"
     >
       <i *ngIf="!responsiveService.desktop()" class="fa-solid fa-plus"></i>
     </p-button>
   </div>
 </div>
 
-<main>
-  <div class="se-card mt-3">
-    <div class="se-card-header">
-      <div class="flex justify-between">
-        <span>INVOICES</span>
-        <div>
-          <p-dialog
-            header="New Invoice"
-            [modal]="true"
-            [visible]="isNewInvoiceDialogVisible()"
-            [style]="{ width: '50rem' }"
-            [draggable]="false"
-            (visibleChange)="isNewInvoiceDialogVisible.set(false)"
-          >
-            <div class="flex items-center gap-3">
-              <label for="description" class="font-semibold w-6rem">Description</label>
-              <input pInputText id="description" class="flex-auto" [(ngModel)]="newInvoiceDescription" required [minlength]="5" />
-            </div>
-
-            <div class="flex justify-end gap-2 mt-3">
-              <p-button label="Cancel" severity="secondary" (onClick)="isNewInvoiceDialogVisible.set(false)" />
-              <p-button label="Save" (onClick)="onSaveNewInvoiceClick($event)" [disabled]="newInvoiceDescription.length < 1" />
-            </div>
-          </p-dialog>
-        </div>
-      </div>
+<main class="mt-6">
+  <p-dialog
+    header="New Invoice"
+    [modal]="true"
+    [visible]="isNewInvoiceDialogVisible()"
+    [style]="{ width: '50rem' }"
+    [draggable]="false"
+    (visibleChange)="isNewInvoiceDialogVisible.set(false)"
+  >
+    <div class="flex items-center gap-3">
+      <label for="description" class="font-semibold w-6rem">Description</label>
+      <input pInputText id="description" class="flex-auto" [(ngModel)]="newInvoiceDescription" required [minlength]="5" />
     </div>
-    <div class="se-card-body">
-      <p-table [value]="invoicesPage()" [tableStyle]="{ 'min-width': '60rem' }" [loading]="invoiceState().dataState === DataState.LOADING">
-        <ng-template pTemplate="header">
-          <tr>
-            <th style="width: 10%">Invoice number</th>
-            <th style="width: 30%">Description</th>
-            <th pSortableColumn="status" style="width: 10%">Status <p-sortIcon field="status" /></th>
-            <th style="width: 20%">Issued at</th>
-            <th pSortableColumn="total" style="width: 20%">Total price <p-sortIcon field="quantity" /></th>
-            <th style="width: 20%">Action</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-invoice>
-          <tr>
-            <td>{{ invoice.invoiceNumber }}</td>
-            <td>{{ invoice.services }}</td>
-            <td>
-              <p-chip
-                [styleClass]="
-                  invoice.status === 'PAID'
-                    ? 'bg-green-300 text-green-700 p-2'
-                    : invoice.status === 'PENDING'
-                      ? 'bg-orange-300 text-black p-2'
-                      : invoice.status === 'OVERDUE'
-                        ? 'bg-red-300 text-red-700 p-2'
-                        : invoice.status === 'DRAFT'
-                          ? 'p-2'
-                          : ''
-                "
-              >
-                <span>{{ invoice.status }}</span>
-              </p-chip>
-            </td>
-            <td>{{ invoice.issuedAt | date: 'mediumDate' }}</td>
-            <td>${{ invoice.totalVat }}</td>
-            <td><p-button label="See more" severity="info" [size]="'small'" (onClick)="onRedirectToInvoice(invoice.invoiceId, invoice.invoiceNumber)" /></td>
-          </tr>
-        </ng-template>
-        <!-- Show when there are no invoices -->
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="5" class="text-center p-4">No invoices found.</td>
-          </tr>
-        </ng-template>
-      </p-table>
+
+    <div class="flex justify-end gap-2 mt-3">
+      <p-button label="Cancel" severity="secondary" (onClick)="isNewInvoiceDialogVisible.set(false)" />
+      <p-button label="Save" (onClick)="onSaveNewInvoiceClick($event)" [disabled]="newInvoiceDescription.length < 1" />
+    </div>
+  </p-dialog>
+
+  <p-table [value]="invoicesPage()" [tableStyle]="{ 'min-width': '60rem' }" [loading]="invoiceState().dataState === DataState.LOADING">
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 10%">Invoice number</th>
+        <th style="width: 30%">Description</th>
+        <th pSortableColumn="status" style="width: 10%">Status <p-sortIcon field="status" /></th>
+        <th style="width: 20%">Issued at</th>
+        <th pSortableColumn="total" style="width: 20%">Total price <p-sortIcon field="quantity" /></th>
+        <th style="width: 20%">Action</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-invoice>
+      <tr>
+        <td>{{ invoice.invoiceNumber }}</td>
+        <td>{{ invoice.services }}</td>
+        <td>
+          <p-chip
+            [styleClass]="
+              invoice.status.toLowerCase() === 'paid'
+                ? 'ACTIVE'
+                : invoice.status.toLowerCase() === 'pending'
+                  ? 'PENDING'
+                  : invoice.status.toLowerCase() === 'overdue'
+                    ? 'BANNED'
+                    : invoice.status.toLowerCase() === 'draft'
+                      ? 'INACTIVE'
+                      : ''
+            "
+          >
+            <span>{{ invoice.status }}</span>
+          </p-chip>
+        </td>
+        <td>{{ invoice.issuedAt | date: 'mediumDate' }}</td>
+        <td>${{ invoice.totalVat }}</td>
+        <td><p-button label="See more" severity="info" [size]="'small'" (onClick)="onRedirectToInvoice(invoice.invoiceId, invoice.invoiceNumber)" /></td>
+      </tr>
+    </ng-template>
+    <!-- Show when there are no invoices -->
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="5" class="text-center p-4">No invoices found.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+  <div class="flex justify-between items-center">
+    <div>
+      <span>{{ getShowingRange() }}</span>
+    </div>
+    <div>
       <p-paginator (onPageChange)="onPageChange($event)" [rows]="pageSize()" [totalRecords]="totalRecords()" [first]="first()" />
     </div>
   </div>
