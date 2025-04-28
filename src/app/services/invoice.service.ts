@@ -44,4 +44,8 @@ export class InvoiceService {
   public createInvoice(description: string): Observable<CustomHttpResponse<ViewInvoice>> {
     return this.http.post<CustomHttpResponse<ViewInvoice>>(`${this.server}invoice/create`, description);
   }
+
+  public getInvoicesByCustomerId(customerId: number, page: number = 0, size: number = 5): Observable<CustomHttpResponse<InvoicesPage>> {
+    return this.http.get<CustomHttpResponse<InvoicesPage>>(`${this.server}invoice/get/customer/${customerId}?page=${page}&size=${size}`);
+  }
 }

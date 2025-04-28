@@ -1,10 +1,10 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, OnDestroy, OnInit, signal, ViewEncapsulation } from '@angular/core';
+import { HttpErrorResponse, HttpEvent, HttpEventType } from '@angular/common/http';
+import { ChangeDetectionStrategy, Component, computed, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DialogService } from 'primeng/dynamicdialog';
-import { debounceTime, distinctUntilChanged, finalize, Subject, takeUntil } from 'rxjs';
-import { CUSTOMER_STATUS_ITEMS_FILTERS, CUSTOMER_TYPE_ITEMS_FILTERS } from 'src/app/enums/customer.enum';
+import { BehaviorSubject, debounceTime, distinctUntilChanged, finalize, Subject, takeUntil } from 'rxjs';
+import { CUSTOMER_STATUS_ITEMS, CUSTOMER_TYPE_ITEMS, CustomerStatusEnum, CustomerTypeEnum, LabelValueFilter } from 'src/app/enums/customer.enum';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { CustomersPage } from 'src/app/interfaces/appstate';
 import { BreadcrumbItem } from 'src/app/interfaces/common.interface';
@@ -35,8 +35,8 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
 
   //filter
   public searchCustomerByNameSubject = new Subject<string>();
-  public customerTypeItems = CUSTOMER_TYPE_ITEMS_FILTERS;
-  public customerStatusItems = CUSTOMER_STATUS_ITEMS_FILTERS;
+  public customerTypeItems = signal<LabelValueFilter<CustomerTypeEnum>[]>([{ label: 'Type (All)', value: 'all' }, ...CUSTOMER_TYPE_ITEMS]);
+  public customerStatusItems = signal<LabelValueFilter<CustomerStatusEnum>[]>([{ label: 'Status (All)', value: 'all' }, ...CUSTOMER_STATUS_ITEMS]);
 
   public customersFilters = {
     customerType: signal(this.customerTypeItems().at(0)?.value),
@@ -59,8 +59,12 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
     { icon: 'fa-solid fa-grip', value: 'card' },
   ]);
 
-  public displayMode = signal<'table' | 'card'>('table');
+  //excel report
+  private fileStatusSubject = new BehaviorSubject<{ status: string; type: string; value: number } | undefined>(undefined);
+  private fileStatus = this.fileStatusSubject.asObservable();
+  public downloadStatus = signal<number | undefined>(undefined);
 
+  public displayMode = signal<'table' | 'card'>('table');
   private isInitialLoad = true;
 
   constructor(
@@ -241,4 +245,57 @@ export class ListCustomerComponent implements OnInit, OnDestroy {
   }
 
   //#endregion
+
+  //#region export Data
+
+  public downloadReport(): void {
+    this.customerService
+      .downloadReport()
+      .pipe(takeUntil(this.destroy))
+      .subscribe({
+        next: (response) => {
+          this.reportProgress(response);
+        },
+        error: (err) => {
+          console.error('Download failed:', err);
+        },
+      });
+  }
+  private reportProgress(httpEvent: HttpEvent<Blob | string[]>): void {
+    switch (httpEvent.type) {
+      case HttpEventType.DownloadProgress || HttpEventType.UploadProgress:
+        if (httpEvent.total) {
+          const progress = Math.round((httpEvent.loaded / httpEvent.total) * 100);
+          this.fileStatusSubject.next({ status: 'progress', type: 'Downloading...', value: progress });
+        }
+        break;
+      case HttpEventType.ResponseHeader:
+        break;
+      case HttpEventType.Response:
+        if (httpEvent.body instanceof Blob) {
+          const blob = httpEvent.body; // Already a Blob
+          this.saveFile(blob, `${httpEvent.headers.get('File-Name')}`);
+        } else if (Array.isArray(httpEvent.body)) {
+          const blob = new Blob(httpEvent.body, { type: `${httpEvent.headers.get('Content-Type')!};charset=utf-8` });
+          this.saveFile(blob, `${httpEvent.headers.get('File-Name')}`);
+        } else {
+          console.error('Unexpected response body type:', typeof httpEvent.body);
+        }
+        this.fileStatusSubject.next(undefined);
+        break;
+      default:
+        break;
+    }
+  }
+
+  private saveFile(blob: Blob, fileName: string): void {
+    const url = window.URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = fileName;
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+    window.URL.revokeObjectURL(url);
+  }
 }

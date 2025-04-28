@@ -1,15 +1,15 @@
-<main>
+<div>
   <div class="flex justify-between items-center flex-wrap">
     <p-breadcrumb class="max-w-full" [model]="breadcrumbsItems()">
       <ng-template pTemplate="item" let-item>
         <ng-container *ngIf="item.route; else elseBlock">
           <a [routerLink]="item.route" class="p-menuitem-link">
-            <span [ngClass]="[item.icon ? item.icon : '', 'text-white mr-1']"></span>
-            <span class="text-white font-semibold">{{ item.label }}</span>
+            <span class="text-[#f1f1f1]" [ngClass]="[item.icon ? item.icon : '', ' mr-1']"></span>
+            <span class="text-[#f1f1f1] font-semibold">{{ item.label }}</span>
           </a>
         </ng-container>
         <ng-template #elseBlock>
-          <span class="text-slate-200">{{ customerState().dataState !== 'LOADING_STATE' ? item.label : 'Loading...' }}</span>
+          <span>{{ customerState().dataState !== 'LOADING_STATE' ? item.label : 'Loading...' }}</span>
         </ng-template>
       </ng-template>
     </p-breadcrumb>
@@ -20,6 +20,7 @@
       </div>
     </div>
   </div>
+  <!-- FILTER -->
   <div class="flex justify-between items-center align-middle mt-4">
     <div>
       <div class="relative">
@@ -37,6 +38,7 @@
       </div>
     </div>
     <div class="flex gap-3">
+      <p-button label="Export" severity="success" icon="fa-solid fa-file-excel" (click)="downloadReport()" />
       <p-dropdown
         [options]="customerStatusItems()"
         class="lightbg"
@@ -66,6 +68,7 @@
       </p-selectButton>
     </div>
   </div>
+  <!-- END FILTER -->
   <main class="mt-6">
     <div *ngTemplateOutlet="displayMode() === 'table' ? viewTable : viewCard"></div>
     <div class="flex justify-between items-center">
@@ -77,7 +80,7 @@
       </div>
     </div>
   </main>
-</main>
+</div>
 
 <ng-template #viewTable>
   <p-table [value]="customersPage()" [tableStyle]="{ 'min-width': '60rem' }" [loading]="customerState().dataState === DataState.LOADING">
