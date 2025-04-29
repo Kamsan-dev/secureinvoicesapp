@@ -40,14 +40,14 @@
   </div>
   <!-- FILTER -->
   <div class="flex justify-between items-center align-middle mt-4 flex-wrap">
-    <div [ngClass]="{ 'mb-3': responsiveService.phone() || responsiveService.tablet() }">
+    <div>
       <div class="relative">
         <input
           #input_search
           pInputText
           type="text"
           name="firstName"
-          class="form-input pl-10 w-[300px] lightbg"
+          class="form-input pl-10 w-[300px] lightbg mb-3"
           [ngModel]="customersFilters.name()"
           (input)="onNameFilterChange(input_search.value)"
           placeholder="Search by name.."

@@ -17,31 +17,19 @@
 </div>
 <main class="mt-6">
   <div class="flex flex-wrap gap-4">
-    <div class="se-card w-full md:w-[30%] h-fit">
+    <div class="se-card w-full md:w-[30%] h-fit min-w-[350px]">
       <div class="se-card-header">
         <div class="flex justify-between items-center">
           <div class="flex gap-4 items-center">
-            <img [src]="customer()?.imageUrl" class="w-[150px] h-[120px] rounded-md" />
+            <img [src]="customer()?.imageUrl" class="w-[150px] h-[120px]" />
             <div class="flex flex-col gap-2">
               <span class="text-2xl font-bold">{{ customer()?.name }}</span>
               <span class="text-sm italic font-light">{{ customer()?.email }}</span>
+              <div>
+                <ng-container *ngTemplateOutlet="customerStatusTemplate"></ng-container>
+              </div>
             </div>
           </div>
-          <p-chip
-            [styleClass]="
-              customer()?.status?.toLowerCase() === 'active'
-                ? 'ACTIVE'
-                : customer()?.status?.toLowerCase() === 'pending'
-                  ? 'PENDING'
-                  : customer()?.status?.toLowerCase() === 'banned'
-                    ? 'BANNED'
-                    : customer()?.status?.toLowerCase() === 'inactive'
-                      ? 'INACTIVE'
-                      : ''
-            "
-          >
-            <span>{{ customer()?.status }}</span>
-          </p-chip>
         </div>
       </div>
       <div class="se-card-body text-slate-300">
@@ -170,8 +158,8 @@
             </tr>
           </ng-template>
         </p-table>
-        <div class="flex justify-between items-center">
-          <div>
+        <div class="flex items-center" [ngClass]="responsiveService.phone() || responsiveService.tablet() ? 'justify-center' : 'justify-between'">
+          <div *ngIf="responsiveService.desktop()">
             <span>{{ getShowingRange() }}</span>
           </div>
           <div>
@@ -187,4 +175,22 @@
   <div class="d-flex align-items-center justify-content-center pt-1">
     <se-progress-spinner [size]="'l'" mode="indeterminate"></se-progress-spinner>
   </div>
+</ng-template>
+
+<ng-template #customerStatusTemplate>
+  <p-chip
+    [styleClass]="
+      customer()?.status?.toLowerCase() === 'active'
+        ? 'ACTIVE'
+        : customer()?.status?.toLowerCase() === 'pending'
+          ? 'PENDING'
+          : customer()?.status?.toLowerCase() === 'banned'
+            ? 'BANNED'
+            : customer()?.status?.toLowerCase() === 'inactive'
+              ? 'INACTIVE'
+              : ''
+    "
+  >
+    <span>{{ customer()?.status }}</span>
+  </p-chip>
 </ng-template>

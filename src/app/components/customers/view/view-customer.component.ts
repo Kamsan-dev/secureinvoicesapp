@@ -14,6 +14,7 @@ import { Invoice } from 'src/app/interfaces/invoice.interface';
 import { State } from 'src/app/interfaces/state';
 import { CustomerService } from 'src/app/services/customer.service';
 import { InvoiceService } from 'src/app/services/invoice.service';
+import { ResponsiveService } from 'src/app/services/responsive.service';
 
 @Component({
   selector: 'app-view-customer',
@@ -70,6 +71,7 @@ export class ViewCustomerComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private toasterService: ToasterService,
+    public responsiveService: ResponsiveService,
   ) {}
 
   public ngOnInit(): void {
