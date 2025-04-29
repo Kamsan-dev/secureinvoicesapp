@@ -15,14 +15,32 @@
     </p-breadcrumb>
     <div class="flex-col gap-2">
       <div class="flex gap-2 mb-4">
-        <p-button label="Register a new customer" severity="success" type="submit" [size]="'small'" (onClick)="onRegisterNewCustomerClick()" />
-        <p-button label="Delete customer(s)" severity="danger" [size]="'small'" />
+        <p-button
+          [label]="responsiveService.desktop() ? 'Register a new customer' : undefined"
+          severity="success"
+          type="submit"
+          [size]="'small'"
+          pTooltip="Register a new customer"
+          tooltipPosition="left"
+          (onClick)="onRegisterNewCustomerClick()"
+        >
+          <i *ngIf="!responsiveService.desktop()" class="fa-solid fa-plus"></i
+        ></p-button>
+        <p-button
+          [label]="responsiveService.desktop() ? 'Delete customer(s)' : undefined"
+          severity="danger"
+          [size]="'small'"
+          pTooltip="Delete customer(s)"
+          tooltipPosition="left"
+        >
+          <i *ngIf="!responsiveService.desktop()" class="fa-solid fa-minus"></i
+        ></p-button>
       </div>
     </div>
   </div>
   <!-- FILTER -->
-  <div class="flex justify-between items-center align-middle mt-4">
-    <div>
+  <div class="flex justify-between items-center align-middle mt-4 flex-wrap">
+    <div [ngClass]="{ 'mb-3': responsiveService.phone() || responsiveService.tablet() }">
       <div class="relative">
         <input
           #input_search
@@ -37,7 +55,7 @@
         <i class="fas fa-search absolute left-3 top-[30%] transform -translate-y-1/2 text-[#9CA3AF]"></i>
       </div>
     </div>
-    <div class="flex gap-3">
+    <div class="flex gap-3 flex-wrap">
       <p-button label="Export" severity="success" icon="fa-solid fa-file-excel" (click)="downloadReport()" />
       <p-dropdown
         [options]="customerStatusItems()"
@@ -71,8 +89,8 @@
   <!-- END FILTER -->
   <main class="mt-6">
     <div *ngTemplateOutlet="displayMode() === 'table' ? viewTable : viewCard"></div>
-    <div class="flex justify-between items-center">
-      <div>
+    <div class="flex items-center" [ngClass]="responsiveService.phone() || responsiveService.tablet() ? 'justify-center' : 'justify-between'">
+      <div *ngIf="responsiveService.desktop()">
         <span>{{ getShowingRange() }}</span>
       </div>
       <div>

@@ -25,7 +25,7 @@
       <p-dropdown [options]="customerStatusItems()" formControlName="status" placeholder="Customer status" appendTo="body"> </p-dropdown>
     </div>
     <div class="flex justify-end gap-1">
-      <p-button label="Cancel" severity="secondary" (onClick)="this.ref.close()" />
+      <p-button label="Cancel" severity="info" (onClick)="this.ref.close()" />
       <p-button
         severity="success"
         [loading]="loading()"
