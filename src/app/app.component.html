@@ -1,5 +1,5 @@
 <app-sidebar *ngIf="userService.isAuthenticated()"></app-sidebar>
-<app-navbar *ngIf="userService.isAuthenticated()"></app-navbar>
+<app-navbar></app-navbar>
 
 <div
   class="page-content"
@@ -9,6 +9,14 @@
 >
   <div class="max-w-screen-2xl mx-auto px-4">
     <router-outlet></router-outlet>
+    <footer *ngIf="userService.isAuthenticated()" class="footer w-full flex justify-between mt-[20px]">
+      <span>2025 <span class="font-bold">Secure-Invoices, LLC.</span></span>
+      <div class="flex gap-2 items-center">
+        <span>About</span>
+        <span>Blog</span>
+        <span>Licence</span>
+      </div>
+    </footer>
   </div>
 </div>
 

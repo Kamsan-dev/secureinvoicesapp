@@ -11,7 +11,7 @@ import { UserService } from './services/user.service';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  title = 'secureinvoicesapp';
+  title = 'Secure-Invoices';
   private static readonly SIDEBAR_WIDTH = 270;
   public pageMarginLeft = signal(AppComponent.SIDEBAR_WIDTH);
   private destroy: Subject<void> = new Subject<void>();

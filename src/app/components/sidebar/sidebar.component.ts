@@ -21,7 +21,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private router = inject(Router);
 
   public listLink = signal<{ label: string; route: string; icon: string }[]>([
-    { label: 'Dashboard', route: '/', icon: 'fa-solid fa-chart-simple' },
+    { label: 'Dashboard', route: '/dashboard', icon: 'fa-solid fa-chart-simple' },
     { label: 'Profile', route: '/profile', icon: 'fa-solid fa-user' },
     { label: 'Customers', route: '/customers', icon: 'fa-solid fa-users' },
     { label: 'Invoices', route: '/invoices', icon: 'fa-solid fa-file-invoice' },

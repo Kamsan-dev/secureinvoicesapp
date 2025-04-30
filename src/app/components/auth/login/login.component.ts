@@ -90,7 +90,7 @@ export class LoginComponent implements OnDestroy, OnInit {
             dataState: DataState.LOADED,
             message: response.message,
           });
-          this.router.navigateByUrl('/');
+          this.router.navigateByUrl('/dashboard');
           this.toasterService.show('success', 'Login success !', this.loginState().message ?? '');
         },
         error: (errors: HttpErrorResponse) => {
@@ -140,7 +140,7 @@ export class LoginComponent implements OnDestroy, OnInit {
   private handleRegularUser(response: CustomHttpResponse<Profile>): void {
     this.persistanceService.set('access-token', response.data?.access_token);
     this.persistanceService.set('refresh-token', response.data?.refresh_token);
-    this.router.navigateByUrl('/');
+    this.router.navigateByUrl('/dashboard');
     this.loginState.set({
       ...this.loginState,
       dataState: DataState.LOADED,

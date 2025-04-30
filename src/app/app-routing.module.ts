@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { HomeComponent } from './components/home/home/home.component';
+import { LandingPageComponent } from './components/landing-page/landing-page.component';
 import { authenticationGuard } from './guard/authentication.guard';
 
 const routes: Routes = [
@@ -20,14 +20,17 @@ const routes: Routes = [
     canActivate: [authenticationGuard],
   },
   {
+    path: 'home',
+    component: LandingPageComponent,
+  },
+  {
     path: '',
-    redirectTo: '/',
+    redirectTo: 'home',
     pathMatch: 'full',
   },
   {
     path: '**',
-    component: HomeComponent,
-    canActivate: [authenticationGuard],
+    component: LandingPageComponent,
   },
 ];
 

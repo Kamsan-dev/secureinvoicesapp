@@ -1,4 +1,17 @@
-import { ChangeDetectionStrategy, Component, computed, ElementRef, HostListener, Inject, Input, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  computed,
+  ElementRef,
+  HostListener,
+  Inject,
+  Input,
+  OnDestroy,
+  OnInit,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { User } from 'src/app/interfaces/user';
 import { UserService } from 'src/app/services/user.service';
@@ -29,9 +42,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
   public pageMarginLeft = signal(this.SIDEBAR_WIDTH);
 
   constructor(
-    private userService: UserService,
+    public userService: UserService,
     private sidebarService: SidebarService,
     public responsiveService: ResponsiveService,
+    private cdr: ChangeDetectorRef,
     @Inject(DOCUMENT) private document: Document,
   ) {}
 
@@ -45,6 +59,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
         });
     }
     this.userService.user$.pipe(takeUntil(this.destroy)).subscribe((user) => {
+      this.cdr.markForCheck();
       this.userInformations.set(user);
     });
 
@@ -66,6 +81,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   public async logout(event: MouseEvent | TouchEvent): Promise<void> {
     event.stopImmediatePropagation();
+    this.isDropdownOpen.set(false);
     this.userService.logout();
   }
 

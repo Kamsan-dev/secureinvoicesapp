@@ -31,7 +31,7 @@
         </p-chip>
       </td>
       <td>{{ invoice.issuedAt | date: 'mediumDate' }}</td>
-      <td>${{ invoice.total }}</td>
+      <td>${{ invoice.totalVat }}</td>
       <td>
         <p-button label="See more" severity="info" [size]="'small'" (onClick)="onCloseDialog(invoice.invoiceId, invoice.invoiceNumber)" />
       </td>

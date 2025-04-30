@@ -16,10 +16,10 @@
   </ng-template>
   <ng-template pTemplate="body" let-event>
     <tr>
-      <td>{{ event.device }}</td>
-      <td>{{ event.ipAddress }}</td>
-      <td>{{ event.occuredAt | date: 'MMM d, y, h:mm a' }}</td>
-      <td>
+      <td class="nowrap-column">{{ event.device }}</td>
+      <td class="nowrap-column">{{ event.ipAddress }}</td>
+      <td class="nowrap-column">{{ event.occuredAt | date: 'MMM d, y, h:mm a' }}</td>
+      <td class="nowrap-column">
         <p-chip
           [styleClass]="
             event.type.endsWith('SUCCESS')
@@ -36,7 +36,7 @@
           {{ event.type }}
         </p-chip>
       </td>
-      <td>{{ event.description }}</td>
+      <td class="nowrap-column">{{ event.description }}</td>
       <td>
         <p-button severity="danger" size="small" label="Report"></p-button>
       </td>

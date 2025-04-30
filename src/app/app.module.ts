@@ -8,10 +8,10 @@ import { CoreModule } from './Core/core.module';
 import { ToasterModule } from './common/toaster/toaster.module';
 import { NavbarModule } from './components/navbar/navbar.module';
 import { SidebarModule } from './components/sidebar/sidebar.module';
-import { PrimeNGConfig } from 'primeng/api';
+import { LandingPageComponent } from './components/landing-page/landing-page.component';
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, CoreModule, HomeModule, AuthModule, AppRoutingModule, ToasterModule, NavbarModule, SidebarModule],
+  imports: [BrowserModule, CoreModule, HomeModule, AuthModule, AppRoutingModule, ToasterModule, NavbarModule, SidebarModule, LandingPageComponent],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
