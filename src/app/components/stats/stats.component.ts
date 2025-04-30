@@ -1,10 +1,11 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, Input, OnInit, signal, ViewChild } from '@angular/core';
-import { Chart, CategoryScale, LinearScale, BarController, BarElement, Legend } from 'chart.js';
+import { Chart, CategoryScale, LinearScale, BarController, BarElement, Legend, PieController, ArcElement, Tooltip, ChartData, ChartOptions, ChartType } from 'chart.js';
 import { DialogService } from 'primeng/dynamicdialog';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { Statistics } from 'src/app/interfaces/appstate';
 import { ListInvoiceDialogComponent } from './dialog/list-invoice-dialog.component';
-import { getStatusColor, MonthlyInvoiceStatistic } from './statistic';
+import { getStatusColor, InvoicesByStatus, MonthlyInvoiceStatistic } from './statistic';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 @Component({
   selector: 'se-stats',
@@ -25,89 +26,151 @@ export class StatsComponent implements AfterViewInit {
 
   public readonly monthlystatsSig = signal<MonthlyInvoiceStatistic[] | undefined>(undefined);
   @Input() public set monthlyStats(stats: MonthlyInvoiceStatistic[] | undefined) {
-    console.log(stats);
     this.monthlystatsSig.set(stats);
   }
 
+  public readonly invoicesStatusStatsSig = signal<InvoicesByStatus | undefined>(undefined);
+  @Input() public set invoicesStatusStats(stats: InvoicesByStatus | undefined) {
+    this.invoicesStatusStatsSig.set(stats);
+  }
+
   public monthlyinvoiceChart: any;
+  public invoicesByStatusChart: any;
   @ViewChild('chartCanvas') chartCanvas: any;
+  @ViewChild('chart2Canvas') chart2Canvas: any;
 
   constructor(private dialogService: DialogService) {
-    Chart.register(CategoryScale, LinearScale, BarController, BarElement, Legend);
+    Chart.register(CategoryScale, LinearScale, BarController, BarElement, Legend, PieController, ArcElement, Tooltip, ChartDataLabels);
   }
 
   public ngAfterViewInit(): void {
-    this.initChartOptions();
-    this.createChart();
+    this.initBreakdownChart();
+    this.initInvoiceByStatusChart();
   }
 
   //#region Monthly Stats Statistics
 
-  private createChart(): void {
+  private initBreakdownChart(): void {
     const { months, datasets } = this.transformData();
+    const options: ChartOptions = {
+      responsive: true,
+      maintainAspectRatio: false, // Allows better scaling in mobile view
+      indexAxis: 'y',
+      plugins: {
+        legend: {
+          position: 'top',
+          display: true,
+          labels: {
+            color: 'lightgray', // Custom label color
+            // Custom function to generate circle-shaped labels
+            usePointStyle: true,
+            pointStyle: 'circle', // Make the label as a circle
+            font: {
+              size: 18, // Adjust font size (optional)
+              family: 'Space Grotesk, sans-serif',
+            },
+          },
+        },
+        title: {
+          display: true,
+          text: '',
+          color: 'white',
+          font: {
+            size: 25,
+          },
+        },
+        datalabels: {
+          display: false, // 🔴 Turn off datalabels for this chart
+        },
+      },
+      scales: {
+        x: {
+          stacked: true,
+          ticks: {
+            color: 'lightgray', // X-axis label color
+            precision: 0,
+          },
+        }, // Stack the X-axis
+        y: {
+          stacked: true,
+          ticks: {
+            color: 'lightgray', // X-axis label color
+            precision: 0,
+          },
+        }, // Stack the Y-axis
+      },
+      onClick: (event: any, elements: any[], chart: Chart) => {
+        if (chart === this.monthlyinvoiceChart && elements.length > 0) {
+          const datasetIndex = elements[0].datasetIndex;
+          const dataIndex = elements[0].index;
+          this.onMonthlyInvoicesChartClick(datasetIndex, dataIndex);
+        }
+      },
+    };
+
     this.monthlyinvoiceChart = new Chart(this.chartCanvas.nativeElement, {
       type: 'bar',
       data: {
         labels: months,
         datasets: datasets,
       },
-      options: this.monthlyinvoiceChart.options,
+      options: options,
+      plugins: [ChartDataLabels],
     });
   }
 
-  private initChartOptions(): void {
-    this.monthlyinvoiceChart = {
-      options: {
-        responsive: true,
-        maintainAspectRatio: false, // Allows better scaling in mobile view
-        indexAxis: 'y',
-        plugins: {
-          legend: {
-            position: 'top',
-            display: true,
-            labels: {
-              color: 'lightgray', // Custom label color
-              font: {
-                size: 15, // Adjust font size (optional)
-                family: 'Arial', // Font family (optional)
-              },
-            },
-          },
-          title: {
-            display: true,
-            text: '',
-            color: 'white',
+  private initInvoiceByStatusChart(): void {
+    const { statuses, datasets1 } = this.invoicesByStatus_transformData();
+    const data: any = {
+      labels: statuses,
+      datasets: datasets1,
+    };
+
+    const options: ChartOptions<'pie'> = {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: {
+            color: 'lightgray', // Custom label color
+            // Custom function to generate circle-shaped labels
+            usePointStyle: true,
+            pointStyle: 'circle', // Make the label as a circle
             font: {
-              size: 25,
+              size: 18, // Adjust font size (optional)
+              family: 'Space Grotesk, sans-serif',
             },
           },
         },
-        scales: {
-          x: {
-            stacked: true,
-            ticks: {
-              color: 'lightgray', // X-axis label color
-              precision: 0,
-            },
-          }, // Stack the X-axis
-          y: {
-            stacked: true,
-            ticks: {
-              color: 'lightgray', // X-axis label color
-              precision: 0,
-            },
-          }, // Stack the Y-axis
+        tooltip: {
+          enabled: true,
         },
-        onClick: (event: any, elements: any[]) => {
-          if (elements.length > 0) {
-            const datasetIndex = elements[0].datasetIndex;
-            const dataIndex = elements[0].index;
-            this.onMonthlyInvoicesChartClick(datasetIndex, dataIndex);
-          }
+        datalabels: {
+          color: 'white',
+          formatter: (value: number, context) => {
+            const data = context.chart.data.datasets[0].data as number[];
+            const total = data.reduce((sum, val) => sum + val, 0);
+            const percentage = ((value / total) * 100).toFixed(1);
+            return `${percentage}%`;
+          },
+          font: {
+            weight: 'normal',
+            size: 14,
+            family: 'Space Grotesk, sans-serif',
+          },
         },
       },
     };
+
+    this.invoicesByStatusChart = new Chart(this.chart2Canvas.nativeElement, {
+      type: 'pie',
+      data,
+      options,
+      plugins: [ChartDataLabels],
+    });
   }
+
+  //#region data
 
   private transformData() {
     // Extract unique months and statuses
@@ -127,6 +190,24 @@ export class StatsComponent implements AfterViewInit {
       };
     });
     return { months, datasets };
+  }
+
+  private invoicesByStatus_transformData() {
+    // Extract unique statuses
+    const statuses = this.invoicesStatusStatsSig()?.stats.map((invoice) => invoice.status);
+    const count = this.invoicesStatusStatsSig()?.stats.map((invoice) => invoice.count);
+    const bgColors = this.invoicesStatusStatsSig()?.stats.map((invoice) => getStatusColor(invoice.status));
+
+    // Prepare datasets for Chart.js
+    const datasets1 = [
+      {
+        label: '',
+        data: count,
+        backgroundColor: bgColors,
+        borderWidth: 0,
+      },
+    ];
+    return { statuses, datasets1 };
   }
   public onMonthlyInvoicesChartClick(datasetIndex: any, dataIndex: any) {
     // Get dataset index and data index

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { MonthlyInvoiceStatistics } from '../components/stats/statistic';
+import { InvoicesByStatus, MonthlyInvoiceStatistics } from '../components/stats/statistic';
 import { CustomHttpResponse } from '../interfaces/custom-http-response';
 import { PersistanceService } from './persistance.service';
 
@@ -18,5 +18,9 @@ export class StatisticService {
 
   public getMonthlyInvoiceStatistics(): Observable<CustomHttpResponse<MonthlyInvoiceStatistics>> {
     return this.http.get<CustomHttpResponse<MonthlyInvoiceStatistics>>(`${this.server}statistic/mounthly-statistic-invoice`);
+  }
+
+  public getInvoicesByStatus(): Observable<CustomHttpResponse<InvoicesByStatus>> {
+    return this.http.get<CustomHttpResponse<InvoicesByStatus>>(`${this.server}statistic/invoices/status-distribution`);
   }
 }

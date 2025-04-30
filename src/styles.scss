@@ -152,6 +152,13 @@ button {
   &-body {
     padding: 20px 15px 20px 15px;
   }
+
+  &-footer {
+    border-top: solid 1px #2c2c2c;
+    padding: 10px 15px 10px 15px;
+    font-weight: 500;
+    font-size: var(--text-sm);
+  }
 }
 
 // PRIME-NG CUSTOM STYLE

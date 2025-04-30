@@ -76,21 +76,18 @@
         </div>
       </div>
       <div class="se-card-body justify-center flex items-center w-full" style="position: relative; height: 40vh; width: 80vw">
-        <!-- <p-chart
-          style="display: block"
-          type="bar"
-          [data]="monthlyinvoiceChart.data"
-          [options]="monthlyinvoiceChart.options"
-          (onDataSelect)="onMonthlyInvoicesChartClick($event)"
-        ></p-chart> -->
         <canvas #chartCanvas></canvas>
       </div>
+      <div class="se-card-footer flex items-center gap-2 w-full"><i class="fa-solid fa-circle-info"></i><span>Click on each data slice for more details</span></div>
     </div>
     <div class="col-span-12 lg:col-span-6 xl:col-span-5 row-span-2 se-card">
       <div class="se-card-header">
-        <p>toast</p>
+        <div class="flex justify-between items-center">
+          <span>Invoices Breakdown</span>
+          <i class="fa-solid fa-ellipsis-vertical text-xl"></i>
+        </div>
       </div>
-      <div class="se-card-body">toast toast</div>
+      <div class="se-card-body justify-center flex items-center w-full" style="position: relative; height: 40vh; width: 80vw"><canvas #chart2Canvas></canvas></div>
     </div>
   </div>
 </section>

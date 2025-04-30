@@ -1,7 +1,7 @@
 import { HttpErrorResponse, HttpEvent, HttpEventType } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { BehaviorSubject, finalize, lastValueFrom, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, finalize, forkJoin, lastValueFrom, Subject, takeUntil } from 'rxjs';
 import { DataState } from 'src/app/enums/datastate.enum';
 import { CustomersPage } from 'src/app/interfaces/appstate';
 import { CustomHttpResponse } from 'src/app/interfaces/custom-http-response';
@@ -10,7 +10,7 @@ import { State } from 'src/app/interfaces/state';
 import { User } from 'src/app/interfaces/user';
 import { CustomerService } from 'src/app/services/customer.service';
 import { StatisticService } from 'src/app/services/statistic.service';
-import { MonthlyInvoiceStatistic, MonthlyInvoiceStatistics } from '../../stats/statistic';
+import { InvoicesByStatus, MonthlyInvoiceStatistic, MonthlyInvoiceStatistics } from '../../stats/statistic';
 import { BreadcrumbItem } from 'src/app/interfaces/common.interface';
 
 declare type direction = 'forward' | 'previous';
@@ -29,6 +29,12 @@ export class HomeComponent implements OnInit, OnDestroy {
   });
 
   public statisticState = signal<State<CustomHttpResponse<MonthlyInvoiceStatistics>>>({
+    dataState: DataState.LOADED,
+    appData: undefined,
+    error: undefined,
+  });
+
+  public statistic2State = signal<State<CustomHttpResponse<InvoicesByStatus>>>({
     dataState: DataState.LOADED,
     appData: undefined,
     error: undefined,
@@ -181,18 +187,26 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   public loadStatistics(): void {
     this.loading.set(true);
-    this.statisticService
-      .getMonthlyInvoiceStatistics()
+
+    forkJoin({
+      monthly: this.statisticService.getMonthlyInvoiceStatistics(),
+      status: this.statisticService.getInvoicesByStatus(),
+    })
       .pipe(
         takeUntil(this.destroy),
         finalize(() => this.loading.set(false)),
       )
       .subscribe({
-        next: (response: CustomHttpResponse<MonthlyInvoiceStatistics>) => {
+        next: ({ monthly, status }) => {
           this.statisticState.set({
             ...this.statisticState(),
             dataState: DataState.LOADED,
-            appData: response,
+            appData: monthly,
+          });
+          this.statistic2State.set({
+            ...this.statisticState(),
+            dataState: DataState.LOADED,
+            appData: status,
           });
         },
         error: (error: HttpErrorResponse) => {
