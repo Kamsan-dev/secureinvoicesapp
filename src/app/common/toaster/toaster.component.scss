@@ -2,7 +2,7 @@
   position: fixed;
   right: 0;
   width: 300px;
-  height: 60px;
+  //height: 60px;
   padding: 0.15rem 0.75rem 0.15rem 1.75rem;
   margin-top: 95px;
   margin-right: 1rem;
@@ -11,28 +11,28 @@
   animation: move 0.5s both;
 
   &-success {
-    color: #155724;
-    background-color: #d4edda;
+    color: #22c55e;
+    background-color: rgb(34, 197, 94, 0.15);
     border-color: #28a745;
 
     .se-toast-heading {
-      color: #28a745;
+      color: #22c55e;
     }
 
     .se-toast-icon {
-      color: #28a745;
+      color: #22c55e;
     }
   }
 
   &-error {
-    color: #721c24;
-    background-color: #f8d7da;
+    color: #ef4444;
+    background-color: rgb(239, 68, 68, 0.15);
     border-color: #dc3545;
     .se-toast-heading {
-      color: #dc3545;
+      color: #ef4444;
     }
     .se-toast-icon {
-      color: #dc3545;
+      color: #ef4444;
     }
   }
 
@@ -59,17 +59,17 @@
 .se-toast-icon {
   position: absolute;
   left: 7px;
-  top: 7px;
+  top: 9px;
 }
 
 .se-toast--content {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-size: 0.85rem;
+  font-size: 1rem;
 }
 .se-toast-heading {
-  font-size: 1rem !important;
+  font-size: 1.25rem !important;
 }
 
 @keyframes move {

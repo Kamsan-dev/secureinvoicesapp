@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LandingPageComponent } from './components/landing-page/landing-page.component';
 import { authenticationGuard } from './guard/authentication.guard';
+import { redirectOnRootGuard } from './guard/redirect-on-root.guard';
 
 const routes: Routes = [
   {
@@ -31,6 +32,7 @@ const routes: Routes = [
   {
     path: '**',
     component: LandingPageComponent,
+    canActivate: [redirectOnRootGuard],
   },
 ];
 

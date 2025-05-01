@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, Renderer2, signal } from '@angular/core';
 import { PrimeNGConfig } from 'primeng/api';
 import { SidebarService } from './components/sidebar/sidebar.service';
 import { Subject, takeUntil } from 'rxjs';
@@ -21,12 +21,20 @@ export class AppComponent implements OnInit, OnDestroy {
     private sidebarService: SidebarService,
     public responsiveService: ResponsiveService,
     public userService: UserService,
+    private renderer: Renderer2,
   ) {}
 
   ngOnInit() {
     this.primengConfig.ripple = false;
     this.sidebarService.sidebarState$.pipe(takeUntil(this.destroy)).subscribe(() => {
       this.pageMarginLeft.set(this.sidebarService.getSidebarWidth());
+    });
+
+    // Update background color if user is authenticated or not
+    this.userService.user$.subscribe((user) => {
+      this.renderer.removeClass(document.body, 'authenticated-body');
+      this.renderer.removeClass(document.body, 'unauthenticated-body');
+      this.renderer.addClass(document.body, user ? 'authenticated-body' : 'unauthenticated-body');
     });
   }
 

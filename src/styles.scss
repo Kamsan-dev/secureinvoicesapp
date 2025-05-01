@@ -74,7 +74,6 @@ body {
   padding: 0;
   //background-color: rgb(9, 9, 11);
   //background-color: #121212;
-  background-color: #0a0a0c;
   display: flex;
   flex-direction: column;
 
@@ -83,6 +82,13 @@ body {
   font-weight: var(--font-regular);
   line-height: 1.6;
   color: #f1f1f1;
+
+  &.authenticated-body {
+    background-color: #0a0a0c;
+  }
+  &.unauthenticated-body {
+    background-color: #1e1e24;
+  }
 }
 
 .font-input-text {

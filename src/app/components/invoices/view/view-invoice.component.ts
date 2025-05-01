@@ -561,7 +561,7 @@ export class ViewInvoiceComponent implements OnInit {
             dataState: DataState.ERROR,
             error: error.error.reason,
           });
-          this.toasterService.show('error', `Something went wrong !`, '');
+          this.toasterService.show('error', `Error !`, `Something went wrong when trying to delete invoice number ${this.invoiceNumber()}`);
         },
       });
   }

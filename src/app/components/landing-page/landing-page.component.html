@@ -1,32 +1,90 @@
 <div class="landing-wrapper">
-  <header class="hero">
-    <div class="logo-title">
-      <img src="logo.png" alt="Secure Invoices Logo" class="logo" />
-      <div>
-        <h1>Secure Invoices</h1>
-        <p>Invoice Management Reimagined — Secure, Simple, Smart.</p>
+  <header>
+    <div class="flex items-center w-full justify-evenly">
+      <div class="flex flex-col gap-2">
+        <span class="h1">Secure Invoices</span>
+        <span class="h3">Invoice Management Reimagined — Secure, Simple, Smart.</span>
+        <span>Individuals and companies trust Secure-Invoices</span>
       </div>
+      <img src="../../../assets/images/logo.png" alt="Secure Invoices Logo" class="logo" class="w-[20rem] h-[20rem]" />
     </div>
   </header>
 
-  <section class="features">
-    <div class="feature-card">
-      <h3>End-to-End Security</h3>
-      <p>All invoices are encrypted and backed by role-based access control.</p>
+  <main class="mt-6">
+    <div class="grid-stats">
+      <div class="col-span-12 lg:col-span-6 xl:col-span-3 se-card">
+        <div class="se-card-header">
+          <div class="flex justify-between items-center">
+            <span class="h-title-card">End-to-End Security</span>
+            <i class="fa-solid fa-ellipsis-vertical text-xl"></i>
+          </div>
+        </div>
+        <div class="se-card-body">
+          <span>All invoices are encrypted and backed by role-based access control.</span>
+        </div>
+      </div>
+      <div class="col-span-12 lg:col-span-6 xl:col-span-3 se-card">
+        <div class="se-card-header">
+          <div class="flex justify-between items-center">
+            <span class="h-title-card">Smart Dashboards</span>
+            <i class="fa-solid fa-ellipsis-vertical text-xl"></i>
+          </div>
+        </div>
+        <div class="se-card-body">
+          <span>Track billing, payments, and compliance at a glance with rich data visualization.</span>
+        </div>
+      </div>
+      <div class="col-span-12 lg:col-span-6 xl:col-span-3 se-card">
+        <div class="se-card-header">
+          <div class="flex justify-between items-center">
+            <span class="h-title-card">Team Collaboration</span>
+            <i class="fa-solid fa-ellipsis-vertical text-xl"></i>
+          </div>
+        </div>
+        <div class="se-card-body">
+          <span>Manage invoice approvals, comments, and status changes in real time.</span>
+        </div>
+      </div>
+      <div class="col-span-12 lg:col-span-6 xl:col-span-3 se-card">
+        <div class="se-card-header">
+          <div class="flex justify-between items-center">
+            <span class="h-title-card">Audit Logs</span>
+            <i class="fa-solid fa-ellipsis-vertical text-xl"></i>
+          </div>
+        </div>
+        <div class="se-card-body">
+          <span>Every change is logged for accountability and audit-readiness.</span>
+        </div>
+      </div>
     </div>
-    <div class="feature-card">
-      <h3>Smart Dashboards</h3>
-      <p>Track billing, payments, and compliance at a glance with rich data visualization.</p>
+
+    <div class="mt-6">
+      <div class="se-card">
+        <div class="flex justify-between">
+          <div class="se-card-body flex flex-col">
+            <div class="flex flex-col gap-12">
+              <span class="h2">Make Invoicing Easy, Keep Your Data Safe.</span>
+              <span class="text-2xl">Helping you manage clients, invoices, and users with ease—while keeping everything secure and organized in one place.</span>
+            </div>
+            <div class="card-body-content flex flex-col gap-4 mt-8 text-xl mb-8">
+              <span>✅ Simple Login with Extra Security (2-Step Verification)</span>
+              <span>👤 Easy Management of User Profiles and Role</span>
+              <span>🧾 Add, Edit, and Track Clients and Invoices</span>
+              <span>📊 Clear Dashboard with Useful Stats</span>
+              <span>📄 Download Reports as Excel or PDF</span>
+              <span>📱 Works Perfectly on Computer, Tablet, and Phone</span>
+            </div>
+            <div>
+              <span class="text-base">Turning everyday tasks into smooth, secure experiences—so you can focus on what matters.</span>
+            </div>
+          </div>
+          <div>
+            <img src="../../../assets/images/imgLP_1.png" class="border-red-500 w-[45rem] h-full hidden lg:block" />
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="feature-card">
-      <h3>Team Collaboration</h3>
-      <p>Manage invoice approvals, comments, and status changes in real time.</p>
-    </div>
-    <div class="feature-card">
-      <h3>Audit Logs</h3>
-      <p>Every change is logged for accountability and audit-readiness.</p>
-    </div>
-  </section>
+  </main>
 
   <footer class="footer">
     <p>© 2025 Secure Invoices. All rights reserved.</p>
