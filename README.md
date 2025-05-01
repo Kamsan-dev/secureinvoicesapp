@@ -2,7 +2,7 @@
 
 Secure-Invoices Frontend is the client-side application for Secure-Invoices. Built with Angular 17, PrimeNG, and Tailwind CSS, it provides an intuitive user interface for managing clients, invoices, and user profiles.
 
-## Features
+## 🚀 Features
 
 - User Authentication: Login with JWT-based authentication and 2FA.
 
@@ -14,7 +14,7 @@ Secure-Invoices Frontend is the client-side application for Secure-Invoices. Bui
 
 - Responsive Design: The UI is fully responsive, providing a seamless experience across desktop, tablet, and mobile devices.
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 - Framework: Angular 17
 
@@ -24,13 +24,7 @@ Secure-Invoices Frontend is the client-side application for Secure-Invoices. Bui
 
 - API Communication: RESTful API integration
 
-## UI Preview
-
-#### Login
-
-<p align="center">
-    <img src="./src/assets/docs/login_preview.PNG" alt=""/>
-</p>
+## 💻 UI Preview
 
 #### Admin Dashboard
 
@@ -50,12 +44,32 @@ Secure-Invoices Frontend is the client-side application for Secure-Invoices. Bui
     <img src="./src/assets/docs/user-event-history_preview.PNG" alt=""/>
 </p>
 
-#### Invoices : List & Edit Section
+#### Details of a customer
+
+<p align="center">
+    <img src="./src/assets/docs/customers-details-preview.PNG" alt=""/>
+</p>
+
+#### List of customers
+
+<p align="center">
+    <img src="./src/assets/docs/customers-list_preview.png" alt=""/>
+</p>
+
+#### Invoices : List
 
 <p align="center">
     <img src="./src/assets/docs/invoices-list_preview.PNG" alt=""/>
 </p>
 
+#### Invoices : Details
+
 <p align="center">
     <img src="./src/assets/docs/invoice-details_preview.PNG" alt=""/>
+</p>
+
+### Responsive Design Across Devices
+
+<p align="center">
+    <img src="./src/assets/docs/phone-view.PNG" alt=""/>
 </p>

@@ -9,7 +9,7 @@ export const redirectOnRootGuard: CanActivateFn = (route, state) => {
   if (userService.isAuthenticated()) {
     router.navigateByUrl('/dashboard');
   } else {
-    router.navigateByUrl('/home');
+    router.navigateByUrl('**');
   }
   return false;
 };
